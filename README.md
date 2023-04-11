@@ -1,4 +1,4 @@
-# Shopify App
+# App
 
 This project contains a Shopify App powered by [Remix](https://remix.run/).
 
