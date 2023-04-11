@@ -1,5 +1,5 @@
 {
-  "name": "{{ app_name }}",
+  "name": "app",
   "private": true,
   "scripts": {
     "build": "shopify app build",

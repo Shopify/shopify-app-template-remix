@@ -1,11 +1,11 @@
-# {{ app_name }}
+# Shopify App
 
 This project contains a Shopify App powered by [Remix](https://remix.run/).
 
 ## Set up
 
-1. Install dependencies: `{{ dependency_manager }} install`.
-2. Run `{{ dependency_manager }} dev`.
+1. Install dependencies: `pnpm/yarn/npm install`.
+2. Run `pnpm/yarn/npm dev`.
 
 ## Resources
 

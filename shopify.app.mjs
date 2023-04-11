@@ -1,5 +1,5 @@
 export default {
-name: '{{ app_name }}',
+name: 'app',
   scopes: 'read_products,write_products',
   gdpr: true,
   apiVersion: '2023-01',
