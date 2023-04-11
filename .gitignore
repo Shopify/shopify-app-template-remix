@@ -1,7 +1,8 @@
 node_modules
 
 /.cache
-/home/build
-/home/public/build
+/build
+/app/build
+/app/public/build
+
 .env
-home/sessions.json
