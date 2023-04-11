@@ -1,0 +1,7 @@
+node_modules
+
+/.cache
+/home/build
+/home/public/build
+.env
+home/sessions.json

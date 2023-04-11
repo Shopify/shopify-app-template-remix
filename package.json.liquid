@@ -1,0 +1,35 @@
+{
+  "name": "{{ app_name }}",
+  "private": true,
+  "scripts": {
+    "build": "shopify app build",
+    "dev": "shopify app dev",
+    "push": "shopify app push",
+    "generate": "shopify app generate",
+    "deploy": "shopify app deploy",
+    "env": "shopify app env",
+    "postinstall": "node .shopify/remix-patch.js",
+    "db:up": "npx prisma db push"
+  },
+  "dependencies": {
+    "remix-auth": "3.4.0",
+    "@remix-run/serve": "^1.14.0",
+    "@remix-run/node": "^1.14.0",
+    "@remix-run/react": "^1.14.0",
+    "@shopify/polaris": "9.11.0",
+    "isbot": "^3.6.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "cross-env": "^7.0.3",
+    "@prisma/client": "^4.12.0",
+    "prisma": "^4.11.0"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "^1.14.0"
+  },
+  "workspaces": {
+    "packages": [
+      "extensions/*"
+    ]
+  }
+}
