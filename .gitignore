@@ -4,5 +4,6 @@ node_modules
 /build
 /app/build
 /app/public/build
+/prisma/dev.sqlite
 
 .env
