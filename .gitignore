@@ -7,3 +7,5 @@ node_modules
 /prisma/dev.sqlite
 
 .env
+package-lock.json
+yarn.lock
