@@ -2,13 +2,15 @@
   "name": "app",
   "private": true,
   "scripts": {
-    "build": "shopify app build",
+    "build": "NODE_ENV=production remix build",
     "dev": "shopify app dev",
     "push": "shopify app push",
     "generate": "shopify app generate",
     "deploy": "shopify app deploy",
     "env": "shopify app env",
-    "db:up": "npx prisma db push"
+    "db:up": "npx prisma db push",
+    "db:setup": "prisma generate",
+    "start": "remix-serve build"
   },
   "dependencies": {
     "@prisma/client": "^4.12.0",
