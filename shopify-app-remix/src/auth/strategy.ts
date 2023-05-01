@@ -30,17 +30,15 @@ export class AuthStrategyInternal extends Strategy<any, any> {
 
   public async authenticate(
     request: Request,
-    sessionStorage: SessionStorage,
-    options: AuthenticateOptions
+    _sessionStorage: SessionStorage,
+    _options: AuthenticateOptions
   ): Promise<any> {
-    const logger = this.strategyClass().logger;
+    const { logger, config } = this.strategyClass();
 
     if (isbot(request.headers.get("User-Agent"))) {
       logger.debug("Request is from a bot, skipping auth");
       throw new Response(null, { status: 400 });
     }
-
-    const config = this.strategyClass().config;
 
     const url = new URL(request.url);
     url.protocol = "https:";
@@ -62,9 +60,9 @@ export class AuthStrategyInternal extends Strategy<any, any> {
     }
 
     if (isAuthCallbackRequest) {
-      await this.handleAuthCallbackRequest(request, sessionStorage, options);
+      await this.handleAuthCallbackRequest(request);
     } else if (isAuthRequest) {
-      await this.handleAuthBeginRequest(request, sessionStorage, options);
+      await this.handleAuthBeginRequest(request);
     } else if (hasSessionTokenInHeaders) {
       // return await this.verifySessionToken(request, sessionStorage, options);
     } else {
@@ -83,21 +81,14 @@ export class AuthStrategyInternal extends Strategy<any, any> {
     }
   }
 
-  private async handleAuthBeginRequest(
-    request: Request,
-    _sessionStorage: SessionStorage,
-    _options: AuthenticateOptions
-  ): Promise<void> {
-    const logger = this.strategyClass().logger;
-    const config = this.strategyClass().config;
-    const api = this.strategyClass().api;
+  private async handleAuthBeginRequest(request: Request): Promise<void> {
+    const { logger, config, api } = this.strategyClass();
 
     const url = new URL(request.url);
-    const params = new URLSearchParams(url.search);
 
     logger.info("Handling OAuth begin request");
 
-    const shop = api.utils.sanitizeShop(params.get("shop")!);
+    const shop = api.utils.sanitizeShop(url.searchParams.get("shop")!);
     if (!shop) {
       throw new Error("Shop param is not present");
     }
@@ -107,19 +98,15 @@ export class AuthStrategyInternal extends Strategy<any, any> {
     throw await api.auth.begin({
       shop,
       callbackPath: config.auth.callbackPath,
-      isOnline: config.useOnlineTokens,
+      isOnline: false,
       rawRequest: request,
     });
   }
 
-  private async handleAuthCallbackRequest(
-    request: Request,
-    sessionStorage: SessionStorage,
-    options: AuthenticateOptions
-  ): Promise<void> {
-    const logger = this.strategyClass().logger;
-    const config = this.strategyClass().config;
-    const api = this.strategyClass().api;
+  private async handleAuthCallbackRequest(request: Request): Promise<void> {
+    const { logger, config, api } = this.strategyClass();
+
+    const url = new URL(request.url);
 
     logger.info("Handling OAuth callback request");
 
@@ -130,23 +117,36 @@ export class AuthStrategyInternal extends Strategy<any, any> {
 
       await config.sessionStorage.storeSession(callback.session);
 
+      if (config.useOnlineTokens && !callback.session.isOnline) {
+        logger.info("Requesting online access token for offline session");
+
+        const shop = api.utils.sanitizeShop(url.searchParams.get("shop")!)!;
+        throw await api.auth.begin({
+          shop,
+          callbackPath: config.auth.callbackPath,
+          isOnline: true,
+          rawRequest: request,
+        });
+      }
+
       // TODO register webhooks here
 
       await this.redirectToShopifyOrAppRoot(request);
     } catch (error) {
-      console.log(error);
+      if (error instanceof Response) {
+        throw error;
+      }
+
       logger.error("Error during OAuth callback", { error: error.message });
 
       switch (true) {
-        case error instanceof Response:
-          throw error;
         case error instanceof InvalidOAuthError:
           throw new Response(undefined, {
             status: 400,
             statusText: "Invalid OAuth Request",
           });
         case error instanceof CookieNotFound:
-          await this.handleAuthBeginRequest(request, sessionStorage, options);
+          await this.handleAuthBeginRequest(request);
           break;
         default:
           throw new Response(undefined, {
@@ -158,13 +158,12 @@ export class AuthStrategyInternal extends Strategy<any, any> {
   }
 
   private async redirectToShopifyOrAppRoot(request: Request): Promise<void> {
-    const api = this.strategyClass().api;
+    const { api } = this.strategyClass();
 
     const url = new URL(request.url);
-    const search = new URLSearchParams(url.search);
 
-    const host = api.utils.sanitizeHost(search.get("host")!)!;
-    const shop = api.utils.sanitizeShop(search.get("shop")!)!;
+    const host = api.utils.sanitizeHost(url.searchParams.get("host")!)!;
+    const shop = api.utils.sanitizeShop(url.searchParams.get("shop")!)!;
 
     const redirectUrl = api.config.isEmbeddedApp
       ? await api.auth.getEmbeddedAppUrl({ rawRequest: request })

@@ -8,7 +8,7 @@ import { SessionStorage } from "@shopify/shopify-app-session-storage";
 export interface AppConfigArg<
   R extends ShopifyRestResources = any,
   S extends SessionStorage = SessionStorage
-> extends Omit<ApiConfigArg<R>, "hostName"> {
+> extends Omit<ApiConfigArg<R>, "hostName" | "hostScheme"> {
   appUrl: string;
   auth?: Partial<AuthConfig>;
   sessionStorage?: S;

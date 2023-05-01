@@ -12,6 +12,7 @@ export const app = shopifyApp({
   sessionStorage: new PrismaSessionStorage(prisma),
   isEmbeddedApp: true,
   appUrl: process.env.SHOPIFY_APP_URL!,
+  useOnlineTokens: true,
   auth: {
     path: process.env.SHOPIFY_APP_AUTH_AUTHORIZATION_PATH,
     callbackPath: process.env.SHOPIFY_APP_AUTH_CALLBACK_PATH,
