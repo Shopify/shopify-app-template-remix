@@ -111,18 +111,17 @@ export class AuthStrategyInternal extends Strategy<any, any> {
     logger.info("Handling OAuth callback request");
 
     try {
-      const callback = await api.auth.callback({
+      const { session, headers: responseHeaders } = await api.auth.callback({
         rawRequest: request,
       });
 
-      await config.sessionStorage.storeSession(callback.session);
+      await config.sessionStorage.storeSession(session);
 
-      if (config.useOnlineTokens && !callback.session.isOnline) {
+      if (config.useOnlineTokens && !session.isOnline) {
         logger.info("Requesting online access token for offline session");
 
-        const shop = api.utils.sanitizeShop(url.searchParams.get("shop")!)!;
         throw await api.auth.begin({
-          shop,
+          shop: api.utils.sanitizeShop(url.searchParams.get("shop")!)!,
           callbackPath: config.auth.callbackPath,
           isOnline: true,
           rawRequest: request,
@@ -131,7 +130,7 @@ export class AuthStrategyInternal extends Strategy<any, any> {
 
       // TODO register webhooks here
 
-      await this.redirectToShopifyOrAppRoot(request);
+      await this.redirectToShopifyOrAppRoot(request, responseHeaders);
     } catch (error) {
       if (error instanceof Response) {
         throw error;
@@ -157,7 +156,10 @@ export class AuthStrategyInternal extends Strategy<any, any> {
     }
   }
 
-  private async redirectToShopifyOrAppRoot(request: Request): Promise<void> {
+  private async redirectToShopifyOrAppRoot(
+    request: Request,
+    responseHeaders: Headers
+  ): Promise<void> {
     const { api } = this.strategyClass();
 
     const url = new URL(request.url);
@@ -169,9 +171,13 @@ export class AuthStrategyInternal extends Strategy<any, any> {
       ? await api.auth.getEmbeddedAppUrl({ rawRequest: request })
       : `/?shop=${shop}&host=${encodeURIComponent(host)}`;
 
+    const headers: { [key: string]: string } = {};
+    responseHeaders.forEach(([key, value]) => (headers[key] = value));
+
     throw new Response(undefined, {
       status: 302,
       headers: {
+        ...headers,
         location: redirectUrl,
       },
     });
