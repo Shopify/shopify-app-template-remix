@@ -10,10 +10,13 @@ datasource db {
   url      = "file:dev.sqlite"
 }
 
-model Tokens {
-  id Int @id @default(autoincrement())
-  storeFQDN String @unique
-  online Boolean @default(false)
-  scopes String
-  token  String
+model Session {
+  id          String    @id
+  shop        String
+  state       String
+  isOnline    Boolean   @default(false)
+  scope       String?
+  expires     DateTime?
+  accessToken String
+  userId      Int?
 }
