@@ -12,6 +12,7 @@ export interface AppConfigArg<
   appUrl: string;
   auth?: Partial<AuthConfig>;
   sessionStorage?: S;
+  useOnlineTokens?: boolean;
 }
 
 export interface AppConfig<S extends SessionStorage = SessionStorage>
@@ -19,6 +20,7 @@ export interface AppConfig<S extends SessionStorage = SessionStorage>
   appUrl: string;
   auth: AuthConfig;
   sessionStorage: S;
+  useOnlineTokens: boolean;
 }
 
 export interface AuthConfig {

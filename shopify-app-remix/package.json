@@ -23,5 +23,11 @@
     "@shopify/shopify-app-session-storage-memory": "^1.0.5",
     "semver": "^7.5.0",
     "tslib": "^2.5.0"
-  }
+  },
+  "files": [
+    "dist/*",
+    "!bundle/*",
+    "!tsconfig.tsbuildinfo",
+    "!node_modules"
+  ]
 }

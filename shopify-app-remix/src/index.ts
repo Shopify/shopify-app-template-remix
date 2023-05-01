@@ -10,14 +10,14 @@ import {
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
 import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memory";
 
-import { AppConfig, AppConfigArg } from "./config-types";
-import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version";
-import { AuthStrategy, authStrategyFactory } from "./auth";
+import { AppConfig, AppConfigArg } from "./config-types.js";
+import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version.js";
+import { AuthStrategyInternal, authStrategyFactory } from "./auth/index.js";
 
 export interface ShopifyApp<S extends SessionStorage = SessionStorage> {
   config: AppConfig<S>;
   // TODO Extract this type into an interface
-  AuthStrategy: typeof AuthStrategy;
+  AuthStrategy: typeof AuthStrategyInternal;
 }
 
 export function shopifyApp<
@@ -38,9 +38,16 @@ function deriveApi<R extends ShopifyRestResources = any>(
   appConfig: AppConfigArg
 ): Shopify<R> {
   const appUrl = new URL(appConfig.appUrl);
+
+  const hostName =
+    appUrl.hostname === "localhost"
+      ? // TODO make sure the port is being added in the CLI when filling SHOPIFY_APP_URL
+        `${appUrl.hostname}:${appUrl.port || process.env.PORT}`
+      : appUrl.hostname;
+
   const cleanApiConfig = {
     ...appConfig,
-    hostName: appUrl.hostname,
+    hostName,
     hostScheme: appUrl.protocol.replace(":", "") as "http" | "https",
   };
 
@@ -54,13 +61,14 @@ function deriveConfig<S extends SessionStorage = SessionStorage>(
   return {
     ...appConfig,
     ...apiConfig,
+    useOnlineTokens: appConfig.useOnlineTokens ?? false,
     sessionStorage: (appConfig.sessionStorage ??
       new MemorySessionStorage()) as unknown as S,
     auth: {
-      path: appConfig.auth?.path ?? "/auth",
-      callbackPath: appConfig.auth?.callbackPath ?? "/auth/callback",
+      path: appConfig.auth?.path || "/auth",
+      callbackPath: appConfig.auth?.callbackPath || "/auth/callback",
       sessionTokenPath:
-        appConfig.auth?.sessionTokenPath ?? "/auth/session-token",
+        appConfig.auth?.sessionTokenPath || "/auth/session-token",
     },
   };
 }

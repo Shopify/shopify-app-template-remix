@@ -1,8 +1,9 @@
 import { Shopify } from "@shopify/shopify-api";
 
-import { AppConfigInterface } from "./config-types";
+import { AppConfig } from "./config-types.js";
 
-export interface ApiAndConfigParams {
+export interface BasicParams {
   api: Shopify;
-  config: AppConfigInterface;
+  config: AppConfig;
+  logger: Shopify["logger"];
 }
