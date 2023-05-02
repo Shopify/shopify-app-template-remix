@@ -26,5 +26,6 @@ export interface AppConfig<S extends SessionStorage = SessionStorage>
 export interface AuthConfig {
   path: string;
   callbackPath: string;
+  exitIframePath: string;
   sessionTokenPath: string;
 }

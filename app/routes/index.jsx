@@ -16,10 +16,13 @@ import trophyImage from "../assets/home-trophy.png";
 import { useSubmit } from "@remix-run/react";
 
 export const loader = async ({ request }) => {
-  await authenticator.authenticate("shopify-app", request);
+  const { session, api } = await authenticator.authenticate(
+    "shopify-app",
+    request
+  );
   return json({});
-  // const result = await admin.fetch('/products/count.json')
-  // return json(result)
+  // const result = await admin.fetch("/products/count.json");
+  // return json(result);
 };
 
 export async function action({ request }) {

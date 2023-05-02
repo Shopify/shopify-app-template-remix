@@ -69,6 +69,7 @@ function deriveConfig<S extends SessionStorage = SessionStorage>(
       callbackPath: appConfig.auth?.callbackPath || "/auth/callback",
       sessionTokenPath:
         appConfig.auth?.sessionTokenPath || "/auth/session-token",
+      exitIframePath: appConfig.auth?.exitIframePath || "/auth/exit-iframe",
     },
   };
 }
