@@ -37,17 +37,12 @@ export function shopifyApp<
 function deriveApi<R extends ShopifyRestResources = any>(
   appConfig: AppConfigArg
 ): Shopify<R> {
+  // TODO make sure the port is being added in the CLI when filling SHOPIFY_APP_URL
   const appUrl = new URL(appConfig.appUrl);
-
-  const hostName =
-    appUrl.hostname === "localhost"
-      ? // TODO make sure the port is being added in the CLI when filling SHOPIFY_APP_URL
-        `${appUrl.hostname}:${appUrl.port || process.env.PORT}`
-      : appUrl.hostname;
 
   const cleanApiConfig = {
     ...appConfig,
-    hostName,
+    hostName: appUrl.host,
     hostScheme: appUrl.protocol.replace(":", "") as "http" | "https",
   };
 

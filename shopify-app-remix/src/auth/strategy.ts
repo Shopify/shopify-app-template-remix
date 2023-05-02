@@ -152,8 +152,6 @@ export class AuthStrategyInternal extends Strategy<any, any> {
     const { api, config, logger } = this.strategyClass();
     const url = new URL(request.url);
 
-    // TODO Validate the HMAC signature on the request
-
     const host = api.utils.sanitizeHost(url.searchParams.get("host")!);
     if (!host) {
       throw new Error("Host param is not present");
@@ -162,6 +160,13 @@ export class AuthStrategyInternal extends Strategy<any, any> {
     const shop = api.utils.sanitizeShop(url.searchParams.get("shop")!);
     if (!shop) {
       throw new Error("Shop param is not present");
+    }
+
+    const isValidHmac = await api.utils.validateHmac(
+      Object.fromEntries(url.searchParams.entries())
+    );
+    if (!isValidHmac) {
+      throw new Error("Request does not have a valid HMAC signature");
     }
 
     logger.debug("Ensuring app is installed on shop", { shop });
@@ -348,14 +353,17 @@ export class AuthStrategyInternal extends Strategy<any, any> {
     });
   }
 
-  private redirectToBouncePage(
-    url: URL,
-    redirectTo: string | undefined = undefined
-  ): void {
-    const params = new URLSearchParams(url.search);
-    params.set("redirectTo", redirectTo ?? url.href);
+  private redirectToBouncePage(url: URL): void {
+    const { api, config } = this.strategyClass();
 
-    throw redirect(`/auth/session-token?${params.toString()}`);
+    // TODO this is to work around a remix bug
+    url.protocol = `${api.config.hostScheme}:`;
+
+    const params = new URLSearchParams(url.search);
+    params.set("redirectTo", url.href);
+
+    // TODO Make sure this works on chrome without a tunnel (weird HTTPS redirect issue)
+    throw redirect(`${config.auth.sessionTokenPath}?${params.toString()}`);
   }
 
   private renderAppBridge(): void {
