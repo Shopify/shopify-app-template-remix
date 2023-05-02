@@ -9,7 +9,7 @@
     "deploy": "shopify app deploy",
     "env": "shopify app env",
     "db:up": "npx prisma db push",
-    "db:setup": "prisma generate",
+    "db:generate": "prisma generate",
     "start": "remix-serve build"
   },
   "dependencies": {
