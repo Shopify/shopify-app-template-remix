@@ -38,7 +38,7 @@ export class AuthStrategyInternal extends Strategy<any, any> {
 
     if (isbot(request.headers.get("User-Agent"))) {
       logger.debug("Request is from a bot, skipping auth");
-      throw new Response(null, { status: 400, statusText: "Bad Request" });
+      throw new Response(undefined, { status: 400, statusText: "Bad Request" });
     }
 
     const url = new URL(request.url);
@@ -152,6 +152,8 @@ export class AuthStrategyInternal extends Strategy<any, any> {
     const { api, config, logger } = this.strategyClass();
     const url = new URL(request.url);
 
+    // TODO Validate the HMAC signature on the request
+
     const host = api.utils.sanitizeHost(url.searchParams.get("host")!);
     if (!host) {
       throw new Error("Host param is not present");
@@ -191,7 +193,6 @@ export class AuthStrategyInternal extends Strategy<any, any> {
           "Session token is present in query params, validating session",
           { shop }
         );
-        // TODO is this the right thing to do?
         session = await this.validateAuthenticatedSession(
           request,
           searchParamSessionToken
@@ -216,6 +217,7 @@ export class AuthStrategyInternal extends Strategy<any, any> {
 
     logger.debug("Validating session token");
 
+    // TODO update the API library to be able to find either a header or search param token for validation
     let shop: string;
     let userId: string;
     try {
@@ -359,6 +361,7 @@ export class AuthStrategyInternal extends Strategy<any, any> {
   private renderAppBridge(): void {
     const { config } = this.strategyClass();
 
+    // TODO Align with ABN team on how to pass the URL in. Do we need to pass in the shop / host?
     throw new Response(
       `<script data-api-key="${config.apiKey}" src="https://cdn.shopify.com/shopifycloud/app-bridge-next/app-bridge.js"></script>`,
       { headers: { "content-type": "text/html;charset=utf-8" } }
