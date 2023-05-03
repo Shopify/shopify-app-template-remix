@@ -7,6 +7,7 @@ import { SessionStorage, redirect } from "@remix-run/server-runtime";
 import {
   CookieNotFound,
   InvalidOAuthError,
+  JwtPayload,
   Session,
   Shopify,
 } from "@shopify/shopify-api";
@@ -15,15 +16,10 @@ import isbot from "isbot";
 import { BasicParams } from "../types.js";
 import { AppConfig } from "../config-types.js";
 
-import {
-  AdminContext,
-  Context,
-  EmbeddedContext,
-  NonEmbeddedContext,
-} from "./types.js";
+import { AdminContext, Context, SessionContext } from "./types.js";
 
 // TODO Figure out what these types should be
-export class AuthStrategyInternal extends Strategy<Context, any> {
+export class AuthStrategyInternal extends Strategy<any, any> {
   name = "ShopifyAppAuthStrategy";
 
   protected static api: Shopify;
@@ -40,7 +36,7 @@ export class AuthStrategyInternal extends Strategy<Context, any> {
     _sessionStorage: SessionStorage,
     _options: AuthenticateOptions
   ): Promise<Context> {
-    const { api, logger, config } = this.strategyClass();
+    const { logger, config } = this.strategyClass();
 
     if (isbot(request.headers.get("User-Agent"))) {
       logger.debug("Request is from a bot, skipping auth");
@@ -51,7 +47,7 @@ export class AuthStrategyInternal extends Strategy<Context, any> {
 
     const isBouncePage = url.pathname.startsWith(config.auth.sessionTokenPath);
     const isExitIframe = url.pathname.startsWith(config.auth.exitIframePath);
-    const headerSessionToken = request?.headers
+    const sessionTokenHeader = request?.headers
       ?.get("authorization")
       ?.replace("Bearer ", "");
     const isAuthRequest = url.pathname.startsWith(config.auth.path);
@@ -61,7 +57,7 @@ export class AuthStrategyInternal extends Strategy<Context, any> {
 
     logger.info("Authenticating request");
 
-    let session: Session | undefined;
+    let sessionContext: SessionContext | undefined;
     if (isBouncePage) {
       logger.debug("Rendering bounce page");
       this.renderAppBridge();
@@ -72,29 +68,28 @@ export class AuthStrategyInternal extends Strategy<Context, any> {
       await this.handleAuthCallbackRequest(request);
     } else if (isAuthRequest) {
       await this.handleAuthBeginRequest(request);
-    } else if (headerSessionToken) {
-      session = await this.validateAuthenticatedSession(
+    } else if (sessionTokenHeader) {
+      const sessionToken = await this.validateSessionToken(sessionTokenHeader);
+
+      sessionContext = await this.validateAuthenticatedSession(
         request,
-        headerSessionToken
+        sessionToken
       );
     } else {
-      session = await this.ensureInstalledOnShop(request);
+      await this.validateUrlParams(request);
+      await this.ensureInstalledOnShop(request);
+      await this.ensureAppIsEmbeddedIfRequired(request);
+      await this.ensureSessionTokenSearchParamIfRequired(request);
+
+      sessionContext = await this.ensureSessionExists(request);
     }
 
     const admin: AdminContext = {};
 
-    if (config.isEmbeddedApp) {
-      return {
-        sanitizedHost: api.utils.sanitizeHost(url.searchParams.get("host")!),
-        admin,
-        session: { session: session!, token: jwtPayload },
-      } as EmbeddedContext;
-    } else {
-      return {
-        admin,
-        session: { session: session! },
-      } as NonEmbeddedContext;
-    }
+    return {
+      admin,
+      session: sessionContext!,
+    };
 
     // TODO Override client functions to return context for the request?
   }
@@ -165,10 +160,8 @@ export class AuthStrategyInternal extends Strategy<Context, any> {
     }
   }
 
-  private async ensureInstalledOnShop(
-    request: Request
-  ): Promise<Session | undefined> {
-    const { api, config, logger } = this.strategyClass();
+  private async validateUrlParams(request: Request) {
+    const { api } = this.strategyClass();
     const url = new URL(request.url);
 
     const host = api.utils.sanitizeHost(url.searchParams.get("host")!);
@@ -181,16 +174,23 @@ export class AuthStrategyInternal extends Strategy<Context, any> {
       throw new Error("Shop param is not present");
     }
 
-    const isValidHmac = await api.utils.validateHmac(
-      Object.fromEntries(url.searchParams.entries())
-    );
-    if (!isValidHmac) {
-      throw new Error("Request does not have a valid HMAC signature");
-    }
+    // TODO: Start validating HMAC if CLI can produce valid links
+    // const isValidHmac = await api.utils.validateHmac(
+    //   Object.fromEntries(url.searchParams.entries())
+    // );
+    // if (!isValidHmac) {
+    //   throw new Error("Request does not have a valid HMAC signature");
+    // }
+  }
 
+  private async ensureInstalledOnShop(request: Request) {
+    const { api, config, logger } = this.strategyClass();
+    const url = new URL(request.url);
+
+    const shop = url.searchParams.get("shop")!;
+
+    // Ensure app is installed
     logger.debug("Ensuring app is installed on shop", { shop });
-
-    const searchParamSessionToken = url.searchParams.get("session_token");
 
     const offlineSession = await config.sessionStorage.loadSession(
       api.session.getOfflineId(shop)
@@ -203,56 +203,82 @@ export class AuthStrategyInternal extends Strategy<Context, any> {
       if (url.searchParams.get("embedded") === "1") {
         this.redirectWithExitIframe(request, shop);
       } else {
-        this.beginAuth(request, false, shop);
+        await this.beginAuth(request, false, shop);
       }
     }
-
-    let session: Session | undefined;
-    if (api.config.isEmbeddedApp) {
-      if (url.searchParams.get("embedded") !== "1") {
-        logger.debug("App is not embedded, redirecting to Shopify", { shop });
-        await this.redirectToShopifyOrAppRoot(request);
-      } else if (searchParamSessionToken) {
-        logger.debug(
-          "Session token is present in query params, validating session",
-          { shop }
-        );
-        session = await this.validateAuthenticatedSession(
-          request,
-          searchParamSessionToken
-        );
-      } else {
-        logger.debug(
-          "Missing session token in search params, going to bounce page",
-          { shop }
-        );
-        this.redirectToBouncePage(url);
-      }
-    } else {
-      // TODO grab session from cookie and return it
-    }
-
-    return session;
   }
 
-  private async validateAuthenticatedSession(
-    request: Request,
-    token: string
-  ): Promise<Session | undefined> {
+  private async ensureAppIsEmbeddedIfRequired(request: Request) {
+    const { api, logger } = this.strategyClass();
+    const url = new URL(request.url);
+
+    const shop = url.searchParams.get("shop")!;
+
+    if (api.config.isEmbeddedApp && url.searchParams.get("embedded") !== "1") {
+      logger.debug("App is not embedded, redirecting to Shopify", { shop });
+      await this.redirectToShopifyOrAppRoot(request);
+    }
+  }
+
+  private async ensureSessionTokenSearchParamIfRequired(request: Request) {
+    const { api, logger } = this.strategyClass();
+    const url = new URL(request.url);
+
+    const shop = url.searchParams.get("shop")!;
+    const searchParamSessionToken = url.searchParams.get("session_token");
+
+    if (api.config.isEmbeddedApp && !searchParamSessionToken) {
+      logger.debug(
+        "Missing session token in search params, going to bounce page",
+        { shop }
+      );
+      this.redirectToBouncePage(url);
+    }
+  }
+
+  private async ensureSessionExists(request: Request): Promise<SessionContext> {
     const { api, config, logger } = this.strategyClass();
+    const url = new URL(request.url);
+
+    const shop = url.searchParams.get("shop")!;
+    const searchParamSessionToken = url.searchParams.get("session_token")!;
+
+    if (api.config.isEmbeddedApp) {
+      logger.debug(
+        "Session token is present in query params, validating session",
+        { shop }
+      );
+
+      const sessionToken = await this.validateSessionToken(
+        searchParamSessionToken
+      );
+
+      return this.validateAuthenticatedSession(request, sessionToken);
+    } else {
+      // TODO move this check into loadSession once we add support for it in the library
+      const sessionId = await api.session.getCurrentId({
+        isOnline: config.useOnlineTokens,
+        rawRequest: request,
+      });
+      if (!sessionId) {
+        throw new Error("Session ID not found in cookies");
+      }
+
+      return { session: await this.loadSession(request, shop, sessionId) };
+    }
+  }
+
+  private async validateSessionToken(token: string): Promise<JwtPayload> {
+    const { api, logger } = this.strategyClass();
 
     logger.debug("Validating session token");
 
     // TODO update the API library to be able to find either a header or search param token for validation
-    let shop: string;
-    let userId: string;
     try {
       const payload = await api.session.decodeSessionToken(token);
-      const dest = new URL(payload.dest);
+      logger.debug("Session token is valid", { payload: payload });
 
-      userId = payload.sub;
-      shop = dest.hostname;
-      logger.debug("Session token is valid", { shop, userId });
+      return payload;
     } catch (error) {
       logger.debug(`Failed to validate session token: ${error.message}`);
       throw new Response(undefined, {
@@ -260,13 +286,38 @@ export class AuthStrategyInternal extends Strategy<Context, any> {
         statusText: "Unauthorized",
       });
     }
+  }
+
+  private async validateAuthenticatedSession(
+    request: Request,
+    payload: JwtPayload
+  ): Promise<SessionContext> {
+    const { config, logger } = this.strategyClass();
+
+    const dest = new URL(payload.dest);
+    const shop = dest.hostname;
 
     const sessionId = config.useOnlineTokens
-      ? this.getJwtSessionId(shop, userId)
+      ? this.getJwtSessionId(shop, payload.sub)
       : this.getOfflineId(shop);
     if (!sessionId) {
       throw new Error("Session ID not found in JWT token");
     }
+
+    const session = await this.loadSession(request, shop, sessionId);
+
+    logger.debug("Found session, request is valid", { shop });
+
+    return { session, token: payload };
+  }
+
+  private async loadSession(
+    request: Request,
+    shop: string,
+    sessionId: string
+  ): Promise<Session> {
+    const { config, logger } = this.strategyClass();
+
     logger.debug("Loading session from storage", { sessionId });
 
     const session = await config.sessionStorage.loadSession(sessionId);
@@ -290,9 +341,7 @@ export class AuthStrategyInternal extends Strategy<Context, any> {
       }
     }
 
-    logger.debug("Found session, request is valid", { shop });
-
-    return session;
+    return session!;
   }
 
   // TODO export these methods out of the API library

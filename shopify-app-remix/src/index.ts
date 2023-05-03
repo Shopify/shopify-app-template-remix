@@ -2,6 +2,7 @@ import semver from "semver";
 import "./shopify-api-adapter";
 import {
   ConfigInterface as ApiConfig,
+  ConfigParams,
   FeatureDeprecatedError,
   Shopify,
   ShopifyRestResources,
@@ -14,8 +15,11 @@ import { AppConfig, AppConfigArg } from "./config-types.js";
 import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version.js";
 import { AuthStrategyInternal, authStrategyFactory } from "./auth/index.js";
 
-export interface ShopifyApp<S extends SessionStorage = SessionStorage> {
-  config: AppConfig<S>;
+export interface ShopifyApp<
+  S extends SessionStorage = SessionStorage,
+  C extends AppConfig<S> = AppConfig<S>
+> {
+  config: C;
   AuthStrategy: typeof AuthStrategyInternal;
 }
 
@@ -27,9 +31,14 @@ export function shopifyApp<
   const config = deriveConfig<S>(appConfig, api.config);
   const logger = overrideLoggerPackage(api.logger);
 
+  // TODO: Figure out how to automatically type the output of this function
   return {
     config,
-    AuthStrategy: authStrategyFactory({ api, config, logger }),
+    AuthStrategy: authStrategyFactory({
+      api,
+      config,
+      logger,
+    }),
   };
 }
 
@@ -39,10 +48,16 @@ function deriveApi<R extends ShopifyRestResources = any>(
   // TODO make sure the port is being added in the CLI when filling SHOPIFY_APP_URL
   const appUrl = new URL(appConfig.appUrl);
 
-  const cleanApiConfig = {
+  let userAgentPrefix = `Shopify Remix Library v${SHOPIFY_REMIX_LIBRARY_VERSION}`;
+  if (appConfig.userAgentPrefix) {
+    userAgentPrefix = `${appConfig.userAgentPrefix} | ${userAgentPrefix}`;
+  }
+
+  const cleanApiConfig: ConfigParams = {
     ...appConfig,
     hostName: appUrl.host,
     hostScheme: appUrl.protocol.replace(":", "") as "http" | "https",
+    userAgentPrefix,
   };
 
   return shopifyApi<R>(cleanApiConfig);

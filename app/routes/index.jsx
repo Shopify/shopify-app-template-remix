@@ -11,15 +11,13 @@ import {
   Link,
   Heading,
 } from "@shopify/polaris";
-import { ProductsCard } from "../components/ProductsCard.jsx";
+import { ProductsCard } from "../components/ProductsCard";
 import trophyImage from "../assets/home-trophy.png";
 import { useSubmit } from "@remix-run/react";
 
 export const loader = async ({ request }) => {
-  const { session, api } = await authenticator.authenticate(
-    "shopify-app",
-    request
-  );
+  const shopify = await authenticator.authenticate("shopify-app", request);
+
   return json({});
   // const result = await admin.fetch("/products/count.json");
   // return json(result);
