@@ -1,9 +1,8 @@
 import semver from "semver";
 import "./shopify-api-adapter";
 import {
-  ConfigParams as ApiConfigParams,
+  ConfigInterface as ApiConfig,
   FeatureDeprecatedError,
-  LATEST_API_VERSION,
   Shopify,
   ShopifyRestResources,
   shopifyApi,
@@ -11,95 +10,66 @@ import {
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
 import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memory";
 
-import { AppConfigInterface, AppConfigParams } from "./config-types";
-import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version";
+import { AppConfig, AppConfigArg } from "./config-types.js";
+import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version.js";
+import { AuthStrategyInternal, authStrategyFactory } from "./auth/index.js";
 
-export interface ShopifyApp<
-  R extends ShopifyRestResources = any,
-  S extends SessionStorage = SessionStorage
-> {
-  config: AppConfigInterface<S>;
-  api: Shopify<R>;
+export interface ShopifyApp<S extends SessionStorage = SessionStorage> {
+  config: AppConfig<S>;
+  // TODO Extract this type into an interface
+  AuthStrategy: typeof AuthStrategyInternal;
 }
 
 export function shopifyApp<
   R extends ShopifyRestResources = any,
   S extends SessionStorage = SessionStorage
->(config: AppConfigParams<R, S>): ShopifyApp<R, S> {
-  const { api: apiConfig, ...appConfig } = config;
-
-  const api = shopifyApi<R>(apiConfigWithDefaults<R>(apiConfig ?? {}));
-  const validatedConfig = validateAppConfig<R, S>(appConfig, api);
+>(appConfig: AppConfigArg<R, S>): ShopifyApp<S> {
+  const api = deriveApi<R>(appConfig);
+  const config = deriveConfig<S>(appConfig, api.config);
+  const logger = overrideLoggerPackage(api.logger);
 
   return {
-    config: validatedConfig,
-    api,
+    config,
+    AuthStrategy: authStrategyFactory({ api, config, logger }),
   };
 }
 
-function validateAppConfig<
-  R extends ShopifyRestResources,
-  S extends SessionStorage
->(
-  config: Omit<AppConfigParams<R, S>, "api">,
-  api: Shopify
-): AppConfigInterface<S> {
-  const { sessionStorage, ...configWithoutSessionStorage } = config;
+function deriveApi<R extends ShopifyRestResources = any>(
+  appConfig: AppConfigArg
+): Shopify<R> {
+  // TODO make sure the port is being added in the CLI when filling SHOPIFY_APP_URL
+  const appUrl = new URL(appConfig.appUrl);
 
-  return {
-    // We override the API package's logger to add the right package context by default (and make the call simpler)
-    logger: overrideLoggerPackage(api.logger),
-    sessionStorage: sessionStorage ?? new MemorySessionStorage(),
-    ...configWithoutSessionStorage,
+  const cleanApiConfig = {
+    ...appConfig,
+    hostName: appUrl.host,
+    hostScheme: appUrl.protocol.replace(":", "") as "http" | "https",
   };
+
+  return shopifyApi<R>(cleanApiConfig);
 }
 
-// TODO: Everything after this point is a copy of shopify-app-express and should be moved into a shared internal package
-
-function apiConfigWithDefaults<R extends ShopifyRestResources>(
-  apiConfig: Partial<ApiConfigParams<R>>
-): ApiConfigParams<R> {
-  let userAgentPrefix = `Shopify Remix Library v${SHOPIFY_REMIX_LIBRARY_VERSION}`;
-
-  if (apiConfig.userAgentPrefix) {
-    userAgentPrefix = `${apiConfig.userAgentPrefix} | ${userAgentPrefix}`;
-  }
-
-  let hostName: string;
-  let hostScheme: "http" | "https";
-  if (apiConfig.hostName) {
-    hostName = apiConfig.hostName;
-    hostScheme = apiConfig.hostScheme ?? "https";
-  } else {
-    const hostEnvVar = process.env.SHOPIFY_APP_URL;
-    const hostUrl = hostEnvVar
-      ? new URL(
-          hostEnvVar.startsWith("http") ? hostEnvVar : `https://${hostEnvVar}`
-        )
-      : undefined;
-
-    hostName = hostUrl?.hostname ?? "localhost";
-    hostScheme =
-      (hostUrl?.protocol?.replace(":", "") as "http" | "https") ?? "https";
-  }
-
-  /* eslint-disable no-process-env */
+function deriveConfig<S extends SessionStorage = SessionStorage>(
+  appConfig: AppConfigArg,
+  apiConfig: ApiConfig
+): AppConfig<S> {
   return {
-    apiKey: process.env.SHOPIFY_API_KEY!,
-    apiSecretKey: process.env.SHOPIFY_API_SECRET!,
-    scopes: process.env.SCOPES?.split(",")!,
-    hostScheme,
-    hostName,
-    isEmbeddedApp: true,
-    apiVersion: LATEST_API_VERSION,
-    ...(process.env.SHOP_CUSTOM_DOMAIN && {
-      customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN],
-    }),
+    ...appConfig,
     ...apiConfig,
-    userAgentPrefix,
+    useOnlineTokens: appConfig.useOnlineTokens ?? false,
+    sessionStorage: (appConfig.sessionStorage ??
+      new MemorySessionStorage()) as unknown as S,
+    auth: {
+      path: appConfig.auth?.path || "/auth",
+      callbackPath: appConfig.auth?.callbackPath || "/auth/callback",
+      sessionTokenPath:
+        appConfig.auth?.sessionTokenPath || "/auth/session-token",
+      exitIframePath: appConfig.auth?.exitIframePath || "/auth/exit-iframe",
+    },
   };
-  /* eslint-enable no-process-env */
 }
+
+// TODO This has been copied from shopify-app-express, it should be extracted into a shared package
 
 function overrideLoggerPackage(logger: Shopify["logger"]): Shopify["logger"] {
   const baseContext = { package: "shopify-app" };
@@ -108,6 +78,18 @@ function overrideLoggerPackage(logger: Shopify["logger"]): Shopify["logger"] {
     message,
     context = {}
   ) => logger.warning(message, { ...baseContext, ...context });
+
+  function deprecated(warningFunction: Shopify["logger"]["warning"]) {
+    return function (version: string, message: string): Promise<void> {
+      if (semver.gte(SHOPIFY_REMIX_LIBRARY_VERSION, version)) {
+        throw new FeatureDeprecatedError(
+          `Feature was deprecated in version ${version}`
+        );
+      }
+
+      return warningFunction(`[Deprecated | ${version}] ${message}`);
+    };
+  }
 
   return {
     ...logger,
@@ -121,17 +103,5 @@ function overrideLoggerPackage(logger: Shopify["logger"]): Shopify["logger"] {
     error: (message, context = {}) =>
       logger.error(message, { ...baseContext, ...context }),
     deprecated: deprecated(warningFunction),
-  };
-}
-
-function deprecated(warningFunction: Shopify["logger"]["warning"]) {
-  return function (version: string, message: string): Promise<void> {
-    if (semver.gte(SHOPIFY_REMIX_LIBRARY_VERSION, version)) {
-      throw new FeatureDeprecatedError(
-        `Feature was deprecated in version ${version}`
-      );
-    }
-
-    return warningFunction(`[Deprecated | ${version}] ${message}`);
   };
 }

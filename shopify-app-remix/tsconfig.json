@@ -9,7 +9,8 @@
     "declarationMap": true,
     "pretty": true,
     "moduleResolution": "node16",
-    "target": "es5",
+    "module": "CommonJS",
+    "target": "ES6",
     "downlevelIteration": true,
     "esModuleInterop": true,
     "sourceMap": true,
@@ -23,6 +24,7 @@
     "noImplicitThis": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
+    "jsx": "react-jsx",
     "lib": [
       "dom",
       "dom.iterable",
@@ -37,6 +39,6 @@
     "types": ["node", "jest"],
   },
 
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/index.ts.old"],
   "exclude": ["**/*.test.ts", "**/*.test.tsx", "**/test/*", "**/__tests__/*"]
 }
