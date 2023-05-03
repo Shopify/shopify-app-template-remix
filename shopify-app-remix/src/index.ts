@@ -16,7 +16,6 @@ import { AuthStrategyInternal, authStrategyFactory } from "./auth/index.js";
 
 export interface ShopifyApp<S extends SessionStorage = SessionStorage> {
   config: AppConfig<S>;
-  // TODO Extract this type into an interface
   AuthStrategy: typeof AuthStrategyInternal;
 }
 

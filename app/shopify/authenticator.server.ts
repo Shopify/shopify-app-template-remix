@@ -25,6 +25,8 @@ const authenticator = new Authenticator(sessionStorage);
 // });
 authenticator.use(new app.AuthStrategy(), "shopify-app");
 
+// TODO Add a billing strategy that takes in a session and exports billing functionality
+
 // Webhook authenticator
 // const shopifyAppWebhookAuthStrategy = new ShopifyAppWebhookAuthStrategy({
 //   ...app,

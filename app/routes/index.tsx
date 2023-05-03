@@ -11,7 +11,7 @@ import {
   Link,
   Heading,
 } from "@shopify/polaris";
-import { ProductsCard } from "../components/ProductsCard";
+import { ProductsCard } from "../components/ProductsCard.jsx";
 import trophyImage from "../assets/home-trophy.png";
 import { useSubmit } from "@remix-run/react";
 
