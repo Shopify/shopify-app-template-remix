@@ -1,21 +1,25 @@
-import { useState } from "react";
+import React from "react";
+
 import {
   Card,
   Heading,
   TextContainer,
   DisplayText,
   TextStyle,
+  Spinner,
 } from "@shopify/polaris";
-import { useSubmit } from "@remix-run/react";
 
-export function ProductsCard({count}) {
-  const submit = useSubmit();
+interface ProductsCardProps {
+  count: number;
+  populating: boolean;
+  handlePopulate: () => void;
+}
 
-  function handleChange(event) {
-    event.preventDefault()
-    submit({ action: 'create-products'}, { replace: true, method: 'POST' });
-  }
-
+export function ProductsCard({
+  count,
+  handlePopulate,
+  populating,
+}: ProductsCardProps) {
   return (
     <>
       <Card
@@ -23,8 +27,8 @@ export function ProductsCard({count}) {
         sectioned
         primaryFooterAction={{
           content: "Populate 5 products",
-          onAction: handleChange,
-          // loading: isLoading,
+          onAction: handlePopulate,
+          loading: populating,
         }}
       >
         <TextContainer spacing="loose">
@@ -35,9 +39,7 @@ export function ProductsCard({count}) {
           <Heading element="h4">
             TOTAL PRODUCTS
             <DisplayText size="medium">
-              <TextStyle variation="strong">
-                {count ? count :  "-" }
-              </TextStyle>
+              <TextStyle variation="strong">{count}</TextStyle>
             </DisplayText>
           </Heading>
         </TextContainer>

@@ -16,10 +16,16 @@ import isbot from "isbot";
 import { BasicParams } from "../types.js";
 import { AppConfig } from "../config-types.js";
 
-import { AdminContext, Context, SessionContext } from "./types.js";
+import {
+  AdminContext,
+  Context,
+  EmbeddedSessionContext,
+  NonEmbeddedSessionContext,
+} from "./types.js";
 
-// TODO Figure out what these types should be
-export class AuthStrategyInternal extends Strategy<any, any> {
+export class AuthStrategyInternal<
+  T extends EmbeddedSessionContext | NonEmbeddedSessionContext
+> extends Strategy<Context<T>, any> {
   name = "ShopifyAppAuthStrategy";
 
   protected static api: Shopify;
@@ -30,13 +36,12 @@ export class AuthStrategyInternal extends Strategy<any, any> {
     super(verifyAuth);
   }
 
-  // TODO See if we can type the return value based on whether the app is embedded or not
   public async authenticate(
     request: Request,
     _sessionStorage: SessionStorage,
     _options: AuthenticateOptions
-  ): Promise<Context> {
-    const { logger, config } = this.strategyClass();
+  ): Promise<Context<T>> {
+    const { api, logger, config } = this.strategyClass();
 
     if (isbot(request.headers.get("User-Agent"))) {
       logger.debug("Request is from a bot, skipping auth");
@@ -57,7 +62,7 @@ export class AuthStrategyInternal extends Strategy<any, any> {
 
     logger.info("Authenticating request");
 
-    let sessionContext: SessionContext | undefined;
+    let sessionContext: T;
     if (isBouncePage) {
       logger.debug("Rendering bounce page");
       this.renderAppBridge();
@@ -84,7 +89,9 @@ export class AuthStrategyInternal extends Strategy<any, any> {
       sessionContext = await this.ensureSessionExists(request);
     }
 
-    const admin: AdminContext = {};
+    const admin: AdminContext = {
+      rest: new api.clients.Rest({ session: sessionContext!.session }),
+    };
 
     return {
       admin,
@@ -236,7 +243,7 @@ export class AuthStrategyInternal extends Strategy<any, any> {
     }
   }
 
-  private async ensureSessionExists(request: Request): Promise<SessionContext> {
+  private async ensureSessionExists(request: Request): Promise<T> {
     const { api, config, logger } = this.strategyClass();
     const url = new URL(request.url);
 
@@ -264,7 +271,7 @@ export class AuthStrategyInternal extends Strategy<any, any> {
         throw new Error("Session ID not found in cookies");
       }
 
-      return { session: await this.loadSession(request, shop, sessionId) };
+      return { session: await this.loadSession(request, shop, sessionId) } as T;
     }
   }
 
@@ -276,7 +283,9 @@ export class AuthStrategyInternal extends Strategy<any, any> {
     // TODO update the API library to be able to find either a header or search param token for validation
     try {
       const payload = await api.session.decodeSessionToken(token);
-      logger.debug("Session token is valid", { payload: payload });
+      logger.debug("Session token is valid", {
+        payload: JSON.stringify(payload),
+      });
 
       return payload;
     } catch (error) {
@@ -291,7 +300,7 @@ export class AuthStrategyInternal extends Strategy<any, any> {
   private async validateAuthenticatedSession(
     request: Request,
     payload: JwtPayload
-  ): Promise<SessionContext> {
+  ): Promise<T> {
     const { config, logger } = this.strategyClass();
 
     const dest = new URL(payload.dest);
@@ -308,7 +317,7 @@ export class AuthStrategyInternal extends Strategy<any, any> {
 
     logger.debug("Found session, request is valid", { shop });
 
-    return { session, token: payload };
+    return { session, token: payload } as T;
   }
 
   private async loadSession(
@@ -399,8 +408,8 @@ export class AuthStrategyInternal extends Strategy<any, any> {
 
     // TODO verify that this is correct
     throw new Response(undefined, {
-      status: 403,
-      statusText: "Forbidden",
+      status: 401,
+      statusText: "Unauthorized",
       headers: {
         "X-Shopify-API-Request-Failure-Reauthorize": "1",
         "X-Shopify-API-Request-Failure-Reauthorize-Url": redirectUri,
@@ -455,12 +464,12 @@ export class AuthStrategyInternal extends Strategy<any, any> {
 // TODO look at the docs and implement this
 const verifyAuth: StrategyVerifyCallback<any, {}> = async (_params: {}) => {};
 
-export function authStrategyFactory(
-  params: BasicParams
-): typeof AuthStrategyInternal {
+export function authStrategyFactory<
+  T extends EmbeddedSessionContext | NonEmbeddedSessionContext
+>(params: BasicParams): typeof AuthStrategyInternal<T> {
   const { api, config, logger } = params;
 
-  class AuthStrategy extends AuthStrategyInternal {
+  class AuthStrategy extends AuthStrategyInternal<T> {
     protected static api = api;
     protected static config = config;
     protected static logger = logger;
