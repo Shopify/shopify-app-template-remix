@@ -18,37 +18,43 @@ import trophyImage from "../assets/home-trophy.png";
 import { useSubmit } from "@remix-run/react";
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const { admin } = await authenticator.authenticate("shopify-app", request);
+  const { admin, session } = await authenticator.authenticate(
+    "shopify-app",
+    request
+  );
 
-  const result = await admin.rest.get({ path: "/products/count.json" });
-  return json(result);
+  return json(await admin.rest.Product.count({ session: session.session }));
 };
 
 export async function action({ request }: LoaderArgs) {
-  await authenticator.authenticate("shopify-app", request);
-  // await Promise.all(
-  //   [...Array(5).keys()].map(async (i) => {
-  //     await admin.mutate(
-  //       `#graphql
-  //   mutation populateProduct($input: ProductInput!) {
-  //     productCreate(input: $input) {
-  //       product {
-  //         id
-  //       }
-  //     }
-  //   }
-  //   `,
-  //       {
-  //         input: {
-  //           title: `${randomTitle()}`,
-  //           variants: [{price: randomPrice()}],
-  //         },
-  //       },
-  //     )
-  //   }),
-  // )
-  // const result = await admin.fetch('/products/count.json')
-  return json({});
+  const { admin } = await authenticator.authenticate("shopify-app", request);
+
+  await Promise.all(
+    [...Array(5).keys()].map(async (i) => {
+      await admin.graphql.query({
+        data: {
+          query: `#graphql
+            mutation populateProduct($input: ProductInput!) {
+              productCreate(input: $input) {
+                product {
+                  id
+                }
+              }
+            }
+          `,
+          variables: {
+            input: {
+              title: `${randomTitle()}`,
+              variants: [{ price: randomPrice() }],
+            },
+          },
+        },
+      });
+    })
+  );
+
+  const result = await admin.rest.get({ path: "/products/count.json" });
+  return json(result.body);
 }
 
 export default function Index() {

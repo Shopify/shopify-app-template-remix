@@ -1,16 +1,12 @@
 import semver from "semver";
 import "./shopify-api-adapter";
 import {
-  Shopify as ShopifyApi,
   ConfigInterface as ApiConfig,
   ConfigParams,
   FeatureDeprecatedError,
   Shopify,
   ShopifyRestResources,
   shopifyApi,
-  HttpResponseError,
-  RestRequestReturn,
-  RequestParams,
 } from "@shopify/shopify-api";
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
 import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memory";
@@ -40,15 +36,13 @@ export function shopifyApp<
   R extends ShopifyRestResources = any,
   S extends SessionStorage = SessionStorage
 >(appConfig: T): ShopifyApp<SessionContextType<T>, S> {
-  const originalApi = deriveApi<R>(appConfig);
-  const config = deriveConfig<S>(appConfig, originalApi.config);
-  const logger = overrideLoggerPackage(originalApi.logger);
-
-  const api = overrideHttpClients(originalApi, config);
+  const api = deriveApi<R>(appConfig);
+  const config = deriveConfig<S>(appConfig, api.config);
+  const logger = overrideLoggerPackage(api.logger);
 
   return {
     config,
-    AuthStrategy: authStrategyFactory<SessionContextType<T>>({
+    AuthStrategy: authStrategyFactory<SessionContextType<T>, R>({
       api,
       config,
       logger,
@@ -95,40 +89,6 @@ function deriveConfig<S extends SessionStorage = SessionStorage>(
       exitIframePath: appConfig.auth?.exitIframePath || "/auth/exit-iframe",
     },
   };
-}
-
-// TODO centralize the code for responding with the reauthorize header
-function overrideHttpClients(api: ShopifyApi, config: AppConfig): ShopifyApi {
-  // @ts-ignore
-  const originalRequest = api.clients.Rest.prototype.request;
-
-  // prettier-ignore
-  class RemixRestClient extends (api.clients.Rest) {
-    async request<T = any>(params: RequestParams): Promise<RestRequestReturn<T>> {
-      try {
-        return await originalRequest.call(this, params);
-      } catch (error) {
-        if (error instanceof HttpResponseError && error.response.code === 401) {
-          // TODO There seems to be a Remix bug here that prevents the headers from being returned to the browser
-          // TODO We need access to the request object here to be able to determine whether this is an app bridge, exit iframe or redirect request
-          throw new Response(undefined, {
-            status: 401,
-            statusText: "Unauthorized",
-            headers: {
-              "Location": `${config.auth.path}?shop=${this.session.shop}`,
-              "X-Shopify-API-Request-Failure-Reauthorize": "1",
-              "X-Shopify-API-Request-Failure-Reauthorize-Url": `${config.auth.path}?shop=${this.session.shop}`,
-            },
-          });
-        } else {
-          throw error;
-        }
-      }
-    }
-  }
-
-  api.clients.Rest = RemixRestClient;
-  return api;
 }
 
 // TODO This has been copied from shopify-app-express, it should be extracted into a shared package

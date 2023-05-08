@@ -6,10 +6,13 @@ import {
 import { SessionStorage, redirect } from "@remix-run/server-runtime";
 import {
   CookieNotFound,
+  HttpResponseError,
   InvalidOAuthError,
   JwtPayload,
+  RequestParams,
   Session,
   Shopify,
+  ShopifyRestResources,
 } from "@shopify/shopify-api";
 import isbot from "isbot";
 
@@ -24,8 +27,9 @@ import {
 } from "./types.js";
 
 export class AuthStrategyInternal<
-  T extends EmbeddedSessionContext | NonEmbeddedSessionContext
-> extends Strategy<Context<T>, any> {
+  T extends EmbeddedSessionContext | NonEmbeddedSessionContext,
+  R extends ShopifyRestResources = any
+> extends Strategy<Context<T, R>, any> {
   name = "ShopifyAppAuthStrategy";
 
   protected static api: Shopify;
@@ -40,8 +44,8 @@ export class AuthStrategyInternal<
     request: Request,
     _sessionStorage: SessionStorage,
     _options: AuthenticateOptions
-  ): Promise<Context<T>> {
-    const { api, logger, config } = this.strategyClass();
+  ): Promise<Context<T, R>> {
+    const { logger, config } = this.strategyClass();
 
     if (isbot(request.headers.get("User-Agent"))) {
       logger.debug("Request is from a bot, skipping auth");
@@ -90,15 +94,14 @@ export class AuthStrategyInternal<
     }
 
     const admin: AdminContext = {
-      rest: new api.clients.Rest({ session: sessionContext!.session }),
+      rest: this.overriddenRestClient(request, sessionContext!.session),
+      graphql: this.overriddenGraphqlClient(request, sessionContext!.session),
     };
 
     return {
       admin,
       session: sessionContext!,
     };
-
-    // TODO Override client functions to return context for the request?
   }
 
   private async handleAuthBeginRequest(request: Request): Promise<void> {
@@ -331,23 +334,8 @@ export class AuthStrategyInternal<
 
     const session = await config.sessionStorage.loadSession(sessionId);
     if (!session) {
-      const url = new URL(request.url);
-      const isEmbeddedRequest = url.searchParams.get("embedded") === "1";
-      const isXhrRequest = request.headers.get("authorization");
-
-      logger.debug("No session found, redirecting to OAuth", {
-        shop,
-        isEmbeddedRequest,
-        isXhrRequest,
-      });
-
-      if (isEmbeddedRequest) {
-        this.redirectWithExitIframe(request, shop);
-      } else if (isXhrRequest) {
-        this.respondWithAppBridgeRedirectHeaders(shop);
-      } else {
-        await this.beginAuth(request, false, shop);
-      }
+      logger.debug("No session found, redirecting to OAuth", { shop });
+      await this.renderAuthPage(request, shop);
     }
 
     return session!;
@@ -455,6 +443,68 @@ export class AuthStrategyInternal<
     );
   }
 
+  private async renderAuthPage(request: Request, shop: string): Promise<void> {
+    const url = new URL(request.url);
+    const isEmbeddedRequest = url.searchParams.get("embedded") === "1";
+    const isXhrRequest = request.headers.get("authorization");
+
+    if (isEmbeddedRequest) {
+      this.redirectWithExitIframe(request, shop);
+    } else if (isXhrRequest) {
+      this.respondWithAppBridgeRedirectHeaders(shop);
+    } else {
+      await this.beginAuth(request, false, shop);
+    }
+  }
+
+  private overriddenRestClient(request: Request, session: Session) {
+    const { api } = this.strategyClass();
+
+    // TODO Evaluate memory and time costs for this
+    const client = new api.clients.Rest({ session });
+    const originalRequest = Reflect.get(client, "request");
+
+    Reflect.set(client, "request", async (params: RequestParams) => {
+      try {
+        return await originalRequest.call(client, params);
+      } catch (error) {
+        if (error instanceof HttpResponseError && error.response.code === 401) {
+          await this.renderAuthPage(request, session.shop);
+        } else {
+          throw error;
+        }
+      }
+    });
+
+    Object.entries(api.rest).forEach(([name, resource]) => {
+      resource.client = client;
+      Reflect.set(client, name, resource);
+    });
+
+    return client;
+  }
+
+  private overriddenGraphqlClient(request: Request, session: Session) {
+    const { api } = this.strategyClass();
+
+    const client = new api.clients.Graphql({ session });
+    const originalQuery = Reflect.get(client, "query");
+
+    Reflect.set(client, "query", async (params: RequestParams) => {
+      try {
+        return await originalQuery.call(client, params);
+      } catch (error) {
+        if (error instanceof HttpResponseError && error.response.code === 401) {
+          await this.renderAuthPage(request, session.shop);
+        } else {
+          throw error;
+        }
+      }
+    });
+
+    return client;
+  }
+
   private strategyClass() {
     return this.constructor as typeof AuthStrategyInternal;
   }
@@ -465,11 +515,12 @@ export class AuthStrategyInternal<
 const verifyAuth: StrategyVerifyCallback<any, {}> = async (_params: {}) => {};
 
 export function authStrategyFactory<
-  T extends EmbeddedSessionContext | NonEmbeddedSessionContext
->(params: BasicParams): typeof AuthStrategyInternal<T> {
+  T extends EmbeddedSessionContext | NonEmbeddedSessionContext,
+  R extends ShopifyRestResources = any
+>(params: BasicParams): typeof AuthStrategyInternal<T, R> {
   const { api, config, logger } = params;
 
-  class AuthStrategy extends AuthStrategyInternal<T> {
+  class AuthStrategy extends AuthStrategyInternal<T, R> {
     protected static api = api;
     protected static config = config;
     protected static logger = logger;

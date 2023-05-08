@@ -1,16 +1,16 @@
-import { JwtPayload, Session, Shopify } from "@shopify/shopify-api";
+import {
+  JwtPayload,
+  Session,
+  Shopify,
+  ShopifyRestResources,
+} from "@shopify/shopify-api";
 
 import type { AppConfigArg } from "../config-types";
 
-export interface AdminContext {
-  rest: InstanceType<Shopify["clients"]["Rest"]> & {
-    // TODO: Wrap in functionality to detect failurs and throw Responses
-    // // TODO: Use the patched client for the resources as well
-    // ...restResources
-  };
+export interface AdminContext<R extends ShopifyRestResources = any> {
+  rest: InstanceType<Shopify["clients"]["Rest"]> & R;
   // TODO improve the public API in @shopify/shopify-api GraphQL client
-  // TODO: Wrap in functionality to detect failurs and throw Responses
-  // graphql: Shopify["clients"]["Graphql"];
+  graphql: InstanceType<Shopify["clients"]["Graphql"]>;
 }
 
 interface SessionContext {
@@ -24,10 +24,11 @@ export interface EmbeddedSessionContext extends SessionContext {
 export interface NonEmbeddedSessionContext extends SessionContext {}
 
 export interface Context<
-  T extends EmbeddedSessionContext | NonEmbeddedSessionContext
+  T extends EmbeddedSessionContext | NonEmbeddedSessionContext,
+  R extends ShopifyRestResources = any
 > {
   session: T;
-  admin: AdminContext;
+  admin: AdminContext<R>;
 }
 
 export type SessionContextType<T extends AppConfigArg> =
