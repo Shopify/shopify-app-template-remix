@@ -476,6 +476,7 @@ export class AuthStrategyInternal<
       }
     });
 
+    // TODO This is not thread safe and will fail. Can we return this in a thread safe way without duplicating the resources?
     Object.entries(api.rest).forEach(([name, resource]) => {
       resource.client = client;
       Reflect.set(client, name, resource);
