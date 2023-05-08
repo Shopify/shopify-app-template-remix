@@ -13,23 +13,12 @@ import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memor
 
 import { AppConfig, AppConfigArg } from "./config-types.js";
 import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version.js";
-import { AuthStrategyInternal, authStrategyFactory } from "./auth/index.js";
-import {
-  SessionContextType,
-  EmbeddedSessionContext,
-  NonEmbeddedSessionContext,
-} from "./auth/types";
+import { authStrategyFactory } from "./auth/index.js";
+import { SessionContextType } from "./auth/types";
+import { ShopifyApp } from "./types";
 
+export { ShopifyApp } from "./types";
 export { Context } from "./auth/types";
-
-export interface ShopifyApp<
-  SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
-  Storage extends SessionStorage = SessionStorage,
-  Config extends AppConfig<Storage> = AppConfig<Storage>
-> {
-  config: Config;
-  AuthStrategy: typeof AuthStrategyInternal<SessionContext>;
-}
 
 export function shopifyApp<
   T extends AppConfigArg<R, S>,
