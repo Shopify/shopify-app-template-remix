@@ -7,7 +7,7 @@ import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prism
 import { LATEST_API_VERSION, LogSeverity } from "@shopify/shopify-api";
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
 
-import prisma from "~/db.server";
+import prisma from "../db.server";
 
 export const app = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY!,
@@ -27,9 +27,3 @@ export const app = shopifyApp({
     callbackPath: process.env.SHOPIFY_APP_AUTH_CALLBACK_PATH,
   },
 });
-
-// TODO is there a cleaner way of getting this type to the authenticator?
-export type Context = ShopifyContext<
-  typeof app extends ShopifyApp<infer T> ? T : never,
-  typeof restResources
->;
