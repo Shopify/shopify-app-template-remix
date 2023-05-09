@@ -2,6 +2,7 @@ import semver from "semver";
 import "./shopify-api-adapter";
 import {
   ConfigInterface as ApiConfig,
+  ConfigParams,
   FeatureDeprecatedError,
   Shopify,
   ShopifyRestResources,
@@ -12,25 +13,29 @@ import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memor
 
 import { AppConfig, AppConfigArg } from "./config-types.js";
 import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version.js";
-import { AuthStrategyInternal, authStrategyFactory } from "./auth/index.js";
+import { authStrategyFactory } from "./auth/index.js";
+import { SessionContextType } from "./auth/types";
+import { ShopifyApp } from "./types";
 
-export interface ShopifyApp<S extends SessionStorage = SessionStorage> {
-  config: AppConfig<S>;
-  // TODO Extract this type into an interface
-  AuthStrategy: typeof AuthStrategyInternal;
-}
+export { ShopifyApp } from "./types";
+export { Context } from "./auth/types";
 
 export function shopifyApp<
+  T extends AppConfigArg<R, S>,
   R extends ShopifyRestResources = any,
   S extends SessionStorage = SessionStorage
->(appConfig: AppConfigArg<R, S>): ShopifyApp<S> {
+>(appConfig: T): ShopifyApp<SessionContextType<T>, S> {
   const api = deriveApi<R>(appConfig);
   const config = deriveConfig<S>(appConfig, api.config);
   const logger = overrideLoggerPackage(api.logger);
 
   return {
     config,
-    AuthStrategy: authStrategyFactory({ api, config, logger }),
+    AuthStrategy: authStrategyFactory<SessionContextType<T>, R>({
+      api,
+      config,
+      logger,
+    }),
   };
 }
 
@@ -40,10 +45,16 @@ function deriveApi<R extends ShopifyRestResources = any>(
   // TODO make sure the port is being added in the CLI when filling SHOPIFY_APP_URL
   const appUrl = new URL(appConfig.appUrl);
 
-  const cleanApiConfig = {
+  let userAgentPrefix = `Shopify Remix Library v${SHOPIFY_REMIX_LIBRARY_VERSION}`;
+  if (appConfig.userAgentPrefix) {
+    userAgentPrefix = `${appConfig.userAgentPrefix} | ${userAgentPrefix}`;
+  }
+
+  const cleanApiConfig: ConfigParams = {
     ...appConfig,
     hostName: appUrl.host,
     hostScheme: appUrl.protocol.replace(":", "") as "http" | "https",
+    userAgentPrefix,
   };
 
   return shopifyApi<R>(cleanApiConfig);
