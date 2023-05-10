@@ -72,7 +72,7 @@ export class AuthStrategyInternal<
       this.renderAppBridge();
     } else if (isExitIframe) {
       logger.debug("Rendering exit iframe page");
-      this.renderAppBridge();
+      this.renderAppBridge(url.searchParams.get("exitIframe")!);
     } else if (isAuthCallbackRequest) {
       await this.handleAuthCallbackRequest(request);
     } else if (isAuthRequest) {
@@ -392,16 +392,12 @@ export class AuthStrategyInternal<
 
   private respondWithAppBridgeRedirectHeaders(shop: string): void {
     const { config } = this.strategyClass();
-    const redirectUri = `${config.auth.path}?shop=${shop}`;
+    const redirectUri = `${config.appUrl}${config.auth.path}?shop=${shop}`;
 
-    // TODO verify that this is correct
     throw new Response(undefined, {
       status: 401,
       statusText: "Unauthorized",
-      headers: {
-        "X-Shopify-API-Request-Failure-Reauthorize": "1",
-        "X-Shopify-API-Request-Failure-Reauthorize-Url": redirectUri,
-      },
+      headers: { "X-Shopify-API-Request-Failure-Reauthorize-Url": redirectUri },
     });
   }
 
@@ -427,18 +423,24 @@ export class AuthStrategyInternal<
     url.protocol = `${api.config.hostScheme}:`;
 
     const params = new URLSearchParams(url.search);
-    params.set("redirectTo", url.href);
+    params.set("shopify-reload", url.href);
 
     // TODO Make sure this works on chrome without a tunnel (weird HTTPS redirect issue)
     throw redirect(`${config.auth.sessionTokenPath}?${params.toString()}`);
   }
 
-  private renderAppBridge(): void {
+  private renderAppBridge(redirectTo?: string): void {
     const { config } = this.strategyClass();
 
-    // TODO Align with ABN team on how to pass the URL in. Do we need to pass in the shop / host?
+    const redirectToScript = redirectTo
+      ? `<script>shopify.redirectTo("${config.appUrl}${redirectTo}")</script>`
+      : ``;
+
     throw new Response(
-      `<script data-api-key="${config.apiKey}" src="https://cdn.shopify.com/shopifycloud/app-bridge-next/app-bridge.js"></script>`,
+      `
+        <script data-api-key="${config.apiKey}" src="https://cdn.shopify.com/shopifycloud/app-bridge-next/app-bridge.js"></script>
+        ${redirectToScript}
+      `,
       { headers: { "content-type": "text/html;charset=utf-8" } }
     );
   }
@@ -448,10 +450,10 @@ export class AuthStrategyInternal<
     const isEmbeddedRequest = url.searchParams.get("embedded") === "1";
     const isXhrRequest = request.headers.get("authorization");
 
-    if (isEmbeddedRequest) {
-      this.redirectWithExitIframe(request, shop);
-    } else if (isXhrRequest) {
+    if (isXhrRequest) {
       this.respondWithAppBridgeRedirectHeaders(shop);
+    } else if (isEmbeddedRequest) {
+      this.redirectWithExitIframe(request, shop);
     } else {
       await this.beginAuth(request, false, shop);
     }
