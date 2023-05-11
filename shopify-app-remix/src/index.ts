@@ -14,34 +14,52 @@ import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memor
 import { AppConfig, AppConfigArg } from "./config-types.js";
 import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version.js";
 import { authStrategyFactory } from "./auth/index.js";
-import { SessionContextType } from "./auth/types";
-import { ShopifyApp } from "./types";
+import { webhookStrategyFactory } from "./webhooks/strategy";
+import {
+  EmbeddedSessionContext,
+  NonEmbeddedSessionContext,
+  OAuthContext,
+  SessionContextType,
+} from "./auth/types";
+import { BasicParams, ShopifyApp } from "./types";
+import { registerWebhooksFactory } from "./webhooks";
+import { Authenticator } from "remix-auth";
+import { WebhookContext } from "./webhooks/types";
 
 export { ShopifyApp } from "./types";
-export { Context } from "./auth/types";
 
 export function shopifyApp<
-  T extends AppConfigArg<R, S>,
-  R extends ShopifyRestResources = any,
-  S extends SessionStorage = SessionStorage
->(appConfig: T): ShopifyApp<SessionContextType<T>, S> {
-  const api = deriveApi<R>(appConfig);
-  const config = deriveConfig<S>(appConfig, api.config);
+  Config extends AppConfigArg<Resources, Storage>,
+  Resources extends ShopifyRestResources = any,
+  Storage extends SessionStorage = SessionStorage
+>(appConfig: Config): ShopifyApp<SessionContextType<Config>, Storage> {
+  const api = deriveApi<Resources>(appConfig);
+  const config = deriveConfig<Storage>(appConfig, api.config);
   const logger = overrideLoggerPackage(api.logger);
 
+  if (appConfig.webhooks) {
+    // TODO The any is a temporary workaround until the library supports the new webhook format
+    api.webhooks.addHandlers(appConfig.webhooks as any);
+  }
+
+  // TODO: Should we be returning the api object as part of this response? How can apps get session ids otherwise?
   return {
     config,
-    AuthStrategy: authStrategyFactory<SessionContextType<T>, R>({
-      api,
-      config,
-      logger,
-    }),
+    registerWebhooks: registerWebhooksFactory({ api, config, logger }),
+    authenticate: {
+      oauth: oAuthAuthenticatorFactory<SessionContextType<Config>, Resources>({
+        api,
+        config,
+        logger,
+      }),
+      webhook: webhookAuthenticatorFactory<Resources>({ api, config, logger }),
+    },
   };
 }
 
-function deriveApi<R extends ShopifyRestResources = any>(
+function deriveApi<Resources extends ShopifyRestResources = any>(
   appConfig: AppConfigArg
-): Shopify<R> {
+): Shopify<Resources> {
   // TODO make sure the port is being added in the CLI when filling SHOPIFY_APP_URL
   const appUrl = new URL(appConfig.appUrl);
 
@@ -57,19 +75,22 @@ function deriveApi<R extends ShopifyRestResources = any>(
     userAgentPrefix,
   };
 
-  return shopifyApi<R>(cleanApiConfig);
+  return shopifyApi<Resources>(cleanApiConfig);
 }
 
-function deriveConfig<S extends SessionStorage = SessionStorage>(
+function deriveConfig<Storage extends SessionStorage = SessionStorage>(
   appConfig: AppConfigArg,
   apiConfig: ApiConfig
-): AppConfig<S> {
+): AppConfig<Storage> {
   return {
     ...appConfig,
     ...apiConfig,
     useOnlineTokens: appConfig.useOnlineTokens ?? false,
+    hooks: appConfig.hooks ?? {},
     sessionStorage: (appConfig.sessionStorage ??
-      new MemorySessionStorage()) as unknown as S,
+      new MemorySessionStorage()) as unknown as Storage,
+    // TODO: Replace these settings with just a prefix, and "hardcode" the actual paths
+    // E.g: User passes /auth, and we derive /auth/callback, /auth/session-token, etc
     auth: {
       path: appConfig.auth?.path || "/auth",
       callbackPath: appConfig.auth?.callbackPath || "/auth/callback",
@@ -77,6 +98,35 @@ function deriveConfig<S extends SessionStorage = SessionStorage>(
         appConfig.auth?.sessionTokenPath || "/auth/session-token",
       exitIframePath: appConfig.auth?.exitIframePath || "/auth/exit-iframe",
     },
+  };
+}
+
+function oAuthAuthenticatorFactory<
+  SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
+  Resources extends ShopifyRestResources = any
+>(params: BasicParams) {
+  const Strategy = authStrategyFactory<SessionContext, Resources>(params);
+
+  const authenticator = new Authenticator<OAuthContext<SessionContext>>(
+    {} as any
+  );
+  authenticator.use(new Strategy(), "shopify-app");
+
+  return (request: Request) => {
+    return authenticator.authenticate("shopify-app", request);
+  };
+}
+
+function webhookAuthenticatorFactory<
+  Resources extends ShopifyRestResources = any
+>(params: BasicParams) {
+  const Strategy = webhookStrategyFactory<Resources>(params);
+
+  const authenticator = new Authenticator<WebhookContext<Resources>>({} as any);
+  authenticator.use(new Strategy(), "shopify-webhook");
+
+  return (request: Request) => {
+    return authenticator.authenticate("shopify-webhook", request);
   };
 }
 

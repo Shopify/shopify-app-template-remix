@@ -1,1 +1,1 @@
-export { AuthStrategyInternal, authStrategyFactory } from "./strategy.js";
+export { AuthStrategyInternal, authStrategyFactory } from "./strategy";

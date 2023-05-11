@@ -1,17 +1,10 @@
 import {
   JwtPayload,
   Session,
-  Shopify,
   ShopifyRestResources,
 } from "@shopify/shopify-api";
 
-import type { AppConfigArg } from "../config-types";
-
-export interface AdminContext<R extends ShopifyRestResources = any> {
-  rest: InstanceType<Shopify["clients"]["Rest"]> & R;
-  // TODO improve the public API in @shopify/shopify-api GraphQL client
-  graphql: InstanceType<Shopify["clients"]["Graphql"]>;
-}
+import type { AdminContext, AppConfigArg } from "../config-types";
 
 interface SessionContext {
   // TODO Can we use a different name for this?
@@ -23,12 +16,12 @@ export interface EmbeddedSessionContext extends SessionContext {
 }
 export interface NonEmbeddedSessionContext extends SessionContext {}
 
-export interface Context<
-  T extends EmbeddedSessionContext | NonEmbeddedSessionContext,
-  R extends ShopifyRestResources = any
+export interface OAuthContext<
+  SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
+  Resources extends ShopifyRestResources = any
 > {
-  session: T;
-  admin: AdminContext<R>;
+  session: SessionContext;
+  admin: AdminContext<Resources>;
 }
 
 export type SessionContextType<T extends AppConfigArg> =

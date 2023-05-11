@@ -1,9 +1,6 @@
-import {
-  AuthenticateOptions,
-  Strategy,
-  StrategyVerifyCallback,
-} from "remix-auth";
-import { SessionStorage, redirect } from "@remix-run/server-runtime";
+import isbot from "isbot";
+import { Strategy, StrategyVerifyCallback } from "remix-auth";
+import { redirect } from "@remix-run/server-runtime";
 import {
   CookieNotFound,
   HttpResponseError,
@@ -14,22 +11,20 @@ import {
   Shopify,
   ShopifyRestResources,
 } from "@shopify/shopify-api";
-import isbot from "isbot";
 
 import { BasicParams } from "../types.js";
-import { AppConfig } from "../config-types.js";
+import { AdminContext, AppConfig } from "../config-types.js";
 
 import {
-  AdminContext,
-  Context,
+  OAuthContext,
   EmbeddedSessionContext,
   NonEmbeddedSessionContext,
 } from "./types.js";
 
 export class AuthStrategyInternal<
-  T extends EmbeddedSessionContext | NonEmbeddedSessionContext,
-  R extends ShopifyRestResources = any
-> extends Strategy<Context<T, R>, any> {
+  SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
+  Resources extends ShopifyRestResources = any
+> extends Strategy<OAuthContext<SessionContext, Resources>, any> {
   name = "ShopifyAppAuthStrategy";
 
   protected static api: Shopify;
@@ -41,10 +36,8 @@ export class AuthStrategyInternal<
   }
 
   public async authenticate(
-    request: Request,
-    _sessionStorage: SessionStorage,
-    _options: AuthenticateOptions
-  ): Promise<Context<T, R>> {
+    request: Request
+  ): Promise<OAuthContext<SessionContext, Resources>> {
     const { logger, config } = this.strategyClass();
 
     if (isbot(request.headers.get("User-Agent"))) {
@@ -66,7 +59,7 @@ export class AuthStrategyInternal<
 
     logger.info("Authenticating request");
 
-    let sessionContext: T;
+    let sessionContext: SessionContext;
     if (isBouncePage) {
       logger.debug("Rendering bounce page");
       this.renderAppBridge();
@@ -93,13 +86,8 @@ export class AuthStrategyInternal<
       sessionContext = await this.ensureSessionExists(request);
     }
 
-    const admin: AdminContext = {
-      rest: this.overriddenRestClient(request, sessionContext!.session),
-      graphql: this.overriddenGraphqlClient(request, sessionContext!.session),
-    };
-
     return {
-      admin,
+      admin: this.createAdminContext(request, sessionContext!.session),
       session: sessionContext!,
     };
   }
@@ -142,7 +130,13 @@ export class AuthStrategyInternal<
         await this.beginAuth(request, true, shop);
       }
 
-      // TODO register webhooks here
+      if (config.hooks.afterAuth) {
+        logger.info("Running afterAuth hook");
+        await config.hooks.afterAuth({
+          session,
+          admin: this.createAdminContext(request, session),
+        });
+      }
 
       await this.redirectToShopifyOrAppRoot(request, responseHeaders);
     } catch (error) {
@@ -246,7 +240,7 @@ export class AuthStrategyInternal<
     }
   }
 
-  private async ensureSessionExists(request: Request): Promise<T> {
+  private async ensureSessionExists(request: Request): Promise<SessionContext> {
     const { api, config, logger } = this.strategyClass();
     const url = new URL(request.url);
 
@@ -274,7 +268,9 @@ export class AuthStrategyInternal<
         throw new Error("Session ID not found in cookies");
       }
 
-      return { session: await this.loadSession(request, shop, sessionId) } as T;
+      return {
+        session: await this.loadSession(request, shop, sessionId),
+      } as SessionContext;
     }
   }
 
@@ -303,7 +299,7 @@ export class AuthStrategyInternal<
   private async validateAuthenticatedSession(
     request: Request,
     payload: JwtPayload
-  ): Promise<T> {
+  ): Promise<SessionContext> {
     const { config, logger } = this.strategyClass();
 
     const dest = new URL(payload.dest);
@@ -320,7 +316,7 @@ export class AuthStrategyInternal<
 
     logger.debug("Found session, request is valid", { shop });
 
-    return { session, token: payload } as T;
+    return { session, token: payload } as SessionContext;
   }
 
   private async loadSession(
@@ -484,7 +480,7 @@ export class AuthStrategyInternal<
       Reflect.set(client, name, resource);
     });
 
-    return client;
+    return client as typeof client & Resources;
   }
 
   private overriddenGraphqlClient(request: Request, session: Session) {
@@ -506,6 +502,16 @@ export class AuthStrategyInternal<
     });
 
     return client;
+  }
+
+  private createAdminContext(
+    request: Request,
+    session: Session
+  ): AdminContext<Resources> {
+    return {
+      rest: this.overriddenRestClient(request, session),
+      graphql: this.overriddenGraphqlClient(request, session),
+    };
   }
 
   private strategyClass() {
