@@ -1,5 +1,4 @@
 import isbot from "isbot";
-import { Strategy, StrategyVerifyCallback } from "remix-auth";
 import { redirect } from "@remix-run/server-runtime";
 import {
   CookieNotFound,
@@ -21,24 +20,24 @@ import {
   NonEmbeddedSessionContext,
 } from "./types.js";
 
-export class AuthStrategyInternal<
+export class AuthStrategy<
   SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
   Resources extends ShopifyRestResources = any
-> extends Strategy<OAuthContext<SessionContext, Resources>, any> {
-  name = "ShopifyAppAuthStrategy";
+> {
+  protected api: Shopify;
+  protected config: AppConfig;
+  protected logger: Shopify["logger"];
 
-  protected static api: Shopify;
-  protected static config: AppConfig;
-  protected static logger: Shopify["logger"];
-
-  constructor() {
-    super(verifyAuth);
+  public constructor({ api, config, logger }: BasicParams) {
+    this.api = api;
+    this.config = config;
+    this.logger = logger;
   }
 
   public async authenticate(
     request: Request
   ): Promise<OAuthContext<SessionContext, Resources>> {
-    const { logger, config } = this.strategyClass();
+    const { logger, config } = this;
 
     if (isbot(request.headers.get("User-Agent"))) {
       logger.debug("Request is from a bot, skipping auth");
@@ -93,7 +92,7 @@ export class AuthStrategyInternal<
   }
 
   private async handleAuthBeginRequest(request: Request): Promise<void> {
-    const { logger, api } = this.strategyClass();
+    const { logger, api } = this;
     const url = new URL(request.url);
 
     logger.info("Handling OAuth begin request");
@@ -108,7 +107,7 @@ export class AuthStrategyInternal<
   }
 
   private async handleAuthCallbackRequest(request: Request): Promise<void> {
-    const { logger, config, api } = this.strategyClass();
+    const { logger, config, api } = this;
     const url = new URL(request.url);
 
     logger.info("Handling OAuth callback request");
@@ -165,7 +164,7 @@ export class AuthStrategyInternal<
   }
 
   private async validateUrlParams(request: Request) {
-    const { api } = this.strategyClass();
+    const { api } = this;
     const url = new URL(request.url);
 
     const host = api.utils.sanitizeHost(url.searchParams.get("host")!);
@@ -188,7 +187,7 @@ export class AuthStrategyInternal<
   }
 
   private async ensureInstalledOnShop(request: Request) {
-    const { api, config, logger } = this.strategyClass();
+    const { api, config, logger } = this;
     const url = new URL(request.url);
 
     const shop = url.searchParams.get("shop")!;
@@ -213,7 +212,7 @@ export class AuthStrategyInternal<
   }
 
   private async ensureAppIsEmbeddedIfRequired(request: Request) {
-    const { api, logger } = this.strategyClass();
+    const { api, logger } = this;
     const url = new URL(request.url);
 
     const shop = url.searchParams.get("shop")!;
@@ -225,7 +224,7 @@ export class AuthStrategyInternal<
   }
 
   private async ensureSessionTokenSearchParamIfRequired(request: Request) {
-    const { api, logger } = this.strategyClass();
+    const { api, logger } = this;
     const url = new URL(request.url);
 
     const shop = url.searchParams.get("shop")!;
@@ -241,7 +240,7 @@ export class AuthStrategyInternal<
   }
 
   private async ensureSessionExists(request: Request): Promise<SessionContext> {
-    const { api, config, logger } = this.strategyClass();
+    const { api, config, logger } = this;
     const url = new URL(request.url);
 
     const shop = url.searchParams.get("shop")!;
@@ -275,7 +274,7 @@ export class AuthStrategyInternal<
   }
 
   private async validateSessionToken(token: string): Promise<JwtPayload> {
-    const { api, logger } = this.strategyClass();
+    const { api, logger } = this;
 
     logger.debug("Validating session token");
 
@@ -300,7 +299,7 @@ export class AuthStrategyInternal<
     request: Request,
     payload: JwtPayload
   ): Promise<SessionContext> {
-    const { config, logger } = this.strategyClass();
+    const { config, logger } = this;
 
     const dest = new URL(payload.dest);
     const shop = dest.hostname;
@@ -324,7 +323,7 @@ export class AuthStrategyInternal<
     shop: string,
     sessionId: string
   ): Promise<Session> {
-    const { config, logger } = this.strategyClass();
+    const { config, logger } = this;
 
     logger.debug("Loading session from storage", { sessionId });
 
@@ -339,13 +338,13 @@ export class AuthStrategyInternal<
 
   // TODO export these methods out of the API library
   private getJwtSessionId(shop: string, userId: string): string {
-    const { api } = this.strategyClass();
+    const { api } = this;
     return `${api.utils.sanitizeShop(shop, true)}_${userId}`;
   }
 
   // TODO export these methods out of the API library
   private getOfflineId(shop: string): string {
-    const { api } = this.strategyClass();
+    const { api } = this;
     return `offline_${api.utils.sanitizeShop(shop, true)}`;
   }
 
@@ -353,7 +352,7 @@ export class AuthStrategyInternal<
     request: Request,
     responseHeaders?: Headers
   ): Promise<void> {
-    const { api } = this.strategyClass();
+    const { api } = this;
     const url = new URL(request.url);
 
     const host = api.utils.sanitizeHost(url.searchParams.get("host")!)!;
@@ -375,7 +374,7 @@ export class AuthStrategyInternal<
   }
 
   private redirectWithExitIframe(request: Request, shop: string): void {
-    const { api, config } = this.strategyClass();
+    const { api, config } = this;
     const url = new URL(request.url);
 
     const queryParams = url.searchParams;
@@ -387,7 +386,7 @@ export class AuthStrategyInternal<
   }
 
   private respondWithAppBridgeRedirectHeaders(shop: string): void {
-    const { config } = this.strategyClass();
+    const { config } = this;
     const redirectUri = `${config.appUrl}${config.auth.path}?shop=${shop}`;
 
     throw new Response(undefined, {
@@ -402,7 +401,7 @@ export class AuthStrategyInternal<
     isOnline: boolean,
     shop: string
   ): Promise<void> {
-    const { api, config } = this.strategyClass();
+    const { api, config } = this;
 
     throw await api.auth.begin({
       shop,
@@ -413,7 +412,7 @@ export class AuthStrategyInternal<
   }
 
   private redirectToBouncePage(url: URL): void {
-    const { api, config } = this.strategyClass();
+    const { api, config } = this;
 
     // TODO this is to work around a remix bug
     url.protocol = `${api.config.hostScheme}:`;
@@ -426,7 +425,7 @@ export class AuthStrategyInternal<
   }
 
   private renderAppBridge(redirectTo?: string): void {
-    const { config } = this.strategyClass();
+    const { config } = this;
 
     const redirectToScript = redirectTo
       ? `<script>shopify.redirectTo("${config.appUrl}${redirectTo}")</script>`
@@ -456,7 +455,7 @@ export class AuthStrategyInternal<
   }
 
   private overriddenRestClient(request: Request, session: Session) {
-    const { api } = this.strategyClass();
+    const { api } = this;
 
     // TODO Evaluate memory and time costs for this
     const client = new api.clients.Rest({ session });
@@ -484,7 +483,7 @@ export class AuthStrategyInternal<
   }
 
   private overriddenGraphqlClient(request: Request, session: Session) {
-    const { api } = this.strategyClass();
+    const { api } = this;
 
     const client = new api.clients.Graphql({ session });
     const originalQuery = Reflect.get(client, "query");
@@ -513,35 +512,4 @@ export class AuthStrategyInternal<
       graphql: this.overriddenGraphqlClient(request, session),
     };
   }
-
-  private strategyClass() {
-    return this.constructor as typeof AuthStrategyInternal;
-  }
-}
-
-// TODO figure out the User type here
-// TODO look at the docs and implement this
-const verifyAuth: StrategyVerifyCallback<any, {}> = async (_params: {}) => {};
-
-export function authStrategyFactory<
-  T extends EmbeddedSessionContext | NonEmbeddedSessionContext,
-  R extends ShopifyRestResources = any
->(params: BasicParams): typeof AuthStrategyInternal<T, R> {
-  const { api, config, logger } = params;
-
-  class AuthStrategy extends AuthStrategyInternal<T, R> {
-    protected static api = api;
-    protected static config = config;
-    protected static logger = logger;
-
-    constructor() {
-      super();
-    }
-  }
-
-  Reflect.defineProperty(AuthStrategy, "name", {
-    value: "AuthStrategyInternal",
-  });
-
-  return AuthStrategy as typeof AuthStrategyInternal;
 }

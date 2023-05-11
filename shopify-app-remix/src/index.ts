@@ -13,18 +13,11 @@ import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memor
 
 import { AppConfig, AppConfigArg } from "./config-types.js";
 import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version.js";
-import { authStrategyFactory } from "./auth/index.js";
-import { webhookStrategyFactory } from "./webhooks/strategy";
-import {
-  EmbeddedSessionContext,
-  NonEmbeddedSessionContext,
-  OAuthContext,
-  SessionContextType,
-} from "./auth/types";
-import { BasicParams, ShopifyApp } from "./types";
+import { SessionContextType } from "./auth/types";
+import { ShopifyApp } from "./types";
 import { registerWebhooksFactory } from "./webhooks";
-import { Authenticator } from "remix-auth";
-import { WebhookContext } from "./webhooks/types";
+import { AuthStrategy } from "./auth/strategy";
+import { WebhookStrategy } from "./webhooks/strategy";
 
 export { ShopifyApp } from "./types";
 
@@ -42,17 +35,20 @@ export function shopifyApp<
     api.webhooks.addHandlers(appConfig.webhooks as any);
   }
 
+  const oauth = new AuthStrategy<SessionContextType<Config>, Resources>({
+    api,
+    config,
+    logger,
+  });
+  const webhook = new WebhookStrategy<Resources>({ api, config, logger });
+
   // TODO: Should we be returning the api object as part of this response? How can apps get session ids otherwise?
   return {
     config,
     registerWebhooks: registerWebhooksFactory({ api, config, logger }),
     authenticate: {
-      oauth: oAuthAuthenticatorFactory<SessionContextType<Config>, Resources>({
-        api,
-        config,
-        logger,
-      }),
-      webhook: webhookAuthenticatorFactory<Resources>({ api, config, logger }),
+      oauth: oauth.authenticate.bind(oauth),
+      webhook: webhook.authenticate.bind(webhook),
     },
   };
 }
@@ -98,35 +94,6 @@ function deriveConfig<Storage extends SessionStorage>(
         appConfig.auth?.sessionTokenPath || "/auth/session-token",
       exitIframePath: appConfig.auth?.exitIframePath || "/auth/exit-iframe",
     },
-  };
-}
-
-function oAuthAuthenticatorFactory<
-  SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
-  Resources extends ShopifyRestResources
->(params: BasicParams) {
-  const Strategy = authStrategyFactory<SessionContext, Resources>(params);
-
-  const authenticator = new Authenticator<OAuthContext<SessionContext>>(
-    {} as any
-  );
-  authenticator.use(new Strategy(), "shopify-app");
-
-  return (request: Request) => {
-    return authenticator.authenticate("shopify-app", request);
-  };
-}
-
-function webhookAuthenticatorFactory<Resources extends ShopifyRestResources>(
-  params: BasicParams
-) {
-  const Strategy = webhookStrategyFactory<Resources>(params);
-
-  const authenticator = new Authenticator<WebhookContext<Resources>>({} as any);
-  authenticator.use(new Strategy(), "shopify-webhook");
-
-  return (request: Request) => {
-    return authenticator.authenticate("shopify-webhook", request);
   };
 }
 
