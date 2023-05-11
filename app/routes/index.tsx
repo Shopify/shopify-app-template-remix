@@ -19,7 +19,7 @@ import { useSubmit } from "@remix-run/react";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const { admin, session } = await authenticator.authenticate(
-    "shopify-app",
+    "ShopifyAppAuthStrategy",
     request
   );
 

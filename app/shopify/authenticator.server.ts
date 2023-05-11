@@ -14,10 +14,10 @@ const sessionStorage = createCookieSessionStorage({
 });
 const authenticator = new Authenticator<Context>(sessionStorage);
 
-authenticator.use(new app.AuthStrategy(), "shopify-app");
+authenticator.use(new app.auth.OAuth(), "shopify-app");
+
+// authenticator.use(new app.auth.Webhook(), "shopify-webhook");
 
 // TODO Add a billing strategy that takes in a session and exports billing functionality
-
-// TODO Add a webhook strategy
 
 export { authenticator };

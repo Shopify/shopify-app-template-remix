@@ -8,6 +8,7 @@ import {
   NonEmbeddedSessionContext,
 } from "./auth/types";
 import { RegisterWebhooksOptions } from "./webhooks/types.js";
+import { WebhookStrategyInternal } from "./webhooks/strategy.js";
 
 export interface BasicParams {
   api: Shopify;
@@ -24,5 +25,8 @@ export interface ShopifyApp<
   registerWebhooks: (
     options: RegisterWebhooksOptions
   ) => Promise<RegisterReturn>;
-  AuthStrategy: typeof AuthStrategyInternal<SessionContext>;
+  auth: {
+    OAuth: typeof AuthStrategyInternal<SessionContext>;
+    Webhook: typeof WebhookStrategyInternal;
+  };
 }

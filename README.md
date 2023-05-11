@@ -14,6 +14,14 @@ This is incomplete. It is a proof of concept. Use this for prototyping with the 
 
 But! If you're ready for life on the bleeding edge and your project can take that... we'd love your feedback.
 
+## Requirements
+
+Before setting up, you'll need to have a local version of `shopify-api-js` built. To do that:
+
+1. Run `dev clone shopify-api-js`
+1. Run `yarn && yarn build && npm pack`
+1. Run `dev cd shopify-app-template-remix`
+
 ## Set up
 
 1. Install dependencies: `pnpm/yarn/npm install`.

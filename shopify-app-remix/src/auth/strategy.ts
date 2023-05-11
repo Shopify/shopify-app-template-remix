@@ -1,9 +1,6 @@
-import {
-  AuthenticateOptions,
-  Strategy,
-  StrategyVerifyCallback,
-} from "remix-auth";
-import { SessionStorage, redirect } from "@remix-run/server-runtime";
+import isbot from "isbot";
+import { Strategy, StrategyVerifyCallback } from "remix-auth";
+import { redirect } from "@remix-run/server-runtime";
 import {
   CookieNotFound,
   HttpResponseError,
@@ -14,7 +11,6 @@ import {
   Shopify,
   ShopifyRestResources,
 } from "@shopify/shopify-api";
-import isbot from "isbot";
 
 import { BasicParams } from "../types.js";
 import { AdminContext, AppConfig } from "../config-types.js";
@@ -39,11 +35,7 @@ export class AuthStrategyInternal<
     super(verifyAuth);
   }
 
-  public async authenticate(
-    request: Request,
-    _sessionStorage: SessionStorage,
-    _options: AuthenticateOptions
-  ): Promise<Context<T, R>> {
+  public async authenticate(request: Request): Promise<Context<T, R>> {
     const { logger, config } = this.strategyClass();
 
     if (isbot(request.headers.get("User-Agent"))) {
