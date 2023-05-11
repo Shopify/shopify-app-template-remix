@@ -3,6 +3,7 @@ node_modules
 /.cache
 /build
 /app/build
+/public/build/
 /app/public/build
 /prisma/dev.sqlite
 
