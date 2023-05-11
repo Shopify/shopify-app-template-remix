@@ -2,7 +2,7 @@ import React from "react";
 import { LoaderArgs, json } from "@remix-run/node";
 import { useLoaderData, useTransition } from "@remix-run/react";
 
-import { authenticator } from "../shopify/authenticator.server.js";
+import { app } from "../shopify/app.server.js";
 import {
   Card,
   Page,
@@ -14,20 +14,19 @@ import {
   Heading,
 } from "@shopify/polaris";
 import { ProductsCard } from "../components/ProductsCard.jsx";
+// TODO figure out why this shows as an error in vscode only
+// @ts-ignore
 import trophyImage from "../assets/home-trophy.png";
 import { useSubmit } from "@remix-run/react";
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const { admin, session } = await authenticator.authenticate(
-    "ShopifyAppAuthStrategy",
-    request
-  );
+  const { admin, session } = await app.authenticate.oauth(request);
 
   return json(await admin.rest.Product.count({ session: session.session }));
 };
 
 export async function action({ request }: LoaderArgs) {
-  const { admin } = await authenticator.authenticate("shopify-app", request);
+  const { admin } = await app.authenticate.oauth(request);
 
   await Promise.all(
     [...Array(5).keys()].map(async (i) => {

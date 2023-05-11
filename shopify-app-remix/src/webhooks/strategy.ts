@@ -1,12 +1,14 @@
 import { Strategy, StrategyVerifyCallback } from "remix-auth";
-import { Shopify } from "@shopify/shopify-api";
+import { Shopify, ShopifyRestResources } from "@shopify/shopify-api";
 
 import { BasicParams } from "../types.js";
 import { AppConfig } from "../config-types.js";
 
 import { WebhookContext } from "./types.js";
 
-export class WebhookStrategyInternal extends Strategy<WebhookContext, any> {
+export class WebhookStrategyInternal<
+  Resources extends ShopifyRestResources = any
+> extends Strategy<WebhookContext<Resources>, any> {
   name = "ShopifyAppWebhookStrategy";
 
   protected static api: Shopify;
@@ -17,7 +19,9 @@ export class WebhookStrategyInternal extends Strategy<WebhookContext, any> {
     super(verifyAuth);
   }
 
-  public async authenticate(request: Request): Promise<WebhookContext> {
+  public async authenticate(
+    request: Request
+  ): Promise<WebhookContext<Resources>> {
     const { api, config, logger } = this.strategyClass();
 
     const check = await api.webhooks.validate({
@@ -51,7 +55,7 @@ export class WebhookStrategyInternal extends Strategy<WebhookContext, any> {
       webhookId: check.webhookId,
       session,
       admin: {
-        rest: restClient,
+        rest: restClient as typeof restClient & Resources,
         graphql: graphqlClient,
       },
     };
@@ -66,12 +70,12 @@ export class WebhookStrategyInternal extends Strategy<WebhookContext, any> {
 // TODO look at the docs and implement this
 const verifyAuth: StrategyVerifyCallback<any, {}> = async (_params: {}) => {};
 
-export function webhookStrategyFactory(
-  params: BasicParams
-): typeof WebhookStrategyInternal {
+export function webhookStrategyFactory<
+  Resources extends ShopifyRestResources = any
+>(params: BasicParams): typeof WebhookStrategyInternal<Resources> {
   const { api, config, logger } = params;
 
-  class WebhookStrategy extends WebhookStrategyInternal {
+  class WebhookStrategy extends WebhookStrategyInternal<Resources> {
     protected static api = api;
     protected static config = config;
     protected static logger = logger;

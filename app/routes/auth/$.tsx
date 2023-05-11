@@ -1,7 +1,7 @@
 import { LoaderArgs } from "@remix-run/node";
 
-import { authenticator } from "../../shopify/authenticator.server";
+import { app } from "../../shopify/app.server";
 
 export async function loader({ request }: LoaderArgs) {
-  return authenticator.authenticate("shopify-app", request);
+  return app.authenticate.oauth(request);
 }

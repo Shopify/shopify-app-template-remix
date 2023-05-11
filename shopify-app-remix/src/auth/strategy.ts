@@ -16,15 +16,15 @@ import { BasicParams } from "../types.js";
 import { AdminContext, AppConfig } from "../config-types.js";
 
 import {
-  Context,
+  OAuthContext,
   EmbeddedSessionContext,
   NonEmbeddedSessionContext,
 } from "./types.js";
 
 export class AuthStrategyInternal<
-  T extends EmbeddedSessionContext | NonEmbeddedSessionContext,
-  R extends ShopifyRestResources = any
-> extends Strategy<Context<T, R>, any> {
+  SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
+  Resources extends ShopifyRestResources = any
+> extends Strategy<OAuthContext<SessionContext, Resources>, any> {
   name = "ShopifyAppAuthStrategy";
 
   protected static api: Shopify;
@@ -35,7 +35,9 @@ export class AuthStrategyInternal<
     super(verifyAuth);
   }
 
-  public async authenticate(request: Request): Promise<Context<T, R>> {
+  public async authenticate(
+    request: Request
+  ): Promise<OAuthContext<SessionContext, Resources>> {
     const { logger, config } = this.strategyClass();
 
     if (isbot(request.headers.get("User-Agent"))) {
@@ -57,7 +59,7 @@ export class AuthStrategyInternal<
 
     logger.info("Authenticating request");
 
-    let sessionContext: T;
+    let sessionContext: SessionContext;
     if (isBouncePage) {
       logger.debug("Rendering bounce page");
       this.renderAppBridge();
@@ -238,7 +240,7 @@ export class AuthStrategyInternal<
     }
   }
 
-  private async ensureSessionExists(request: Request): Promise<T> {
+  private async ensureSessionExists(request: Request): Promise<SessionContext> {
     const { api, config, logger } = this.strategyClass();
     const url = new URL(request.url);
 
@@ -266,7 +268,9 @@ export class AuthStrategyInternal<
         throw new Error("Session ID not found in cookies");
       }
 
-      return { session: await this.loadSession(request, shop, sessionId) } as T;
+      return {
+        session: await this.loadSession(request, shop, sessionId),
+      } as SessionContext;
     }
   }
 
@@ -295,7 +299,7 @@ export class AuthStrategyInternal<
   private async validateAuthenticatedSession(
     request: Request,
     payload: JwtPayload
-  ): Promise<T> {
+  ): Promise<SessionContext> {
     const { config, logger } = this.strategyClass();
 
     const dest = new URL(payload.dest);
@@ -312,7 +316,7 @@ export class AuthStrategyInternal<
 
     logger.debug("Found session, request is valid", { shop });
 
-    return { session, token: payload } as T;
+    return { session, token: payload } as SessionContext;
   }
 
   private async loadSession(
@@ -476,7 +480,7 @@ export class AuthStrategyInternal<
       Reflect.set(client, name, resource);
     });
 
-    return client as typeof client & R;
+    return client as typeof client & Resources;
   }
 
   private overriddenGraphqlClient(request: Request, session: Session) {
@@ -503,7 +507,7 @@ export class AuthStrategyInternal<
   private createAdminContext(
     request: Request,
     session: Session
-  ): AdminContext<R> {
+  ): AdminContext<Resources> {
     return {
       rest: this.overriddenRestClient(request, session),
       graphql: this.overriddenGraphqlClient(request, session),
