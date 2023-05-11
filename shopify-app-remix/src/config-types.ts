@@ -2,6 +2,9 @@ import {
   ConfigParams as ApiConfigArg,
   ConfigInterface as ApiConfig,
   ShopifyRestResources,
+  HttpWebhookHandler,
+  PubSubWebhookHandler,
+  EventBridgeWebhookHandler,
 } from "@shopify/shopify-api";
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
 
@@ -13,6 +16,7 @@ export interface AppConfigArg<
   auth?: Partial<AuthConfig>;
   sessionStorage?: S;
   useOnlineTokens?: boolean;
+  webhooks?: WebhookConfig;
 }
 
 export interface AppConfig<S extends SessionStorage = SessionStorage>
@@ -23,9 +27,19 @@ export interface AppConfig<S extends SessionStorage = SessionStorage>
   useOnlineTokens: boolean;
 }
 
-export interface AuthConfig {
+interface AuthConfig {
   path: string;
   callbackPath: string;
   exitIframePath: string;
   sessionTokenPath: string;
+}
+
+// TODO: The callbackUrl field should be optional (and eventually removed) in the library
+type TempWebhookHandler =
+  | Omit<HttpWebhookHandler, "callback">
+  | PubSubWebhookHandler
+  | EventBridgeWebhookHandler;
+
+export interface WebhookConfig {
+  [key: string]: TempWebhookHandler | TempWebhookHandler[];
 }

@@ -142,7 +142,26 @@ export class AuthStrategyInternal<
         await this.beginAuth(request, true, shop);
       }
 
-      // TODO register webhooks here
+      // TODO: Decide what the best way to handle errors here is:
+      //   - We could delete the session, which would make the app unusable until the registration goes through.
+      //   - We could leave as is, but notify users that they should have a background job to reconcile failed registrations.
+      //   - We could await and 500 the request, but the user could reload and still use the app. Plus, it sucks.
+      logger.info("Registering webhooks", { shop });
+      api.webhooks.register({ session }).then((response) => {
+        Object.entries(response).forEach(([topic, topicResults]) => {
+          topicResults.forEach(({ success, result }) => {
+            if (success) {
+              logger.debug("Registered webhook", { topic, shop });
+            } else {
+              logger.error("Failed to register webhook", {
+                topic,
+                shop,
+                result,
+              });
+            }
+          });
+        });
+      });
 
       await this.redirectToShopifyOrAppRoot(request, responseHeaders);
     } catch (error) {

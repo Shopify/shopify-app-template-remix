@@ -29,6 +29,11 @@ export function shopifyApp<
   const config = deriveConfig<S>(appConfig, api.config);
   const logger = overrideLoggerPackage(api.logger);
 
+  if (appConfig.webhooks) {
+    // TODO The any is a temporary workaround until the library supports the new webhook format
+    api.webhooks.addHandlers(appConfig.webhooks as any);
+  }
+
   return {
     config,
     AuthStrategy: authStrategyFactory<SessionContextType<T>, R>({
