@@ -16,6 +16,7 @@ import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version.js";
 import { authStrategyFactory } from "./auth/index.js";
 import { SessionContextType } from "./auth/types";
 import { ShopifyApp } from "./types";
+import { registerWebhooksFactory } from "./webhooks";
 
 export { ShopifyApp } from "./types";
 export { Context } from "./auth/types";
@@ -34,8 +35,10 @@ export function shopifyApp<
     api.webhooks.addHandlers(appConfig.webhooks as any);
   }
 
+  // TODO: Should we be returning the api object as part of this response? How can apps get session ids otherwise?
   return {
     config,
+    registerWebhooks: registerWebhooksFactory({ api, config, logger }),
     AuthStrategy: authStrategyFactory<SessionContextType<T>, R>({
       api,
       config,
@@ -73,8 +76,11 @@ function deriveConfig<S extends SessionStorage = SessionStorage>(
     ...appConfig,
     ...apiConfig,
     useOnlineTokens: appConfig.useOnlineTokens ?? false,
+    hooks: appConfig.hooks ?? {},
     sessionStorage: (appConfig.sessionStorage ??
       new MemorySessionStorage()) as unknown as S,
+    // TODO: Replace these settings with just a prefix, and "hardcode" the actual paths
+    // E.g: User passes /auth, and we derive /auth/callback, /auth/session-token, etc
     auth: {
       path: appConfig.auth?.path || "/auth",
       callbackPath: appConfig.auth?.callbackPath || "/auth/callback",

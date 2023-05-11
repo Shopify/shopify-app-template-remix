@@ -17,10 +17,9 @@ import {
 import isbot from "isbot";
 
 import { BasicParams } from "../types.js";
-import { AppConfig } from "../config-types.js";
+import { AdminContext, AppConfig } from "../config-types.js";
 
 import {
-  AdminContext,
   Context,
   EmbeddedSessionContext,
   NonEmbeddedSessionContext,
@@ -93,13 +92,8 @@ export class AuthStrategyInternal<
       sessionContext = await this.ensureSessionExists(request);
     }
 
-    const admin: AdminContext = {
-      rest: this.overriddenRestClient(request, sessionContext!.session),
-      graphql: this.overriddenGraphqlClient(request, sessionContext!.session),
-    };
-
     return {
-      admin,
+      admin: this.createAdminContext(request, sessionContext!.session),
       session: sessionContext!,
     };
   }
@@ -142,26 +136,13 @@ export class AuthStrategyInternal<
         await this.beginAuth(request, true, shop);
       }
 
-      // TODO: Decide what the best way to handle errors here is:
-      //   - We could delete the session, which would make the app unusable until the registration goes through.
-      //   - We could leave as is, but notify users that they should have a background job to reconcile failed registrations.
-      //   - We could await and 500 the request, but the user could reload and still use the app. Plus, it sucks.
-      logger.info("Registering webhooks", { shop });
-      api.webhooks.register({ session }).then((response) => {
-        Object.entries(response).forEach(([topic, topicResults]) => {
-          topicResults.forEach(({ success, result }) => {
-            if (success) {
-              logger.debug("Registered webhook", { topic, shop });
-            } else {
-              logger.error("Failed to register webhook", {
-                topic,
-                shop,
-                result,
-              });
-            }
-          });
+      if (config.hooks.afterAuth) {
+        logger.info("Running afterAuth hook");
+        await config.hooks.afterAuth({
+          session,
+          admin: this.createAdminContext(request, session),
         });
-      });
+      }
 
       await this.redirectToShopifyOrAppRoot(request, responseHeaders);
     } catch (error) {
@@ -503,7 +484,7 @@ export class AuthStrategyInternal<
       Reflect.set(client, name, resource);
     });
 
-    return client;
+    return client as typeof client & R;
   }
 
   private overriddenGraphqlClient(request: Request, session: Session) {
@@ -525,6 +506,16 @@ export class AuthStrategyInternal<
     });
 
     return client;
+  }
+
+  private createAdminContext(
+    request: Request,
+    session: Session
+  ): AdminContext<R> {
+    return {
+      rest: this.overriddenRestClient(request, session),
+      graphql: this.overriddenGraphqlClient(request, session),
+    };
   }
 
   private strategyClass() {

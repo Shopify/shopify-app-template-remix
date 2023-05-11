@@ -5,6 +5,8 @@ import {
   HttpWebhookHandler,
   PubSubWebhookHandler,
   EventBridgeWebhookHandler,
+  Shopify,
+  Session,
 } from "@shopify/shopify-api";
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
 
@@ -17,6 +19,7 @@ export interface AppConfigArg<
   sessionStorage?: S;
   useOnlineTokens?: boolean;
   webhooks?: WebhookConfig;
+  hooks?: HooksConfig;
 }
 
 export interface AppConfig<S extends SessionStorage = SessionStorage>
@@ -25,6 +28,7 @@ export interface AppConfig<S extends SessionStorage = SessionStorage>
   auth: AuthConfig;
   sessionStorage: S;
   useOnlineTokens: boolean;
+  hooks: HooksConfig;
 }
 
 interface AuthConfig {
@@ -42,4 +46,19 @@ type TempWebhookHandler =
 
 export interface WebhookConfig {
   [key: string]: TempWebhookHandler | TempWebhookHandler[];
+}
+
+interface HooksConfig {
+  afterAuth?: ({}: AfterAuthOptions) => void | Promise<void>;
+}
+
+export interface AfterAuthOptions<R extends ShopifyRestResources = any> {
+  session: Session;
+  admin: AdminContext<R>;
+}
+
+export interface AdminContext<R extends ShopifyRestResources = any> {
+  rest: InstanceType<Shopify["clients"]["Rest"]> & R;
+  // TODO improve the public API in @shopify/shopify-api GraphQL client
+  graphql: InstanceType<Shopify["clients"]["Graphql"]>;
 }
