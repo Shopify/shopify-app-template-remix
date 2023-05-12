@@ -20,6 +20,19 @@ export interface BasicParams {
   logger: Shopify["logger"];
 }
 
+type RegisterWebhooks = (
+  options: RegisterWebhooksOptions
+) => Promise<RegisterReturn>;
+
+type AuthenticateOAuth<
+  SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
+  Resources extends ShopifyRestResources = any
+> = (request: Request) => Promise<OAuthContext<SessionContext, Resources>>;
+
+type AuthenticateWebhook<Resources extends ShopifyRestResources = any> = (
+  request: Request
+) => Promise<WebhookContext<Resources>>;
+
 export interface ShopifyApp<
   SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
   Storage extends SessionStorage = SessionStorage,
@@ -27,11 +40,9 @@ export interface ShopifyApp<
   Resources extends ShopifyRestResources = any
 > {
   config: Config;
-  registerWebhooks: (
-    options: RegisterWebhooksOptions
-  ) => Promise<RegisterReturn>;
+  registerWebhooks: RegisterWebhooks;
   authenticate: {
-    oauth: (request: Request) => Promise<OAuthContext<SessionContext>>;
-    webhook: (request: Request) => Promise<WebhookContext<Resources>>;
+    oauth: AuthenticateOAuth<SessionContext, Resources>;
+    webhook: AuthenticateWebhook<Resources>;
   };
 }

@@ -11,12 +11,12 @@ import {
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
 
 export interface AppConfigArg<
-  R extends ShopifyRestResources = any,
-  S extends SessionStorage = SessionStorage
-> extends Omit<ApiConfigArg<R>, "hostName" | "hostScheme"> {
+  Resources extends ShopifyRestResources = any,
+  Storage extends SessionStorage = SessionStorage
+> extends Omit<ApiConfigArg<Resources>, "hostName" | "hostScheme"> {
   appUrl: string;
   auth?: Partial<AuthConfig>;
-  sessionStorage?: S;
+  sessionStorage?: Storage;
   useOnlineTokens?: boolean;
   webhooks?: WebhookConfig;
   hooks?: HooksConfig;

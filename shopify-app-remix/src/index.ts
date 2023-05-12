@@ -32,7 +32,16 @@ export function shopifyApp<
   Config extends AppConfigArg<Resources, Storage>,
   Resources extends ShopifyRestResources = any,
   Storage extends SessionStorage = SessionStorage
->(appConfig: Config): ShopifyApp<SessionContextType<Config>, Storage> {
+>(
+  appConfig: Config
+): ShopifyApp<
+  SessionContextType<Config>,
+  Storage,
+  AppConfig<Storage>,
+  Config["restResources"] extends Resources
+    ? Config["restResources"]
+    : Resources
+> {
   const api = deriveApi<Resources>(appConfig);
   const config = deriveConfig<Storage>(appConfig, api.config);
   const logger = overrideLoggerPackage(api.logger);
