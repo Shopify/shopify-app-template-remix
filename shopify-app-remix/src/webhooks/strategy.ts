@@ -1,4 +1,3 @@
-import { Strategy, StrategyVerifyCallback } from "remix-auth";
 import { Shopify, ShopifyRestResources } from "@shopify/shopify-api";
 
 import { BasicParams } from "../types.js";
@@ -6,23 +5,21 @@ import { AppConfig } from "../config-types.js";
 
 import { WebhookContext } from "./types.js";
 
-export class WebhookStrategyInternal<
-  Resources extends ShopifyRestResources = any
-> extends Strategy<WebhookContext<Resources>, any> {
-  name = "ShopifyAppWebhookStrategy";
+export class WebhookStrategy<Resources extends ShopifyRestResources = any> {
+  protected api: Shopify;
+  protected config: AppConfig;
+  protected logger: Shopify["logger"];
 
-  protected static api: Shopify;
-  protected static config: AppConfig;
-  protected static logger: Shopify["logger"];
-
-  constructor() {
-    super(verifyAuth);
+  public constructor({ api, config, logger }: BasicParams) {
+    this.api = api;
+    this.config = config;
+    this.logger = logger;
   }
 
   public async authenticate(
     request: Request
   ): Promise<WebhookContext<Resources>> {
-    const { api, config, logger } = this.strategyClass();
+    const { api, config, logger } = this;
 
     const check = await api.webhooks.validate({
       rawBody: await request.text(),
@@ -60,34 +57,4 @@ export class WebhookStrategyInternal<
       },
     };
   }
-
-  private strategyClass() {
-    return this.constructor as typeof WebhookStrategyInternal;
-  }
-}
-
-// TODO figure out the User type here
-// TODO look at the docs and implement this
-const verifyAuth: StrategyVerifyCallback<any, {}> = async (_params: {}) => {};
-
-export function webhookStrategyFactory<
-  Resources extends ShopifyRestResources = any
->(params: BasicParams): typeof WebhookStrategyInternal<Resources> {
-  const { api, config, logger } = params;
-
-  class WebhookStrategy extends WebhookStrategyInternal<Resources> {
-    protected static api = api;
-    protected static config = config;
-    protected static logger = logger;
-
-    constructor() {
-      super();
-    }
-  }
-
-  Reflect.defineProperty(WebhookStrategy, "name", {
-    value: "WebhookStrategyInternal",
-  });
-
-  return WebhookStrategy as typeof WebhookStrategyInternal;
 }
