@@ -1,9 +1,13 @@
-import { Shopify, ShopifyRestResources } from "@shopify/shopify-api";
+import {
+  ApiVersion,
+  Shopify,
+  ShopifyRestResources,
+} from "@shopify/shopify-api";
 
-import { BasicParams } from "../types.js";
-import { AppConfig } from "../config-types.js";
+import { BasicParams } from "../types";
+import { AppConfig } from "../config-types";
 
-import { WebhookContext } from "./types.js";
+import { WebhookContext } from "./types";
 
 export class WebhookStrategy<Resources extends ShopifyRestResources = any> {
   protected api: Shopify;
@@ -38,8 +42,14 @@ export class WebhookStrategy<Resources extends ShopifyRestResources = any> {
       throw new Response(undefined, { status: 404, statusText: "Not found" });
     }
 
-    const restClient = new api.clients.Rest({ session });
-    const graphqlClient = new api.clients.Graphql({ session });
+    const restClient = new api.clients.Rest({
+      session,
+      apiVersion: check.apiVersion as ApiVersion,
+    });
+    const graphqlClient = new api.clients.Graphql({
+      session,
+      apiVersion: check.apiVersion as ApiVersion,
+    });
 
     Object.entries(api.rest).forEach(([name, resource]) => {
       Reflect.set(restClient, name, resource);

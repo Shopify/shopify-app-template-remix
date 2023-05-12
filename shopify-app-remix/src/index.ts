@@ -11,13 +11,15 @@ import {
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
 import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memory";
 
-import { AppConfig, AppConfigArg } from "./config-types.js";
-import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version.js";
-import { SessionContextType } from "./auth/types";
+import { AppConfig, AppConfigArg } from "./config-types";
+import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version";
+import { SessionContextType } from "./oauth/types";
 import { ShopifyApp } from "./types";
 import { registerWebhooksFactory } from "./webhooks";
-import { AuthStrategy } from "./auth/strategy";
+import { AuthStrategy } from "./oauth/strategy";
 import { WebhookStrategy } from "./webhooks/strategy";
+import { BillingStrategy } from "./billing/strategy";
+import { requestBillingFactory } from "./billing";
 
 export { ShopifyApp } from "./types";
 
@@ -41,14 +43,17 @@ export function shopifyApp<
     logger,
   });
   const webhook = new WebhookStrategy<Resources>({ api, config, logger });
+  const billing = new BillingStrategy({ api, config, logger });
 
   // TODO: Should we be returning the api object as part of this response? How can apps get session ids otherwise?
   return {
     config,
     registerWebhooks: registerWebhooksFactory({ api, config, logger }),
+    requestBilling: requestBillingFactory({ api, config, logger }),
     authenticate: {
       oauth: oauth.authenticate.bind(oauth),
       webhook: webhook.authenticate.bind(webhook),
+      billing: billing.authenticate.bind(billing),
     },
   };
 }

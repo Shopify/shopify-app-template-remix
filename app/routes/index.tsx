@@ -1,8 +1,8 @@
 import React from "react";
-import { LoaderArgs, json } from "@remix-run/node";
+import { LoaderArgs, json, redirect } from "@remix-run/node";
 import { useLoaderData, useTransition } from "@remix-run/react";
 
-import { app } from "../shopify/app.server.js";
+import { app } from "../shopify/app.server";
 import {
   Card,
   Page,
@@ -21,12 +21,24 @@ import { useSubmit } from "@remix-run/react";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const { admin, session } = await app.authenticate.oauth(request);
+  await app.authenticate.billing(session.session, {
+    plans: ["remix1"],
+    onFailure: async () => {
+      await app.requestBilling(request, session.session, { plan: "remix1" });
+    },
+  });
 
   return json(await admin.rest.Product.count({ session: session.session }));
 };
 
 export async function action({ request }: LoaderArgs) {
-  const { admin } = await app.authenticate.oauth(request);
+  const { admin, session } = await app.authenticate.oauth(request);
+  await app.authenticate.billing(session.session, {
+    plans: ["remix1"],
+    onFailure: async () => {
+      await app.requestBilling(request, session.session, { plan: "remix1" });
+    },
+  });
 
   await Promise.all(
     [...Array(5).keys()].map(async (i) => {

@@ -4,9 +4,12 @@ import {
   LATEST_API_VERSION,
   LogSeverity,
   DeliveryMethod,
+  BillingInterval,
 } from "@shopify/shopify-api";
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
 
+// TODO figure out why this shows as an error in vscode only
+// @ts-ignore
 import prisma from "~/db.server";
 
 // TODO: reduce the number of arguments you need to pass in by defaulting as many as we can
@@ -36,6 +39,18 @@ export const app = shopifyApp({
   hooks: {
     afterAuth: async ({ session }) => {
       app.registerWebhooks({ session });
+    },
+  },
+  billing: {
+    remix1: {
+      amount: 10,
+      currencyCode: "USD",
+      interval: BillingInterval.Annual,
+    },
+    remix2: {
+      amount: 5,
+      currencyCode: "EUR",
+      interval: BillingInterval.Every30Days,
     },
   },
 });

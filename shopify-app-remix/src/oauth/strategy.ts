@@ -11,14 +11,14 @@ import {
   ShopifyRestResources,
 } from "@shopify/shopify-api";
 
-import { BasicParams } from "../types.js";
-import { AdminContext, AppConfig } from "../config-types.js";
+import { BasicParams } from "../types";
+import { AdminContext, AppConfig } from "../config-types";
 
 import {
   OAuthContext,
   EmbeddedSessionContext,
   NonEmbeddedSessionContext,
-} from "./types.js";
+} from "./types";
 
 export class AuthStrategy<
   SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
@@ -199,6 +199,7 @@ export class AuthStrategy<
       api.session.getOfflineId(shop)
     );
 
+    // TODO We need to implement an app/uninstalled webhook handler to delete sessions for the shop
     if (!offlineSession) {
       logger.info("Shop hasn't installed app yet, redirecting to OAuth", {
         shop,
@@ -427,9 +428,16 @@ export class AuthStrategy<
   private renderAppBridge(redirectTo?: string): void {
     const { config } = this;
 
-    const redirectToScript = redirectTo
-      ? `<script>shopify.redirectTo("${config.appUrl}${redirectTo}")</script>`
-      : ``;
+    let redirectToScript = "";
+    if (redirectTo) {
+      const redirectUrl = decodeURIComponent(
+        redirectTo.startsWith("/")
+          ? `${config.appUrl}${redirectTo}`
+          : redirectTo
+      );
+
+      redirectToScript = `<script>shopify.redirectTo("${redirectUrl}")</script>`;
+    }
 
     throw new Response(
       `
