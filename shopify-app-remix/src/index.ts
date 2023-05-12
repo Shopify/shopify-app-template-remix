@@ -30,9 +30,9 @@ export { ShopifyApp } from "./types";
 
 export function shopifyApp<
   Config extends AppConfigArg<Resources, Storage>,
-  Resources extends ShopifyRestResources = any,
-  Storage extends SessionStorage = SessionStorage
->(appConfig: Config): ShopifyApp<SessionContextType<Config>, Storage> {
+  Resources extends ShopifyRestResources,
+  Storage extends SessionStorage
+>(appConfig: Config): ShopifyApp<Config> {
   const api = deriveApi<Resources>(appConfig);
   const config = deriveConfig<Storage>(appConfig, api.config);
   const logger = overrideLoggerPackage(api.logger);
@@ -57,7 +57,7 @@ export function shopifyApp<
   };
 }
 
-function deriveApi<Resources extends ShopifyRestResources = any>(
+function deriveApi<Resources extends ShopifyRestResources>(
   appConfig: AppConfigArg
 ): Shopify<Resources> {
   // TODO make sure the port is being added in the CLI when filling SHOPIFY_APP_URL
@@ -78,7 +78,7 @@ function deriveApi<Resources extends ShopifyRestResources = any>(
   return shopifyApi<Resources>(cleanApiConfig);
 }
 
-function deriveConfig<Storage extends SessionStorage = SessionStorage>(
+function deriveConfig<Storage extends SessionStorage>(
   appConfig: AppConfigArg,
   apiConfig: ApiConfig
 ): AppConfig<Storage> {
@@ -103,7 +103,7 @@ function deriveConfig<Storage extends SessionStorage = SessionStorage>(
 
 function oAuthAuthenticatorFactory<
   SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
-  Resources extends ShopifyRestResources = any
+  Resources extends ShopifyRestResources
 >(params: BasicParams) {
   const Strategy = authStrategyFactory<SessionContext, Resources>(params);
 
@@ -117,9 +117,9 @@ function oAuthAuthenticatorFactory<
   };
 }
 
-function webhookAuthenticatorFactory<
-  Resources extends ShopifyRestResources = any
->(params: BasicParams) {
+function webhookAuthenticatorFactory<Resources extends ShopifyRestResources>(
+  params: BasicParams
+) {
   const Strategy = webhookStrategyFactory<Resources>(params);
 
   const authenticator = new Authenticator<WebhookContext<Resources>>({} as any);
