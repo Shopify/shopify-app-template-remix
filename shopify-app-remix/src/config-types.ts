@@ -11,7 +11,7 @@ import {
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
 
 export interface AppConfigArg<
-  Resources extends ShopifyRestResources = any,
+  Resources extends ShopifyRestResources = ShopifyRestResources,
   Storage extends SessionStorage = SessionStorage
 > extends Omit<ApiConfigArg<Resources>, "hostName" | "hostScheme"> {
   appUrl: string;
@@ -52,12 +52,16 @@ interface HooksConfig {
   afterAuth?: ({}: AfterAuthOptions) => void | Promise<void>;
 }
 
-export interface AfterAuthOptions<R extends ShopifyRestResources = any> {
+export interface AfterAuthOptions<
+  R extends ShopifyRestResources = ShopifyRestResources
+> {
   session: Session;
   admin: AdminContext<R>;
 }
 
-export interface AdminContext<R extends ShopifyRestResources = any> {
+export interface AdminContext<
+  R extends ShopifyRestResources = ShopifyRestResources
+> {
   rest: InstanceType<Shopify["clients"]["Rest"]> & R;
   // TODO improve the public API in @shopify/shopify-api GraphQL client
   graphql: InstanceType<Shopify["clients"]["Graphql"]>;

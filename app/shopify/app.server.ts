@@ -1,8 +1,4 @@
-import {
-  ShopifyApp,
-  shopifyApp,
-  Context as ShopifyContext,
-} from "@shopify/shopify-app-remix";
+import { shopifyApp } from "@shopify/shopify-app-remix";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import {
   LATEST_API_VERSION,
@@ -43,9 +39,3 @@ export const app = shopifyApp({
     },
   },
 });
-
-// TODO is there a cleaner way of getting this type to the authenticator?
-export type Context = ShopifyContext<
-  typeof app extends ShopifyApp<infer T> ? T : never,
-  typeof restResources
->;
