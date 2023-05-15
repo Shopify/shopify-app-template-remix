@@ -4,14 +4,20 @@ import {
   RequestParams as BillingRequestParams,
 } from "node_modules/@shopify/shopify-api/lib/billing/types";
 
-export interface RequireBillingOptions
-  extends Omit<BillingCheckParams, "session"> {
+import { AppConfigArg } from "../config-types";
+
+export interface RequireBillingOptions<Config extends AppConfigArg>
+  extends Omit<BillingCheckParams, "session" | "plans"> {
   onFailure: (error: any) => Promise<void>;
+  plans: (keyof Config["billing"])[];
 }
 
-export type RequestBillingOptions = Omit<BillingRequestParams, "session">;
+export interface RequestBillingOptions<Config extends AppConfigArg>
+  extends Omit<BillingRequestParams, "session" | "plan"> {
+  plan: keyof Config["billing"];
+}
 
-export interface BillingContext {
-  require: (options: RequireBillingOptions) => Promise<boolean>;
-  request: (options: RequestBillingOptions) => Promise<never>;
+export interface BillingContext<Config extends AppConfigArg> {
+  require: (options: RequireBillingOptions<Config>) => Promise<boolean>;
+  request: (options: RequestBillingOptions<Config>) => Promise<never>;
 }

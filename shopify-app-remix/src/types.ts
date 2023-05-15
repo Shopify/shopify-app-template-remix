@@ -26,9 +26,12 @@ type RegisterWebhooks = (
 ) => Promise<RegisterReturn>;
 
 type AuthenticateOAuth<
+  Config extends AppConfigArg,
   SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
   Resources extends ShopifyRestResources = ShopifyRestResources
-> = (request: Request) => Promise<OAuthContext<SessionContext, Resources>>;
+> = (
+  request: Request
+) => Promise<OAuthContext<Config, SessionContext, Resources>>;
 
 type AuthenticateWebhook<
   Resources extends ShopifyRestResources = ShopifyRestResources
@@ -49,6 +52,7 @@ export interface ShopifyApp<Config extends AppConfigArg> {
   registerWebhooks: RegisterWebhooks;
   authenticate: {
     oauth: AuthenticateOAuth<
+      Config,
       SessionContextType<Config>,
       RestResourcesType<Config>
     >;

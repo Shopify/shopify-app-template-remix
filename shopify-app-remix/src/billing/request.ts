@@ -2,9 +2,11 @@ import { Session } from "@shopify/shopify-api";
 
 import { BasicParams } from "../types";
 import { redirectOutOfApp } from "../helpers";
+import { AppConfigArg } from "../config-types";
+
 import { RequestBillingOptions } from "./types";
 
-export function requestBillingFactory(
+export function requestBillingFactory<Config extends AppConfigArg>(
   params: BasicParams,
   request: Request,
   session: Session
@@ -13,7 +15,7 @@ export function requestBillingFactory(
     plan,
     isTest,
     returnUrl,
-  }: RequestBillingOptions) {
+  }: RequestBillingOptions<Config>) {
     const { api, logger } = params;
 
     logger.info("Requesting billing", {
@@ -24,7 +26,7 @@ export function requestBillingFactory(
     });
 
     const redirectUrl = await api.billing.request({
-      plan,
+      plan: plan as string,
       session,
       isTest,
       returnUrl,

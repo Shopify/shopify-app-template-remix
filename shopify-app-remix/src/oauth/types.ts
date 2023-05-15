@@ -18,12 +18,13 @@ export interface EmbeddedSessionContext extends SessionContext {
 export interface NonEmbeddedSessionContext extends SessionContext {}
 
 export interface OAuthContext<
+  Config extends AppConfigArg,
   SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
   Resources extends ShopifyRestResources = any
 > {
   session: SessionContext;
   admin: AdminContext<Resources>;
-  billing: BillingContext;
+  billing: BillingContext<Config>;
 }
 
 export type SessionContextType<T extends AppConfigArg> =

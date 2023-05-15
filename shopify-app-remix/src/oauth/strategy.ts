@@ -12,7 +12,7 @@ import {
 } from "@shopify/shopify-api";
 
 import { BasicParams } from "../types";
-import { AdminContext, AppConfig } from "../config-types";
+import { AdminContext, AppConfig, AppConfigArg } from "../config-types";
 import { BillingContext } from "../billing/types";
 import { requestBillingFactory, requireBillingFactory } from "../billing";
 
@@ -26,7 +26,8 @@ const SESSION_TOKEN_ARG = "session_token";
 
 export class AuthStrategy<
   SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
-  Resources extends ShopifyRestResources = any
+  Resources extends ShopifyRestResources = any,
+  Config extends AppConfigArg = any
 > {
   protected api: Shopify;
   protected config: AppConfig;
@@ -40,7 +41,7 @@ export class AuthStrategy<
 
   public async authenticate(
     request: Request
-  ): Promise<OAuthContext<SessionContext, Resources>> {
+  ): Promise<OAuthContext<Config, SessionContext, Resources>> {
     const { logger, config } = this;
 
     if (isbot(request.headers.get("User-Agent"))) {
@@ -526,7 +527,7 @@ export class AuthStrategy<
   private createBillingContext(
     request: Request,
     session: Session
-  ): BillingContext {
+  ): BillingContext<Config> {
     const { api, logger, config } = this;
 
     return {
