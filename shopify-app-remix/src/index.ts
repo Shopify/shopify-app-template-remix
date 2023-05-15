@@ -9,7 +9,7 @@ import {
   shopifyApi,
 } from "@shopify/shopify-api";
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
-import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memory";
+import { SQLiteSessionStorage } from "@shopify/shopify-app-session-storage-sqlite";
 
 import { AppConfig, AppConfigArg } from "./config-types";
 import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version";
@@ -89,9 +89,8 @@ function deriveConfig<Storage extends SessionStorage>(
     ...apiConfig,
     useOnlineTokens: appConfig.useOnlineTokens ?? false,
     hooks: appConfig.hooks ?? {},
-    // TODO: This is actually failing, my guess is that the memory state is getting reloaded and the session gets wiped
     sessionStorage: (appConfig.sessionStorage ??
-      new MemorySessionStorage()) as unknown as Storage,
+      new SQLiteSessionStorage("database.sqlite")) as unknown as Storage,
     // TODO: Replace these settings with just a prefix, and "hardcode" the actual paths
     // E.g: User passes /auth, and we derive /auth/callback, /auth/session-token, etc
     auth: {
