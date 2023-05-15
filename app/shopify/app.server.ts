@@ -1,11 +1,11 @@
-import { shopifyApp } from "@shopify/shopify-app-remix";
-import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import {
+  BillingInterval,
+  DeliveryMethod,
   LATEST_API_VERSION,
   LogSeverity,
-  DeliveryMethod,
-  BillingInterval,
-} from "@shopify/shopify-api";
+  shopifyApp,
+} from "@shopify/shopify-app-remix";
+import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
 
 // TODO figure out why this shows as an error in vscode only

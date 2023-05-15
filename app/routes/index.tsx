@@ -1,5 +1,5 @@
 import React from "react";
-import { LoaderArgs, json, redirect } from "@remix-run/node";
+import { ActionArgs, LoaderArgs, json, redirect } from "@remix-run/node";
 import { useLoaderData, useTransition } from "@remix-run/react";
 
 import { app } from "../shopify/app.server";
@@ -30,7 +30,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   return json(await admin.rest.Product.count({ session }));
 };
 
-export async function action({ request }: LoaderArgs) {
+export async function action({ request }: ActionArgs) {
   const { admin, billing } = await app.authenticate.oauth(request);
   await billing.require({
     plans: ["remix1", "remix2"],

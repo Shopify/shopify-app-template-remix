@@ -20,6 +20,13 @@ import { authenticateWebhookFactory } from "./webhooks/authenticate";
 
 export { ShopifyApp } from "./types";
 
+export {
+  LATEST_API_VERSION,
+  LogSeverity,
+  DeliveryMethod,
+  BillingInterval,
+} from "@shopify/shopify-api";
+
 export function shopifyApp<
   Config extends AppConfigArg<Resources, Storage>,
   Resources extends ShopifyRestResources,
