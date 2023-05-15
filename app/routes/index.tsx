@@ -26,7 +26,8 @@ export const loader = async ({ request }: LoaderArgs) => {
     onFailure: async () => await billing.request({ plan: "remix1" }),
   });
 
-  return json(await admin.rest.Product.count({ session: session.session }));
+  // TODO: Can we get rid of the session argument
+  return json(await admin.rest.Product.count({ session }));
 };
 
 export async function action({ request }: LoaderArgs) {

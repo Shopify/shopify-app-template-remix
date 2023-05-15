@@ -7,29 +7,31 @@ import {
 import type { AdminContext, AppConfigArg } from "../config-types";
 import { BillingContext } from "../billing/types";
 
-interface SessionContext {
-  // TODO Can we use a different name for this?
-  session: Session;
-}
-
-export interface EmbeddedSessionContext extends SessionContext {
-  token: JwtPayload;
-}
-export interface NonEmbeddedSessionContext extends SessionContext {}
-
-export interface OAuthContext<
+interface OAuthContextInternal<
   Config extends AppConfigArg,
-  SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
-  Resources extends ShopifyRestResources = any
+  Resources extends ShopifyRestResources = ShopifyRestResources
 > {
-  session: SessionContext;
+  session: Session;
   admin: AdminContext<Resources>;
   billing: BillingContext<Config>;
 }
 
-export type SessionContextType<T extends AppConfigArg> =
-  T["isEmbeddedApp"] extends true
-    ? EmbeddedSessionContext
-    : T["isEmbeddedApp"] extends false
-    ? NonEmbeddedSessionContext
-    : never;
+export interface EmbeddedOAuthContext<
+  Config extends AppConfigArg,
+  Resources extends ShopifyRestResources = ShopifyRestResources
+> extends OAuthContextInternal<Config, Resources> {
+  sessionToken: JwtPayload;
+}
+export interface NonEmbeddedOAuthContext<
+  Config extends AppConfigArg,
+  Resources extends ShopifyRestResources = ShopifyRestResources
+> extends OAuthContextInternal<Config, Resources> {}
+
+export type OAuthContext<
+  Config extends AppConfigArg,
+  Resources extends ShopifyRestResources = ShopifyRestResources
+> = Config["isEmbeddedApp"] extends true
+  ? EmbeddedOAuthContext<Config, Resources>
+  : Config["isEmbeddedApp"] extends false
+  ? NonEmbeddedOAuthContext<Config, Resources>
+  : never;

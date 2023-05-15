@@ -16,18 +16,18 @@ import { AdminContext, AppConfig, AppConfigArg } from "../config-types";
 import { BillingContext } from "../billing/types";
 import { requestBillingFactory, requireBillingFactory } from "../billing";
 
-import {
-  OAuthContext,
-  EmbeddedSessionContext,
-  NonEmbeddedSessionContext,
-} from "./types";
+import { OAuthContext } from "./types";
+
+interface SessionContext {
+  session: Session;
+  token?: JwtPayload;
+}
 
 const SESSION_TOKEN_ARG = "session_token";
 
 export class AuthStrategy<
-  SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
-  Resources extends ShopifyRestResources = any,
-  Config extends AppConfigArg = any
+  Config extends AppConfigArg,
+  Resources extends ShopifyRestResources = ShopifyRestResources
 > {
   protected api: Shopify;
   protected config: AppConfig;
@@ -41,7 +41,7 @@ export class AuthStrategy<
 
   public async authenticate(
     request: Request
-  ): Promise<OAuthContext<Config, SessionContext, Resources>> {
+  ): Promise<OAuthContext<Config, Resources>> {
     const { logger, config } = this;
 
     if (isbot(request.headers.get("User-Agent"))) {
@@ -90,11 +90,20 @@ export class AuthStrategy<
       sessionContext = await this.ensureSessionExists(request);
     }
 
-    return {
+    const context = {
       admin: this.createAdminContext(request, sessionContext!.session),
       billing: this.createBillingContext(request, sessionContext!.session),
-      session: sessionContext!,
+      session: sessionContext!.session,
     };
+
+    if (config.isEmbeddedApp) {
+      return {
+        ...context,
+        sessionToken: sessionContext!.token!,
+      } as OAuthContext<Config, Resources>;
+    } else {
+      return context as OAuthContext<Config, Resources>;
+    }
   }
 
   private async handleAuthBeginRequest(request: Request): Promise<void> {
@@ -274,9 +283,7 @@ export class AuthStrategy<
         throw new Error("Session ID not found in cookies");
       }
 
-      return {
-        session: await this.loadSession(request, shop, sessionId),
-      } as SessionContext;
+      return { session: await this.loadSession(request, shop, sessionId) };
     }
   }
 
@@ -322,7 +329,7 @@ export class AuthStrategy<
 
     logger.debug("Found session, request is valid", { shop });
 
-    return { session, token: payload } as SessionContext;
+    return { session, token: payload };
   }
 
   private async loadSession(

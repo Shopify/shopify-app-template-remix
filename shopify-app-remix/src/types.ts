@@ -6,12 +6,7 @@ import {
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
 
 import { AppConfig, AppConfigArg } from "./config-types";
-import {
-  EmbeddedSessionContext,
-  NonEmbeddedSessionContext,
-  OAuthContext,
-  SessionContextType,
-} from "./oauth/types";
+import { OAuthContext } from "./oauth/types";
 import { RegisterWebhooksOptions } from "./webhooks/types";
 import { WebhookContext } from "./webhooks/types";
 
@@ -27,11 +22,8 @@ type RegisterWebhooks = (
 
 type AuthenticateOAuth<
   Config extends AppConfigArg,
-  SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
   Resources extends ShopifyRestResources = ShopifyRestResources
-> = (
-  request: Request
-) => Promise<OAuthContext<Config, SessionContext, Resources>>;
+> = (request: Request) => Promise<OAuthContext<Config, Resources>>;
 
 type AuthenticateWebhook<
   Resources extends ShopifyRestResources = ShopifyRestResources
@@ -51,11 +43,7 @@ export interface ShopifyApp<Config extends AppConfigArg> {
   config: AppConfig<SessionStorageType<Config>>;
   registerWebhooks: RegisterWebhooks;
   authenticate: {
-    oauth: AuthenticateOAuth<
-      Config,
-      SessionContextType<Config>,
-      RestResourcesType<Config>
-    >;
+    oauth: AuthenticateOAuth<Config, RestResourcesType<Config>>;
     webhook: AuthenticateWebhook<RestResourcesType<Config>>;
   };
 }

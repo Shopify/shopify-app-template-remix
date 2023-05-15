@@ -13,7 +13,6 @@ import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memor
 
 import { AppConfig, AppConfigArg } from "./config-types";
 import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version";
-import { SessionContextType } from "./oauth/types";
 import { ShopifyApp } from "./types";
 import { registerWebhooksFactory } from "./webhooks";
 import { AuthStrategy } from "./oauth/strategy";
@@ -35,7 +34,7 @@ export function shopifyApp<
     api.webhooks.addHandlers(appConfig.webhooks as any);
   }
 
-  const oauth = new AuthStrategy<SessionContextType<Config>, Resources>({
+  const oauth = new AuthStrategy<Config, Resources>({
     api,
     config,
     logger,
