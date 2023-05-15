@@ -13,12 +13,16 @@ import {
 
 import { BasicParams } from "../types";
 import { AdminContext, AppConfig } from "../config-types";
+import { BillingContext } from "../billing/types";
+import { requestBillingFactory, requireBillingFactory } from "../billing";
 
 import {
   OAuthContext,
   EmbeddedSessionContext,
   NonEmbeddedSessionContext,
 } from "./types";
+
+const SESSION_TOKEN_ARG = "session_token";
 
 export class AuthStrategy<
   SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
@@ -87,6 +91,7 @@ export class AuthStrategy<
 
     return {
       admin: this.createAdminContext(request, sessionContext!.session),
+      billing: this.createBillingContext(request, sessionContext!.session),
       session: sessionContext!,
     };
   }
@@ -229,7 +234,7 @@ export class AuthStrategy<
     const url = new URL(request.url);
 
     const shop = url.searchParams.get("shop")!;
-    const searchParamSessionToken = url.searchParams.get("session_token");
+    const searchParamSessionToken = url.searchParams.get(SESSION_TOKEN_ARG);
 
     if (api.config.isEmbeddedApp && !searchParamSessionToken) {
       logger.debug(
@@ -245,7 +250,7 @@ export class AuthStrategy<
     const url = new URL(request.url);
 
     const shop = url.searchParams.get("shop")!;
-    const searchParamSessionToken = url.searchParams.get("session_token")!;
+    const searchParamSessionToken = url.searchParams.get(SESSION_TOKEN_ARG)!;
 
     if (api.config.isEmbeddedApp) {
       logger.debug(
@@ -332,6 +337,12 @@ export class AuthStrategy<
     if (!session) {
       logger.debug("No session found, redirecting to OAuth", { shop });
       await this.renderAuthPage(request, shop);
+    } else if (!session.isActive(config.scopes)) {
+      logger.debug(
+        "Found a session, but it has expired, redirecting to OAuth",
+        { shop }
+      );
+      await this.renderAuthPage(request, shop);
     }
 
     return session!;
@@ -352,6 +363,7 @@ export class AuthStrategy<
   private async redirectToShopifyOrAppRoot(
     request: Request,
     responseHeaders?: Headers
+    // TODO: We should return `never` when we're throwing responses
   ): Promise<void> {
     const { api } = this;
     const url = new URL(request.url);
@@ -509,6 +521,18 @@ export class AuthStrategy<
     });
 
     return client;
+  }
+
+  private createBillingContext(
+    request: Request,
+    session: Session
+  ): BillingContext {
+    const { api, logger, config } = this;
+
+    return {
+      require: requireBillingFactory({ api, logger, config }, session),
+      request: requestBillingFactory({ api, logger, config }, request, session),
+    };
   }
 
   private createAdminContext(

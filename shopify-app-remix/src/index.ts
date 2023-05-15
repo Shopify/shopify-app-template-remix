@@ -17,9 +17,7 @@ import { SessionContextType } from "./oauth/types";
 import { ShopifyApp } from "./types";
 import { registerWebhooksFactory } from "./webhooks";
 import { AuthStrategy } from "./oauth/strategy";
-import { WebhookStrategy } from "./webhooks/strategy";
-import { BillingStrategy } from "./billing/strategy";
-import { requestBillingFactory } from "./billing";
+import { authenticateWebhookFactory } from "./webhooks/authenticate";
 
 export { ShopifyApp } from "./types";
 
@@ -42,18 +40,15 @@ export function shopifyApp<
     config,
     logger,
   });
-  const webhook = new WebhookStrategy<Resources>({ api, config, logger });
-  const billing = new BillingStrategy({ api, config, logger });
 
   // TODO: Should we be returning the api object as part of this response? How can apps get session ids otherwise?
+  // TODO: Make sure to comment on each exported function out of this object
   return {
     config,
     registerWebhooks: registerWebhooksFactory({ api, config, logger }),
-    requestBilling: requestBillingFactory({ api, config, logger }),
     authenticate: {
       oauth: oauth.authenticate.bind(oauth),
-      webhook: webhook.authenticate.bind(webhook),
-      billing: billing.authenticate.bind(billing),
+      webhook: authenticateWebhookFactory<Resources>({ api, config, logger }),
     },
   };
 }
@@ -88,6 +83,7 @@ function deriveConfig<Storage extends SessionStorage>(
     ...apiConfig,
     useOnlineTokens: appConfig.useOnlineTokens ?? false,
     hooks: appConfig.hooks ?? {},
+    // TODO: This is actually failing, my guess is that the memory state is getting reloaded and the session gets wiped
     sessionStorage: (appConfig.sessionStorage ??
       new MemorySessionStorage()) as unknown as Storage,
     // TODO: Replace these settings with just a prefix, and "hardcode" the actual paths

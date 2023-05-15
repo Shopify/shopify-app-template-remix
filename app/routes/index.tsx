@@ -20,24 +20,20 @@ import trophyImage from "../assets/home-trophy.png";
 import { useSubmit } from "@remix-run/react";
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const { admin, session } = await app.authenticate.oauth(request);
-  await app.authenticate.billing(session.session, {
-    plans: ["remix1"],
-    onFailure: async () => {
-      await app.requestBilling(request, session.session, { plan: "remix1" });
-    },
+  const { admin, session, billing } = await app.authenticate.oauth(request);
+  await billing.require({
+    plans: ["remix1", "remix2"],
+    onFailure: async () => await billing.request({ plan: "remix1" }),
   });
 
   return json(await admin.rest.Product.count({ session: session.session }));
 };
 
 export async function action({ request }: LoaderArgs) {
-  const { admin, session } = await app.authenticate.oauth(request);
-  await app.authenticate.billing(session.session, {
-    plans: ["remix1"],
-    onFailure: async () => {
-      await app.requestBilling(request, session.session, { plan: "remix1" });
-    },
+  const { admin, billing } = await app.authenticate.oauth(request);
+  await billing.require({
+    plans: ["remix1", "remix2"],
+    onFailure: async () => await billing.request({ plan: "remix1" }),
   });
 
   await Promise.all(

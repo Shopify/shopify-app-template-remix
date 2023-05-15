@@ -1,15 +1,17 @@
-export interface BillingContext {
-  success: boolean;
-}
+// TODO: Export this out of the library
+import {
+  CheckParams as BillingCheckParams,
+  RequestParams as BillingRequestParams,
+} from "node_modules/@shopify/shopify-api/lib/billing/types";
 
-export interface BillingAuthenticateOptions {
-  plans: string[];
+export interface RequireBillingOptions
+  extends Omit<BillingCheckParams, "session"> {
   onFailure: (error: any) => Promise<void>;
-  isTest?: boolean;
 }
 
-export interface RequestBillingOptions {
-  plan: string;
-  isTest?: boolean;
-  returnUrl?: string;
+export type RequestBillingOptions = Omit<BillingRequestParams, "session">;
+
+export interface BillingContext {
+  require: (options: RequireBillingOptions) => Promise<boolean>;
+  request: (options: RequestBillingOptions) => Promise<never>;
 }

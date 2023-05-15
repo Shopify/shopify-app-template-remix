@@ -5,6 +5,7 @@ import {
 } from "@shopify/shopify-api";
 
 import type { AdminContext, AppConfigArg } from "../config-types";
+import { BillingContext } from "../billing/types";
 
 interface SessionContext {
   // TODO Can we use a different name for this?
@@ -22,6 +23,7 @@ export interface OAuthContext<
 > {
   session: SessionContext;
   admin: AdminContext<Resources>;
+  billing: BillingContext;
 }
 
 export type SessionContextType<T extends AppConfigArg> =

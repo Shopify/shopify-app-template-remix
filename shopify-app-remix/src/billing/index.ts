@@ -1,1 +1,2 @@
-export { requestBillingFactory } from "./request-billing";
+export { requireBillingFactory } from "./require";
+export { requestBillingFactory } from "./request";
