@@ -11,13 +11,12 @@ import {
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
 import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memory";
 
-import { AppConfig, AppConfigArg } from "./config-types.js";
-import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version.js";
-import { SessionContextType } from "./auth/types";
+import { AppConfig, AppConfigArg } from "./config-types";
+import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version";
 import { ShopifyApp } from "./types";
 import { registerWebhooksFactory } from "./webhooks";
-import { AuthStrategy } from "./auth/strategy";
-import { WebhookStrategy } from "./webhooks/strategy";
+import { AuthStrategy } from "./oauth/strategy";
+import { authenticateWebhookFactory } from "./webhooks/authenticate";
 
 export { ShopifyApp } from "./types";
 
@@ -35,20 +34,20 @@ export function shopifyApp<
     api.webhooks.addHandlers(appConfig.webhooks as any);
   }
 
-  const oauth = new AuthStrategy<SessionContextType<Config>, Resources>({
+  const oauth = new AuthStrategy<Config, Resources>({
     api,
     config,
     logger,
   });
-  const webhook = new WebhookStrategy<Resources>({ api, config, logger });
 
   // TODO: Should we be returning the api object as part of this response? How can apps get session ids otherwise?
+  // TODO: Make sure to comment on each exported function out of this object
   return {
     config,
     registerWebhooks: registerWebhooksFactory({ api, config, logger }),
     authenticate: {
       oauth: oauth.authenticate.bind(oauth),
-      webhook: webhook.authenticate.bind(webhook),
+      webhook: authenticateWebhookFactory<Resources>({ api, config, logger }),
     },
   };
 }
@@ -83,6 +82,7 @@ function deriveConfig<Storage extends SessionStorage>(
     ...apiConfig,
     useOnlineTokens: appConfig.useOnlineTokens ?? false,
     hooks: appConfig.hooks ?? {},
+    // TODO: This is actually failing, my guess is that the memory state is getting reloaded and the session gets wiped
     sessionStorage: (appConfig.sessionStorage ??
       new MemorySessionStorage()) as unknown as Storage,
     // TODO: Replace these settings with just a prefix, and "hardcode" the actual paths

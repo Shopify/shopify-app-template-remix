@@ -11,18 +11,23 @@ import {
   ShopifyRestResources,
 } from "@shopify/shopify-api";
 
-import { BasicParams } from "../types.js";
-import { AdminContext, AppConfig } from "../config-types.js";
+import { BasicParams } from "../types";
+import { AdminContext, AppConfig, AppConfigArg } from "../config-types";
+import { BillingContext } from "../billing/types";
+import { requestBillingFactory, requireBillingFactory } from "../billing";
 
-import {
-  OAuthContext,
-  EmbeddedSessionContext,
-  NonEmbeddedSessionContext,
-} from "./types.js";
+import { OAuthContext } from "./types";
+
+interface SessionContext {
+  session: Session;
+  token?: JwtPayload;
+}
+
+const SESSION_TOKEN_ARG = "session_token";
 
 export class AuthStrategy<
-  SessionContext extends EmbeddedSessionContext | NonEmbeddedSessionContext,
-  Resources extends ShopifyRestResources = any
+  Config extends AppConfigArg,
+  Resources extends ShopifyRestResources = ShopifyRestResources
 > {
   protected api: Shopify;
   protected config: AppConfig;
@@ -36,7 +41,7 @@ export class AuthStrategy<
 
   public async authenticate(
     request: Request
-  ): Promise<OAuthContext<SessionContext, Resources>> {
+  ): Promise<OAuthContext<Config, Resources>> {
     const { logger, config } = this;
 
     if (isbot(request.headers.get("User-Agent"))) {
@@ -85,10 +90,20 @@ export class AuthStrategy<
       sessionContext = await this.ensureSessionExists(request);
     }
 
-    return {
+    const context = {
       admin: this.createAdminContext(request, sessionContext!.session),
-      session: sessionContext!,
+      billing: this.createBillingContext(request, sessionContext!.session),
+      session: sessionContext!.session,
     };
+
+    if (config.isEmbeddedApp) {
+      return {
+        ...context,
+        sessionToken: sessionContext!.token!,
+      } as OAuthContext<Config, Resources>;
+    } else {
+      return context as OAuthContext<Config, Resources>;
+    }
   }
 
   private async handleAuthBeginRequest(request: Request): Promise<void> {
@@ -199,6 +214,7 @@ export class AuthStrategy<
       api.session.getOfflineId(shop)
     );
 
+    // TODO We need to implement an app/uninstalled webhook handler to delete sessions for the shop
     if (!offlineSession) {
       logger.info("Shop hasn't installed app yet, redirecting to OAuth", {
         shop,
@@ -228,7 +244,7 @@ export class AuthStrategy<
     const url = new URL(request.url);
 
     const shop = url.searchParams.get("shop")!;
-    const searchParamSessionToken = url.searchParams.get("session_token");
+    const searchParamSessionToken = url.searchParams.get(SESSION_TOKEN_ARG);
 
     if (api.config.isEmbeddedApp && !searchParamSessionToken) {
       logger.debug(
@@ -244,7 +260,7 @@ export class AuthStrategy<
     const url = new URL(request.url);
 
     const shop = url.searchParams.get("shop")!;
-    const searchParamSessionToken = url.searchParams.get("session_token")!;
+    const searchParamSessionToken = url.searchParams.get(SESSION_TOKEN_ARG)!;
 
     if (api.config.isEmbeddedApp) {
       logger.debug(
@@ -267,9 +283,7 @@ export class AuthStrategy<
         throw new Error("Session ID not found in cookies");
       }
 
-      return {
-        session: await this.loadSession(request, shop, sessionId),
-      } as SessionContext;
+      return { session: await this.loadSession(request, shop, sessionId) };
     }
   }
 
@@ -315,7 +329,7 @@ export class AuthStrategy<
 
     logger.debug("Found session, request is valid", { shop });
 
-    return { session, token: payload } as SessionContext;
+    return { session, token: payload };
   }
 
   private async loadSession(
@@ -330,6 +344,12 @@ export class AuthStrategy<
     const session = await config.sessionStorage.loadSession(sessionId);
     if (!session) {
       logger.debug("No session found, redirecting to OAuth", { shop });
+      await this.renderAuthPage(request, shop);
+    } else if (!session.isActive(config.scopes)) {
+      logger.debug(
+        "Found a session, but it has expired, redirecting to OAuth",
+        { shop }
+      );
       await this.renderAuthPage(request, shop);
     }
 
@@ -351,6 +371,7 @@ export class AuthStrategy<
   private async redirectToShopifyOrAppRoot(
     request: Request,
     responseHeaders?: Headers
+    // TODO: We should return `never` when we're throwing responses
   ): Promise<void> {
     const { api } = this;
     const url = new URL(request.url);
@@ -427,9 +448,16 @@ export class AuthStrategy<
   private renderAppBridge(redirectTo?: string): void {
     const { config } = this;
 
-    const redirectToScript = redirectTo
-      ? `<script>shopify.redirectTo("${config.appUrl}${redirectTo}")</script>`
-      : ``;
+    let redirectToScript = "";
+    if (redirectTo) {
+      const redirectUrl = decodeURIComponent(
+        redirectTo.startsWith("/")
+          ? `${config.appUrl}${redirectTo}`
+          : redirectTo
+      );
+
+      redirectToScript = `<script>shopify.redirectTo("${redirectUrl}")</script>`;
+    }
 
     throw new Response(
       `
@@ -501,6 +529,18 @@ export class AuthStrategy<
     });
 
     return client;
+  }
+
+  private createBillingContext(
+    request: Request,
+    session: Session
+  ): BillingContext<Config> {
+    const { api, logger, config } = this;
+
+    return {
+      require: requireBillingFactory({ api, logger, config }, session),
+      request: requestBillingFactory({ api, logger, config }, request, session),
+    };
   }
 
   private createAdminContext(

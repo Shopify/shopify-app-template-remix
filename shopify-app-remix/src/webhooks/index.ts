@@ -1,1 +1,1 @@
-export { registerWebhooksFactory } from "./register-webhooks";
+export { registerWebhooksFactory } from "./register";

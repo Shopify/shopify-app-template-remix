@@ -1,25 +1,16 @@
-import { Shopify, ShopifyRestResources } from "@shopify/shopify-api";
+import { ApiVersion, ShopifyRestResources } from "@shopify/shopify-api";
 
-import { BasicParams } from "../types.js";
-import { AppConfig } from "../config-types.js";
+import { BasicParams } from "../types";
 
-import { WebhookContext } from "./types.js";
+import { WebhookContext } from "./types";
 
-export class WebhookStrategy<Resources extends ShopifyRestResources = any> {
-  protected api: Shopify;
-  protected config: AppConfig;
-  protected logger: Shopify["logger"];
-
-  public constructor({ api, config, logger }: BasicParams) {
-    this.api = api;
-    this.config = config;
-    this.logger = logger;
-  }
-
-  public async authenticate(
+export function authenticateWebhookFactory<
+  Resources extends ShopifyRestResources
+>({ api, config, logger }: BasicParams) {
+  return async function authenticate(
     request: Request
   ): Promise<WebhookContext<Resources>> {
-    const { api, config, logger } = this;
+    // TODO: Webhooks can only be POST requests, we should fail early in any other scenario
 
     const check = await api.webhooks.validate({
       rawBody: await request.text(),
@@ -38,8 +29,14 @@ export class WebhookStrategy<Resources extends ShopifyRestResources = any> {
       throw new Response(undefined, { status: 404, statusText: "Not found" });
     }
 
-    const restClient = new api.clients.Rest({ session });
-    const graphqlClient = new api.clients.Graphql({ session });
+    const restClient = new api.clients.Rest({
+      session,
+      apiVersion: check.apiVersion as ApiVersion,
+    });
+    const graphqlClient = new api.clients.Graphql({
+      session,
+      apiVersion: check.apiVersion as ApiVersion,
+    });
 
     Object.entries(api.rest).forEach(([name, resource]) => {
       Reflect.set(restClient, name, resource);
@@ -56,5 +53,5 @@ export class WebhookStrategy<Resources extends ShopifyRestResources = any> {
         graphql: graphqlClient,
       },
     };
-  }
+  };
 }
