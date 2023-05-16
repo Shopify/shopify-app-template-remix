@@ -19,6 +19,7 @@ But! If you're ready for life on the bleeding edge and your project can take tha
 Before setting up, you'll need to have a local version of `shopify-api-js` built. To do that:
 
 1. Run `dev clone shopify-api-js`
+1. Run `git checkout export_webhook_validation_function`
 1. Run `yarn && yarn build && npm pack`
 1. Run `dev cd shopify-app-template-remix`
 
