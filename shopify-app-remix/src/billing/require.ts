@@ -20,6 +20,7 @@ export function requireBillingFactory<Config extends AppConfigArg>(
     // TODO Return the full info once the feature is deployed into the library package. Also, should we type the plans
     // option here by the config?
     // TODO: Also also, we should fail if the plan doesn't exist
+    // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28367815
     const result = await api.billing.check({
       session,
       ...options,

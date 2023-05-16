@@ -11,7 +11,7 @@ export function authenticateWebhookFactory<
     request: Request
   ): Promise<WebhookContext<Resources>> {
     // TODO: Webhooks can only be POST requests, we should fail early in any other scenario
-
+    // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28378576
     const check = await api.webhooks.validate({
       rawBody: await request.text(),
       rawRequest: request,

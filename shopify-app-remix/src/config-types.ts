@@ -39,6 +39,7 @@ interface AuthConfig {
 }
 
 // TODO: The callbackUrl field should be optional (and eventually removed) in the library
+// https://github.com/Shopify/shopify-app-template-remix/issues/31
 type TempWebhookHandler =
   | Omit<HttpWebhookHandler, "callback">
   | PubSubWebhookHandler
@@ -63,6 +64,7 @@ export interface AdminContext<
   R extends ShopifyRestResources = ShopifyRestResources
 > {
   rest: InstanceType<Shopify["clients"]["Rest"]> & R;
-  // TODO improve the public API in @shopify/shopify-api GraphQL client
+  // TODO: Improve the public API in @shopify/shopify-api GraphQL client
+  // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28352645
   graphql: InstanceType<Shopify["clients"]["Graphql"]>;
 }

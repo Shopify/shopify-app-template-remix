@@ -43,7 +43,7 @@ beforeEach(() => {
 });
 
 // TODO: Everything after this point is a copy of shopify-app-express and should be moved into a shared internal package
-
+// Not logging as issue. Will be taken care of in: https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=27471073
 export type MockBody =
   | string
   | {

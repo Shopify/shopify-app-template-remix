@@ -37,7 +37,8 @@ export function shopifyApp<
   const logger = overrideLoggerPackage(api.logger);
 
   if (appConfig.webhooks) {
-    // TODO The any is a temporary workaround until the library supports the new webhook format
+    // TODO: The any is a temporary workaround until the library supports the new webhook format
+    // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28352645
     api.webhooks.addHandlers(appConfig.webhooks as any);
   }
 
@@ -48,7 +49,9 @@ export function shopifyApp<
   });
 
   // TODO: Should we be returning the api object as part of this response? How can apps get session ids otherwise?
+  // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28353887
   // TODO: Make sure to comment on each exported function out of this object
+  // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28354989
   return {
     config,
     registerWebhooks: registerWebhooksFactory({ api, config, logger }),
@@ -62,7 +65,8 @@ export function shopifyApp<
 function deriveApi<Resources extends ShopifyRestResources>(
   appConfig: AppConfigArg
 ): Shopify<Resources> {
-  // TODO make sure the port is being added in the CLI when filling SHOPIFY_APP_URL
+  // TODO: Make sure the port is being added in the CLI when filling SHOPIFY_APP_URL
+  // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28356136
   const appUrl = new URL(appConfig.appUrl);
 
   let userAgentPrefix = `Shopify Remix Library v${SHOPIFY_REMIX_LIBRARY_VERSION}`;
@@ -93,6 +97,7 @@ function deriveConfig<Storage extends SessionStorage>(
       new SQLiteSessionStorage("database.sqlite")) as unknown as Storage,
     // TODO: Replace these settings with just a prefix, and "hardcode" the actual paths
     // E.g: User passes /auth, and we derive /auth/callback, /auth/session-token, etc
+    // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28356500
     auth: {
       path: appConfig.auth?.path || "/auth",
       callbackPath: appConfig.auth?.callbackPath || "/auth/callback",
@@ -104,7 +109,7 @@ function deriveConfig<Storage extends SessionStorage>(
 }
 
 // TODO This has been copied from shopify-app-express, it should be extracted into a shared package
-
+// https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28358070
 function overrideLoggerPackage(logger: Shopify["logger"]): Shopify["logger"] {
   const baseContext = { package: "shopify-app" };
 

@@ -188,17 +188,10 @@ export class AuthStrategy<
     }
 
     const shop = api.utils.sanitizeShop(url.searchParams.get("shop")!);
+
     if (!shop) {
       throw new Error("Shop param is not present");
     }
-
-    // TODO: Start validating HMAC if CLI can produce valid links
-    // const isValidHmac = await api.utils.validateHmac(
-    //   Object.fromEntries(url.searchParams.entries())
-    // );
-    // if (!isValidHmac) {
-    //   throw new Error("Request does not have a valid HMAC signature");
-    // }
   }
 
   private async ensureInstalledOnShop(request: Request) {
@@ -215,6 +208,7 @@ export class AuthStrategy<
     );
 
     // TODO We need to implement an app/uninstalled webhook handler to delete sessions for the shop
+    // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28375165
     if (!offlineSession) {
       logger.info("Shop hasn't installed app yet, redirecting to OAuth", {
         shop,
@@ -275,6 +269,7 @@ export class AuthStrategy<
       return this.validateAuthenticatedSession(request, sessionToken);
     } else {
       // TODO move this check into loadSession once we add support for it in the library
+      // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28378114
       const sessionId = await api.session.getCurrentId({
         isOnline: config.useOnlineTokens,
         rawRequest: request,
@@ -292,7 +287,6 @@ export class AuthStrategy<
 
     logger.debug("Validating session token");
 
-    // TODO update the API library to be able to find either a header or search param token for validation
     try {
       const payload = await api.session.decodeSessionToken(token);
       logger.debug("Session token is valid", {
@@ -357,12 +351,14 @@ export class AuthStrategy<
   }
 
   // TODO export these methods out of the API library
+  // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=27469123
   private getJwtSessionId(shop: string, userId: string): string {
     const { api } = this;
     return `${api.utils.sanitizeShop(shop, true)}_${userId}`;
   }
 
   // TODO export these methods out of the API library
+  // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=27469123
   private getOfflineId(shop: string): string {
     const { api } = this;
     return `offline_${api.utils.sanitizeShop(shop, true)}`;
@@ -436,12 +432,14 @@ export class AuthStrategy<
     const { api, config } = this;
 
     // TODO this is to work around a remix bug
+    // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28376650
     url.protocol = `${api.config.hostScheme}:`;
 
     const params = new URLSearchParams(url.search);
     params.set("shopify-reload", url.href);
 
     // TODO Make sure this works on chrome without a tunnel (weird HTTPS redirect issue)
+    // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28376650
     throw redirect(`${config.auth.sessionTokenPath}?${params.toString()}`);
   }
 
@@ -486,6 +484,7 @@ export class AuthStrategy<
     const { api } = this;
 
     // TODO Evaluate memory and time costs for this
+    // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28376875
     const client = new api.clients.Rest({ session });
     const originalRequest = Reflect.get(client, "request");
 
@@ -502,6 +501,7 @@ export class AuthStrategy<
     });
 
     // TODO This is not thread safe and will fail. Can we return this in a thread safe way without duplicating the resources?
+    // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28376875
     Object.entries(api.rest).forEach(([name, resource]) => {
       resource.client = client;
       Reflect.set(client, name, resource);

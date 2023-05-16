@@ -16,6 +16,7 @@ export function redirectOutOfApp(
   const isXhrRequest = request.headers.get("authorization");
 
   // TODO This is similar but not exactly like some code in the oauth strategy - is it worth extracting into a helper?
+  // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28374220
   if (isXhrRequest) {
     return new Response(undefined, {
       status: 401,
