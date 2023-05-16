@@ -19,5 +19,5 @@ export interface RequestBillingOptions<Config extends AppConfigArg>
 
 export interface BillingContext<Config extends AppConfigArg> {
   require: (options: RequireBillingOptions<Config>) => Promise<boolean>;
-  request: (options: RequestBillingOptions<Config>) => Promise<never>;
+  request: (options: RequestBillingOptions<Config>) => Promise<void>;
 }

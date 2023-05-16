@@ -17,6 +17,9 @@ export function redirectOutOfApp(
 
   // TODO This is similar but not exactly like some code in the oauth strategy - is it worth extracting into a helper?
   if (isXhrRequest) {
+    // TODO Check this with the beta flag disabled (with the bounce page)
+    // Remix is not including the X-Shopify-API-Request-Failure-Reauthorize-Url when throwing a 401 Response
+    // https://github.com/remix-run/remix/issues/5356
     return new Response(undefined, {
       status: 401,
       statusText: "Unauthorized",
