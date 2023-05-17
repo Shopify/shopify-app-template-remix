@@ -13,6 +13,7 @@ import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
 import prisma from "~/db.server";
 
 // TODO: reduce the number of arguments you need to pass in by defaulting as many as we can
+// https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28356500
 export const app = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY!,
   apiSecretKey: process.env.SHOPIFY_API_SECRET!,

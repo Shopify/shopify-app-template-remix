@@ -35,7 +35,7 @@ describe("shopifyApp", () => {
   });
 
   // TODO: Everything after this point is a copy of shopify-app-express and should be moved into a shared internal package
-
+  // Not logging as issue. Will be taken care of in: https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=27471073
   it("properly defaults missing configs based on env vars", () => {
     /* eslint-disable no-process-env */
     process.env.SHOPIFY_API_KEY = "envKey";
