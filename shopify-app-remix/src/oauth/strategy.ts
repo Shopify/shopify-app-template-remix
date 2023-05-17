@@ -17,6 +17,7 @@ import { BillingContext } from "../billing/types";
 import { requestBillingFactory, requireBillingFactory } from "../billing";
 
 import { OAuthContext } from "./types";
+import { redirectWithExitIframe, renderAuthPage } from "../helpers";
 
 interface SessionContext {
   session: Session;
@@ -220,7 +221,7 @@ export class AuthStrategy<
         shop,
       });
       if (url.searchParams.get("embedded") === "1") {
-        this.redirectWithExitIframe(request, shop);
+        redirectWithExitIframe(api, config, request, shop);
       } else {
         await this.beginAuth(request, false, shop);
       }
@@ -337,20 +338,20 @@ export class AuthStrategy<
     shop: string,
     sessionId: string
   ): Promise<Session> {
-    const { config, logger } = this;
+    const { api, config, logger } = this;
 
     logger.debug("Loading session from storage", { sessionId });
 
     const session = await config.sessionStorage.loadSession(sessionId);
     if (!session) {
       logger.debug("No session found, redirecting to OAuth", { shop });
-      await this.renderAuthPage(request, shop);
+      await renderAuthPage(api, config, request, shop);
     } else if (!session.isActive(config.scopes)) {
       logger.debug(
         "Found a session, but it has expired, redirecting to OAuth",
         { shop }
       );
-      await this.renderAuthPage(request, shop);
+      await renderAuthPage(api, config, request, shop);
     }
 
     return session!;
@@ -391,29 +392,6 @@ export class AuthStrategy<
         ...headers,
         location: redirectUrl,
       },
-    });
-  }
-
-  private redirectWithExitIframe(request: Request, shop: string): void {
-    const { api, config } = this;
-    const url = new URL(request.url);
-
-    const queryParams = url.searchParams;
-    queryParams.set("shop", shop);
-    queryParams.set("host", api.utils.sanitizeHost(queryParams.get("host")!)!);
-    queryParams.set("exitIframe", `${config.auth.path}?shop=${shop}`);
-
-    throw redirect(`${config.auth.exitIframePath}?${queryParams.toString()}`);
-  }
-
-  private respondWithAppBridgeRedirectHeaders(shop: string): void {
-    const { config } = this;
-    const redirectUri = `${config.appUrl}${config.auth.path}?shop=${shop}`;
-
-    throw new Response(undefined, {
-      status: 401,
-      statusText: "Unauthorized",
-      headers: { "X-Shopify-API-Request-Failure-Reauthorize-Url": redirectUri },
     });
   }
 
@@ -468,22 +446,8 @@ export class AuthStrategy<
     );
   }
 
-  private async renderAuthPage(request: Request, shop: string): Promise<void> {
-    const url = new URL(request.url);
-    const isEmbeddedRequest = url.searchParams.get("embedded") === "1";
-    const isXhrRequest = request.headers.get("authorization");
-
-    if (isXhrRequest) {
-      this.respondWithAppBridgeRedirectHeaders(shop);
-    } else if (isEmbeddedRequest) {
-      this.redirectWithExitIframe(request, shop);
-    } else {
-      await this.beginAuth(request, false, shop);
-    }
-  }
-
   private overriddenRestClient(request: Request, session: Session) {
-    const { api } = this;
+    const { api, config } = this;
 
     // TODO Evaluate memory and time costs for this
     const client = new api.clients.Rest({ session });
@@ -494,7 +458,7 @@ export class AuthStrategy<
         return await originalRequest.call(client, params);
       } catch (error) {
         if (error instanceof HttpResponseError && error.response.code === 401) {
-          await this.renderAuthPage(request, session.shop);
+          await renderAuthPage(api, config, request, session.shop);
         } else {
           throw error;
         }
@@ -511,7 +475,7 @@ export class AuthStrategy<
   }
 
   private overriddenGraphqlClient(request: Request, session: Session) {
-    const { api } = this;
+    const { api, config } = this;
 
     const client = new api.clients.Graphql({ session });
     const originalQuery = Reflect.get(client, "query");
@@ -521,7 +485,7 @@ export class AuthStrategy<
         return await originalQuery.call(client, params);
       } catch (error) {
         if (error instanceof HttpResponseError && error.response.code === 401) {
-          await this.renderAuthPage(request, session.shop);
+          await renderAuthPage(api, config, request, session.shop);
         } else {
           throw error;
         }
