@@ -1,9 +1,8 @@
 import { redirect } from "@remix-run/server-runtime";
-import { Shopify } from "@shopify/shopify-api";
+import { BasicParams } from "../types";
 
-import { AppConfig } from "../config-types";
-
-export function redirectWithExitIframe(api: Shopify, config: AppConfig, request: Request, shop: string): void {
+export function redirectWithExitIframe(params: BasicParams, request: Request, shop: string): never {
+  const { api, config } = params;
   const url = new URL(request.url);
 
   const queryParams = url.searchParams;

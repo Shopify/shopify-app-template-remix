@@ -221,7 +221,7 @@ export class AuthStrategy<
         shop,
       });
       if (url.searchParams.get("embedded") === "1") {
-        redirectWithExitIframe(api, config, request, shop);
+        redirectWithExitIframe({ api, config, logger }, request, shop);
       } else {
         await this.beginAuth(request, false, shop);
       }
@@ -345,13 +345,13 @@ export class AuthStrategy<
     const session = await config.sessionStorage.loadSession(sessionId);
     if (!session) {
       logger.debug("No session found, redirecting to OAuth", { shop });
-      await renderAuthPage(api, config, request, shop);
+      await renderAuthPage({ api, config, logger }, request, shop);
     } else if (!session.isActive(config.scopes)) {
       logger.debug(
         "Found a session, but it has expired, redirecting to OAuth",
         { shop }
       );
-      await renderAuthPage(api, config, request, shop);
+      await renderAuthPage({ api, config, logger }, request, shop);
     }
 
     return session!;
@@ -458,7 +458,7 @@ export class AuthStrategy<
         return await originalRequest.call(client, params);
       } catch (error) {
         if (error instanceof HttpResponseError && error.response.code === 401) {
-          await renderAuthPage(api, config, request, session.shop);
+          await renderAuthPage({ api, config, logger: this.logger }, request, session.shop);
         } else {
           throw error;
         }
@@ -485,7 +485,7 @@ export class AuthStrategy<
         return await originalQuery.call(client, params);
       } catch (error) {
         if (error instanceof HttpResponseError && error.response.code === 401) {
-          await renderAuthPage(api, config, request, session.shop);
+          await renderAuthPage({ api, config, logger: this.logger }, request, session.shop);
         } else {
           throw error;
         }

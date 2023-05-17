@@ -15,8 +15,8 @@ export function requestBillingFactory<Config extends AppConfigArg>(
     plan,
     isTest,
     returnUrl,
-  }: RequestBillingOptions<Config>) {
-    const { api, config, logger } = params;
+  }: RequestBillingOptions<Config>): Promise<never> {
+    const { api, logger } = params;
 
     logger.info("Requesting billing", {
       shop: session.shop,
@@ -36,7 +36,7 @@ export function requestBillingFactory<Config extends AppConfigArg>(
       });
     } catch (error) {
       if (error instanceof HttpResponseError && error.response.code === 401) {
-        await renderAuthPage(api, config, request, session.shop);
+        await renderAuthPage(params, request, session.shop);
       } else {
         throw error;
       }
