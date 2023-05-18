@@ -17,11 +17,7 @@ import { BillingContext } from "../billing/types";
 import { requestBillingFactory, requireBillingFactory } from "../billing";
 
 import { OAuthContext } from "./types";
-import {
-  beginAuth,
-  redirectWithExitIframe,
-  renderAuthPage
-} from "../helpers";
+import { beginAuth, redirectWithExitIframe, renderAuthPage } from "../helpers";
 
 interface SessionContext {
   session: Session;
@@ -312,14 +308,15 @@ export class AuthStrategy<
     request: Request,
     payload: JwtPayload
   ): Promise<SessionContext> {
-    const { config, logger } = this;
+    const { config, logger, api } = this;
 
     const dest = new URL(payload.dest);
     const shop = dest.hostname;
 
     const sessionId = config.useOnlineTokens
-      ? this.getJwtSessionId(shop, payload.sub)
-      : this.getOfflineId(shop);
+      ? api.session.getJwtSessionId(shop, payload.sub)
+      : api.session.getOfflineId(shop);
+
     if (!sessionId) {
       throw new Error("Session ID not found in JWT token");
     }
@@ -353,20 +350,6 @@ export class AuthStrategy<
     }
 
     return session!;
-  }
-
-  // TODO export these methods out of the API library
-  // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=27469123
-  private getJwtSessionId(shop: string, userId: string): string {
-    const { api } = this;
-    return `${api.utils.sanitizeShop(shop, true)}_${userId}`;
-  }
-
-  // TODO export these methods out of the API library
-  // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=27469123
-  private getOfflineId(shop: string): string {
-    const { api } = this;
-    return `offline_${api.utils.sanitizeShop(shop, true)}`;
   }
 
   private async redirectToShopifyOrAppRoot(
@@ -474,7 +457,11 @@ export class AuthStrategy<
         return await originalQuery.call(client, params);
       } catch (error) {
         if (error instanceof HttpResponseError && error.response.code === 401) {
-          await renderAuthPage({ api, config, logger: this.logger }, request, session.shop);
+          await renderAuthPage(
+            { api, config, logger: this.logger },
+            request,
+            session.shop
+          );
         } else {
           throw error;
         }
