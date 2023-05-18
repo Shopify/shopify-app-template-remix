@@ -36,11 +36,11 @@ export function requestBillingFactory<Config extends AppConfigArg>(
       });
     } catch (error) {
       if (error instanceof HttpResponseError && error.response.code === 401) {
-        await renderAuthPage(params, request, session.shop);
+        throw await renderAuthPage(params, request, session.shop);
       } else {
         throw error;
       }
     }
-    throw redirectOutOfApp(params, request, redirectUrl!);
+    throw redirectOutOfApp(params, request, redirectUrl);
   };
 }

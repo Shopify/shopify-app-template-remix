@@ -17,7 +17,11 @@ import { BillingContext } from "../billing/types";
 import { requestBillingFactory, requireBillingFactory } from "../billing";
 
 import { OAuthContext } from "./types";
-import { redirectWithExitIframe, renderAuthPage } from "../helpers";
+import {
+  beginAuth,
+  redirectWithExitIframe,
+  renderAuthPage
+} from "../helpers";
 
 interface SessionContext {
   session: Session;
@@ -108,7 +112,7 @@ export class AuthStrategy<
   }
 
   private async handleAuthBeginRequest(request: Request): Promise<void> {
-    const { logger, api } = this;
+    const { api, config, logger } = this;
     const url = new URL(request.url);
 
     logger.info("Handling OAuth begin request");
@@ -119,11 +123,11 @@ export class AuthStrategy<
     }
 
     logger.debug("OAuth request contained valid shop", { shop });
-    await this.beginAuth(request, false, shop);
+    await beginAuth({ api, config, logger }, request, false, shop);
   }
 
   private async handleAuthCallbackRequest(request: Request): Promise<void> {
-    const { logger, config, api } = this;
+    const { api, config, logger } = this;
     const url = new URL(request.url);
 
     logger.info("Handling OAuth callback request");
@@ -142,7 +146,7 @@ export class AuthStrategy<
 
       if (config.useOnlineTokens && !session.isOnline) {
         logger.info("Requesting online access token for offline session");
-        await this.beginAuth(request, true, shop);
+        await beginAuth({ api, config, logger }, request, true, shop);
       }
 
       if (config.hooks.afterAuth) {
@@ -223,7 +227,7 @@ export class AuthStrategy<
       if (url.searchParams.get("embedded") === "1") {
         redirectWithExitIframe({ api, config, logger }, request, shop);
       } else {
-        await this.beginAuth(request, false, shop);
+        await beginAuth({ api, config, logger }, request, false, shop);
       }
     }
   }
@@ -395,21 +399,6 @@ export class AuthStrategy<
     });
   }
 
-  private async beginAuth(
-    request: Request,
-    isOnline: boolean,
-    shop: string
-  ): Promise<void> {
-    const { api, config } = this;
-
-    throw await api.auth.begin({
-      shop,
-      callbackPath: config.auth.callbackPath,
-      isOnline,
-      rawRequest: request,
-    });
-  }
-
   private redirectToBouncePage(url: URL): void {
     const { api, config } = this;
 
@@ -447,7 +436,7 @@ export class AuthStrategy<
   }
 
   private overriddenRestClient(request: Request, session: Session) {
-    const { api, config } = this;
+    const { api, config, logger } = this;
 
     // TODO Evaluate memory and time costs for this
     const client = new api.clients.Rest({ session });
@@ -458,7 +447,7 @@ export class AuthStrategy<
         return await originalRequest.call(client, params);
       } catch (error) {
         if (error instanceof HttpResponseError && error.response.code === 401) {
-          await renderAuthPage({ api, config, logger: this.logger }, request, session.shop);
+          await renderAuthPage({ api, config, logger }, request, session.shop);
         } else {
           throw error;
         }
