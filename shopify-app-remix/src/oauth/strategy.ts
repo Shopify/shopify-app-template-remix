@@ -17,6 +17,11 @@ import { BillingContext } from "../billing/types";
 import { requestBillingFactory, requireBillingFactory } from "../billing";
 
 import { OAuthContext } from "./types";
+import {
+  beginAuth,
+  redirectWithExitIframe,
+  renderAuthPage
+} from "../helpers";
 
 interface SessionContext {
   session: Session;
@@ -107,7 +112,7 @@ export class AuthStrategy<
   }
 
   private async handleAuthBeginRequest(request: Request): Promise<void> {
-    const { logger, api } = this;
+    const { api, config, logger } = this;
     const url = new URL(request.url);
 
     logger.info("Handling OAuth begin request");
@@ -118,11 +123,11 @@ export class AuthStrategy<
     }
 
     logger.debug("OAuth request contained valid shop", { shop });
-    await this.beginAuth(request, false, shop);
+    await beginAuth({ api, config, logger }, request, false, shop);
   }
 
   private async handleAuthCallbackRequest(request: Request): Promise<void> {
-    const { logger, config, api } = this;
+    const { api, config, logger } = this;
     const url = new URL(request.url);
 
     logger.info("Handling OAuth callback request");
@@ -141,7 +146,7 @@ export class AuthStrategy<
 
       if (config.useOnlineTokens && !session.isOnline) {
         logger.info("Requesting online access token for offline session");
-        await this.beginAuth(request, true, shop);
+        await beginAuth({ api, config, logger }, request, true, shop);
       }
 
       if (config.hooks.afterAuth) {
@@ -214,9 +219,9 @@ export class AuthStrategy<
         shop,
       });
       if (url.searchParams.get("embedded") === "1") {
-        this.redirectWithExitIframe(request, shop);
+        redirectWithExitIframe({ api, config, logger }, request, shop);
       } else {
-        await this.beginAuth(request, false, shop);
+        await beginAuth({ api, config, logger }, request, false, shop);
       }
     }
   }
@@ -331,20 +336,20 @@ export class AuthStrategy<
     shop: string,
     sessionId: string
   ): Promise<Session> {
-    const { config, logger } = this;
+    const { api, config, logger } = this;
 
     logger.debug("Loading session from storage", { sessionId });
 
     const session = await config.sessionStorage.loadSession(sessionId);
     if (!session) {
       logger.debug("No session found, redirecting to OAuth", { shop });
-      await this.renderAuthPage(request, shop);
+      await renderAuthPage({ api, config, logger }, request, shop);
     } else if (!session.isActive(config.scopes)) {
       logger.debug(
         "Found a session, but it has expired, redirecting to OAuth",
         { shop }
       );
-      await this.renderAuthPage(request, shop);
+      await renderAuthPage({ api, config, logger }, request, shop);
     }
 
     return session!;
@@ -390,44 +395,6 @@ export class AuthStrategy<
     });
   }
 
-  private redirectWithExitIframe(request: Request, shop: string): void {
-    const { api, config } = this;
-    const url = new URL(request.url);
-
-    const queryParams = url.searchParams;
-    queryParams.set("shop", shop);
-    queryParams.set("host", api.utils.sanitizeHost(queryParams.get("host")!)!);
-    queryParams.set("exitIframe", `${config.auth.path}?shop=${shop}`);
-
-    throw redirect(`${config.auth.exitIframePath}?${queryParams.toString()}`);
-  }
-
-  private respondWithAppBridgeRedirectHeaders(shop: string): void {
-    const { config } = this;
-    const redirectUri = `${config.appUrl}${config.auth.path}?shop=${shop}`;
-
-    throw new Response(undefined, {
-      status: 401,
-      statusText: "Unauthorized",
-      headers: { "X-Shopify-API-Request-Failure-Reauthorize-Url": redirectUri },
-    });
-  }
-
-  private async beginAuth(
-    request: Request,
-    isOnline: boolean,
-    shop: string
-  ): Promise<void> {
-    const { api, config } = this;
-
-    throw await api.auth.begin({
-      shop,
-      callbackPath: config.auth.callbackPath,
-      isOnline,
-      rawRequest: request,
-    });
-  }
-
   private redirectToBouncePage(url: URL): void {
     const { api, config } = this;
 
@@ -466,22 +433,8 @@ export class AuthStrategy<
     );
   }
 
-  private async renderAuthPage(request: Request, shop: string): Promise<void> {
-    const url = new URL(request.url);
-    const isEmbeddedRequest = url.searchParams.get("embedded") === "1";
-    const isXhrRequest = request.headers.get("authorization");
-
-    if (isXhrRequest) {
-      this.respondWithAppBridgeRedirectHeaders(shop);
-    } else if (isEmbeddedRequest) {
-      this.redirectWithExitIframe(request, shop);
-    } else {
-      await this.beginAuth(request, false, shop);
-    }
-  }
-
   private overriddenRestClient(request: Request, session: Session) {
-    const { api } = this;
+    const { api, config, logger } = this;
 
     // TODO Evaluate memory and time costs for this
     // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28376875
@@ -493,7 +446,7 @@ export class AuthStrategy<
         return await originalRequest.call(client, params);
       } catch (error) {
         if (error instanceof HttpResponseError && error.response.code === 401) {
-          await this.renderAuthPage(request, session.shop);
+          await renderAuthPage({ api, config, logger }, request, session.shop);
         } else {
           throw error;
         }
@@ -511,7 +464,7 @@ export class AuthStrategy<
   }
 
   private overriddenGraphqlClient(request: Request, session: Session) {
-    const { api } = this;
+    const { api, config } = this;
 
     const client = new api.clients.Graphql({ session });
     const originalQuery = Reflect.get(client, "query");
@@ -521,7 +474,7 @@ export class AuthStrategy<
         return await originalQuery.call(client, params);
       } catch (error) {
         if (error instanceof HttpResponseError && error.response.code === 401) {
-          await this.renderAuthPage(request, session.shop);
+          await renderAuthPage({ api, config, logger: this.logger }, request, session.shop);
         } else {
           throw error;
         }

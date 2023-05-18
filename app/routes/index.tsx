@@ -1,5 +1,6 @@
 import React from "react";
 import { ActionArgs, LoaderArgs, json, redirect } from "@remix-run/node";
+import type { HeadersFunction } from "@remix-run/node"; // or cloudflare/deno
 import { useLoaderData, useTransition } from "@remix-run/react";
 
 import { app } from "../shopify/app.server";
@@ -26,7 +27,6 @@ export const loader = async ({ request }: LoaderArgs) => {
     onFailure: async () => await billing.request({ plan: "remix1" }),
   });
 
-  // TODO: Can we get rid of the session argument
   return json(await admin.rest.Product.count({ session }));
 };
 
@@ -228,3 +228,17 @@ const NOUNS = [
   "fire",
   "flower",
 ];
+
+export function CatchBoundary() {
+  return (
+    <h1>
+      Error occurred.
+    </h1>
+  );
+}
+
+export const headers: HeadersFunction = ({
+  loaderHeaders,
+}) => {
+  return loaderHeaders;
+};
