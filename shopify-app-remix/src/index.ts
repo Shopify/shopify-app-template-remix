@@ -65,9 +65,11 @@ export function shopifyApp<
 function deriveApi<Resources extends ShopifyRestResources>(
   appConfig: AppConfigArg
 ): Shopify<Resources> {
-  // TODO: Make sure the port is being added in the CLI when filling SHOPIFY_APP_URL
-  // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28356136
   const appUrl = new URL(appConfig.appUrl);
+  if (appUrl.hostname === "localhost" && !appUrl.port && process.env.PORT) {
+    appUrl.port = process.env.PORT;
+  }
+  appConfig.appUrl = appUrl.origin;
 
   let userAgentPrefix = `Shopify Remix Library v${SHOPIFY_REMIX_LIBRARY_VERSION}`;
   if (appConfig.userAgentPrefix) {

@@ -7,12 +7,7 @@ if (
   (!process.env.SHOPIFY_APP_URL ||
     process.env.SHOPIFY_APP_URL === process.env.HOST)
 ) {
-  const url = new URL(process.env.HOST);
-  if (url.hostname === "localhost") {
-    url.port = process.env.PORT;
-  }
-
-  process.env.SHOPIFY_APP_URL = url.origin;
+  process.env.SHOPIFY_APP_URL = process.env.HOST;
   delete process.env.HOST;
 }
 
