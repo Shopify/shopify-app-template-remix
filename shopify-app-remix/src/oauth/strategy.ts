@@ -28,7 +28,7 @@ interface SessionContext {
   token?: JwtPayload;
 }
 
-const SESSION_TOKEN_ARG = "session_token";
+const SESSION_TOKEN_PARAM = "id_token";
 
 export class AuthStrategy<
   Config extends AppConfigArg,
@@ -243,7 +243,7 @@ export class AuthStrategy<
     const url = new URL(request.url);
 
     const shop = url.searchParams.get("shop")!;
-    const searchParamSessionToken = url.searchParams.get(SESSION_TOKEN_ARG);
+    const searchParamSessionToken = url.searchParams.get(SESSION_TOKEN_PARAM);
 
     if (api.config.isEmbeddedApp && !searchParamSessionToken) {
       logger.debug(
@@ -259,7 +259,7 @@ export class AuthStrategy<
     const url = new URL(request.url);
 
     const shop = url.searchParams.get("shop")!;
-    const searchParamSessionToken = url.searchParams.get(SESSION_TOKEN_ARG)!;
+    const searchParamSessionToken = url.searchParams.get(SESSION_TOKEN_PARAM)!;
 
     if (api.config.isEmbeddedApp) {
       logger.debug(
