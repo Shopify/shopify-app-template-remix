@@ -23,7 +23,7 @@ interface SessionContext {
   token?: JwtPayload;
 }
 
-const SESSION_TOKEN_ARG = "session_token";
+const SESSION_TOKEN_ARG = "id_token";
 
 export class AuthStrategy<
   Config extends AppConfigArg,
