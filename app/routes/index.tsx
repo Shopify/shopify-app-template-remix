@@ -62,6 +62,10 @@ export async function action({ request }: ActionArgs) {
   );
 
   const result = await admin.rest.get({ path: "/products/count.json" });
+
+  // TODO: Returning the parsed body as a string/object might be confusing for Remix users. We should consider returning
+  // the body as a stream, or renaming it to something that indicates it's a string.
+  // https://github.com/Shopify/shopify-app-template-remix/issues/55
   return json(result.body);
 }
 
