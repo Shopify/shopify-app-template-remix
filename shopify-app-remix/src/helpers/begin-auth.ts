@@ -5,7 +5,7 @@ export async function beginAuth(
   request: Request,
   isOnline: boolean,
   shop: string
-): Promise<void> {
+): Promise<never> {
   const { api, config } = params;
 
   throw await api.auth.begin({
