@@ -6,7 +6,8 @@ import {
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
 
 import { AppConfig, AppConfigArg } from "./config-types";
-import { MerchantContext, BuyerContext } from "./auth/merchant/types";
+import { MerchantContext } from "./auth/merchant/types";
+import { BuyerContext } from "./auth/buyer/types";
 import { RegisterWebhooksOptions } from "./auth/webhooks/types";
 import { WebhookContext } from "./auth/webhooks/types";
 

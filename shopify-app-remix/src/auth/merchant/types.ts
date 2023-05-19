@@ -35,7 +35,3 @@ export type MerchantContext<
   : Config["isEmbeddedApp"] extends false
   ? NonEmbeddedMerchantContext<Config, Resources>
   : never;
-
-export interface BuyerContext {
-  sessionToken: JwtPayload;
-}

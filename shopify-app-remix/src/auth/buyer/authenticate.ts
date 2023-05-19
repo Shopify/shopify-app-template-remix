@@ -1,9 +1,11 @@
-import isbot from "isbot";
-
 import { BasicParams } from "../../types";
 
 import { BuyerContext } from "./types";
-import { validateSessionToken } from "../helpers/validate-session-token";
+import {
+  getSessionTokenHeader,
+  rejectBotRequest,
+  validateSessionToken,
+} from "../helpers";
 
 export function authenticateBuyerFactory(params: BasicParams) {
   return async function authenticateBuyer(
@@ -11,14 +13,9 @@ export function authenticateBuyerFactory(params: BasicParams) {
   ): Promise<BuyerContext> {
     const { logger } = params;
 
-    if (isbot(request.headers.get("User-Agent"))) {
-      logger.debug("Request is from a bot, skipping auth");
-      throw new Response(undefined, { status: 400, statusText: "Bad Request" });
-    }
+    rejectBotRequest(params, request);
 
-    const sessionTokenHeader = request?.headers
-      ?.get("authorization")
-      ?.replace("Bearer ", "");
+    const sessionTokenHeader = getSessionTokenHeader(request);
 
     logger.info("Authenticating buyer request");
 

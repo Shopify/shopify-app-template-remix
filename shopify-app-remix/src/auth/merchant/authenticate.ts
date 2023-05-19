@@ -1,4 +1,3 @@
-import isbot from "isbot";
 import { redirect } from "@remix-run/server-runtime";
 import {
   CookieNotFound,
@@ -19,10 +18,12 @@ import { requestBillingFactory, requireBillingFactory } from "../../billing";
 import { MerchantContext } from "./types";
 import {
   beginAuth,
+  getSessionTokenHeader,
   redirectWithExitIframe,
   redirectToAuthPage,
+  validateSessionToken,
+  rejectBotRequest,
 } from "../helpers";
-import { validateSessionToken } from "../helpers/validate-session-token";
 
 interface SessionContext {
   session: Session;
@@ -50,10 +51,7 @@ export class AuthStrategy<
   ): Promise<MerchantContext<Config, Resources>> {
     const { api, logger, config } = this;
 
-    if (isbot(request.headers.get("User-Agent"))) {
-      logger.debug("Request is from a bot, skipping auth");
-      throw new Response(undefined, { status: 400, statusText: "Bad Request" });
-    }
+    rejectBotRequest({ api, logger, config }, request);
 
     const url = new URL(request.url);
 
@@ -61,9 +59,7 @@ export class AuthStrategy<
     const isExitIframe = url.pathname === config.auth.exitIframePath;
     const isAuthRequest = url.pathname === config.auth.path;
     const isAuthCallbackRequest = url.pathname === config.auth.callbackPath;
-    const sessionTokenHeader = request?.headers
-      ?.get("authorization")
-      ?.replace("Bearer ", "");
+    const sessionTokenHeader = getSessionTokenHeader(request);
 
     logger.info("Authenticating merchant request");
 
