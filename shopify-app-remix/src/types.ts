@@ -29,8 +29,9 @@ type AuthenticateMerchant<
 type AuthenticateBuyer = (request: Request) => Promise<BuyerContext>;
 
 type AuthenticateWebhook<
-  Resources extends ShopifyRestResources = ShopifyRestResources
-> = (request: Request) => Promise<WebhookContext<Resources>>;
+  Resources extends ShopifyRestResources = ShopifyRestResources,
+  Topics = string | number | symbol
+> = (request: Request) => Promise<WebhookContext<Topics, Resources>>;
 
 type RestResourcesType<Config extends AppConfigArg> =
   Config["restResources"] extends ShopifyRestResources
@@ -48,6 +49,9 @@ export interface ShopifyApp<Config extends AppConfigArg> {
   authenticate: {
     merchant: AuthenticateMerchant<Config, RestResourcesType<Config>>;
     buyer: AuthenticateBuyer;
-    webhook: AuthenticateWebhook<RestResourcesType<Config>>;
+    webhook: AuthenticateWebhook<
+      RestResourcesType<Config>,
+      keyof Config["webhooks"]
+    >;
   };
 }

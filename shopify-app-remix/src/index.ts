@@ -56,7 +56,9 @@ export function shopifyApp<
     authenticate: {
       merchant: oauth.authenticateMerchant.bind(oauth),
       buyer: authenticateBuyerFactory(params),
-      webhook: authenticateWebhookFactory<Resources>(params),
+      webhook: authenticateWebhookFactory<Resources, keyof Config["webhooks"]>(
+        params
+      ),
     },
   };
 }

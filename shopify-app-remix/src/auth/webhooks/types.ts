@@ -4,10 +4,13 @@ export interface RegisterWebhooksOptions {
   session: Session;
 }
 
-export interface WebhookContext<Resources extends ShopifyRestResources = any> {
+export interface WebhookContext<
+  Topics = string | number | symbol,
+  Resources extends ShopifyRestResources = any
+> {
   apiVersion: string;
   shop: string;
-  topic: string;
+  topic: Topics;
   webhookId: string;
   session: Session;
   admin: {
