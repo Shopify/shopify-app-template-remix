@@ -1,4 +1,3 @@
-import isbot from "isbot";
 import { redirect } from "@remix-run/server-runtime";
 import {
   CookieNotFound,
@@ -11,13 +10,20 @@ import {
   ShopifyRestResources,
 } from "@shopify/shopify-api";
 
-import { BasicParams } from "../types";
-import { AdminContext, AppConfig, AppConfigArg } from "../config-types";
-import { BillingContext } from "../billing/types";
-import { requestBillingFactory, requireBillingFactory } from "../billing";
+import { BasicParams } from "../../types";
+import { AdminContext, AppConfig, AppConfigArg } from "../../config-types";
+import { BillingContext } from "../../billing/types";
+import { requestBillingFactory, requireBillingFactory } from "../../billing";
 
-import { OAuthContext } from "./types";
-import { beginAuth, redirectWithExitIframe, renderAuthPage } from "../helpers";
+import { MerchantContext } from "./types";
+import {
+  beginAuth,
+  getSessionTokenHeader,
+  redirectWithExitIframe,
+  redirectToAuthPage,
+  validateSessionToken,
+  rejectBotRequest,
+} from "../helpers";
 
 interface SessionContext {
   session: Session;
@@ -40,29 +46,22 @@ export class AuthStrategy<
     this.logger = logger;
   }
 
-  public async authenticate(
+  public async authenticateMerchant(
     request: Request
-  ): Promise<OAuthContext<Config, Resources>> {
-    const { logger, config } = this;
+  ): Promise<MerchantContext<Config, Resources>> {
+    const { api, logger, config } = this;
 
-    if (isbot(request.headers.get("User-Agent"))) {
-      logger.debug("Request is from a bot, skipping auth");
-      throw new Response(undefined, { status: 400, statusText: "Bad Request" });
-    }
+    rejectBotRequest({ api, logger, config }, request);
 
     const url = new URL(request.url);
 
-    const isBouncePage = url.pathname.startsWith(config.auth.sessionTokenPath);
-    const isExitIframe = url.pathname.startsWith(config.auth.exitIframePath);
-    const sessionTokenHeader = request?.headers
-      ?.get("authorization")
-      ?.replace("Bearer ", "");
-    const isAuthRequest = url.pathname.startsWith(config.auth.path);
-    const isAuthCallbackRequest = url.pathname.startsWith(
-      config.auth.callbackPath
-    );
+    const isBouncePage = url.pathname === config.auth.sessionTokenPath;
+    const isExitIframe = url.pathname === config.auth.exitIframePath;
+    const isAuthRequest = url.pathname === config.auth.path;
+    const isAuthCallbackRequest = url.pathname === config.auth.callbackPath;
+    const sessionTokenHeader = getSessionTokenHeader(request);
 
-    logger.info("Authenticating request");
+    logger.info("Authenticating merchant request");
 
     let sessionContext: SessionContext;
     if (isBouncePage) {
@@ -72,11 +71,14 @@ export class AuthStrategy<
       logger.debug("Rendering exit iframe page");
       this.renderAppBridge(url.searchParams.get("exitIframe")!);
     } else if (isAuthCallbackRequest) {
-      await this.handleAuthCallbackRequest(request);
+      throw await this.handleAuthCallbackRequest(request);
     } else if (isAuthRequest) {
-      await this.handleAuthBeginRequest(request);
+      throw await this.handleAuthBeginRequest(request);
     } else if (sessionTokenHeader) {
-      const sessionToken = await this.validateSessionToken(sessionTokenHeader);
+      const sessionToken = await validateSessionToken(
+        { api, logger, config },
+        sessionTokenHeader
+      );
 
       sessionContext = await this.validateAuthenticatedSession(
         request,
@@ -92,22 +94,22 @@ export class AuthStrategy<
     }
 
     const context = {
-      admin: this.createAdminContext(request, sessionContext!.session),
-      billing: this.createBillingContext(request, sessionContext!.session),
-      session: sessionContext!.session,
+      admin: this.createAdminContext(request, sessionContext.session),
+      billing: this.createBillingContext(request, sessionContext.session),
+      session: sessionContext.session,
     };
 
     if (config.isEmbeddedApp) {
       return {
         ...context,
         sessionToken: sessionContext!.token!,
-      } as OAuthContext<Config, Resources>;
+      } as MerchantContext<Config, Resources>;
     } else {
-      return context as OAuthContext<Config, Resources>;
+      return context as MerchantContext<Config, Resources>;
     }
   }
 
-  private async handleAuthBeginRequest(request: Request): Promise<void> {
+  private async handleAuthBeginRequest(request: Request): Promise<never> {
     const { api, config, logger } = this;
     const url = new URL(request.url);
 
@@ -119,10 +121,10 @@ export class AuthStrategy<
     }
 
     logger.debug("OAuth request contained valid shop", { shop });
-    await beginAuth({ api, config, logger }, request, false, shop);
+    throw await beginAuth({ api, config, logger }, request, false, shop);
   }
 
-  private async handleAuthCallbackRequest(request: Request): Promise<void> {
+  private async handleAuthCallbackRequest(request: Request): Promise<never> {
     const { api, config, logger } = this;
     const url = new URL(request.url);
 
@@ -153,7 +155,7 @@ export class AuthStrategy<
         });
       }
 
-      await this.redirectToShopifyOrAppRoot(request, responseHeaders);
+      throw await this.redirectToShopifyOrAppRoot(request, responseHeaders);
     } catch (error) {
       if (error instanceof Response) {
         throw error;
@@ -168,7 +170,7 @@ export class AuthStrategy<
             statusText: "Invalid OAuth Request",
           });
         case error instanceof CookieNotFound:
-          await this.handleAuthBeginRequest(request);
+          throw await this.handleAuthBeginRequest(request);
           break;
         default:
           throw new Response(undefined, {
@@ -263,7 +265,8 @@ export class AuthStrategy<
         { shop }
       );
 
-      const sessionToken = await this.validateSessionToken(
+      const sessionToken = await validateSessionToken(
+        { api, config, logger },
         searchParamSessionToken
       );
 
@@ -280,27 +283,6 @@ export class AuthStrategy<
       }
 
       return { session: await this.loadSession(request, shop, sessionId) };
-    }
-  }
-
-  private async validateSessionToken(token: string): Promise<JwtPayload> {
-    const { api, logger } = this;
-
-    logger.debug("Validating session token");
-
-    try {
-      const payload = await api.session.decodeSessionToken(token);
-      logger.debug("Session token is valid", {
-        payload: JSON.stringify(payload),
-      });
-
-      return payload;
-    } catch (error) {
-      logger.debug(`Failed to validate session token: ${error.message}`);
-      throw new Response(undefined, {
-        status: 401,
-        statusText: "Unauthorized",
-      });
     }
   }
 
@@ -340,13 +322,13 @@ export class AuthStrategy<
     const session = await config.sessionStorage.loadSession(sessionId);
     if (!session) {
       logger.debug("No session found, redirecting to OAuth", { shop });
-      await renderAuthPage({ api, config, logger }, request, shop);
+      await redirectToAuthPage({ api, config, logger }, request, shop);
     } else if (!session.isActive(config.scopes)) {
       logger.debug(
         "Found a session, but it has expired, redirecting to OAuth",
         { shop }
       );
-      await renderAuthPage({ api, config, logger }, request, shop);
+      await redirectToAuthPage({ api, config, logger }, request, shop);
     }
 
     return session!;
@@ -356,7 +338,7 @@ export class AuthStrategy<
     request: Request,
     responseHeaders?: Headers
     // TODO: We should return `never` when we're throwing responses
-  ): Promise<void> {
+  ): Promise<never> {
     const { api } = this;
     const url = new URL(request.url);
 
@@ -393,7 +375,7 @@ export class AuthStrategy<
     throw redirect(`${config.auth.sessionTokenPath}?${params.toString()}`);
   }
 
-  private renderAppBridge(redirectTo?: string): void {
+  private renderAppBridge(redirectTo?: string): never {
     const { config } = this;
 
     let redirectToScript = "";
@@ -429,7 +411,11 @@ export class AuthStrategy<
         return await originalRequest.call(client, params);
       } catch (error) {
         if (error instanceof HttpResponseError && error.response.code === 401) {
-          await renderAuthPage({ api, config, logger }, request, session.shop);
+          await redirectToAuthPage(
+            { api, config, logger },
+            request,
+            session.shop
+          );
         } else {
           throw error;
         }
@@ -457,7 +443,7 @@ export class AuthStrategy<
         return await originalQuery.call(client, params);
       } catch (error) {
         if (error instanceof HttpResponseError && error.response.code === 401) {
-          await renderAuthPage(
+          await redirectToAuthPage(
             { api, config, logger: this.logger },
             request,
             session.shop

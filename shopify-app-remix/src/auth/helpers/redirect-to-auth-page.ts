@@ -1,9 +1,9 @@
-import { BasicParams } from "../types";
+import { BasicParams } from "../../types";
 import { beginAuth } from "./begin-auth";
 import { redirectWithExitIframe } from "./redirect-with-exitiframe";
-import { respondWithAppBridgeRedirectHeaders } from "./respond-with-app-bridge-redirect-headers";
+import { redirectWithAppBridgeHeaders } from "./redirect-with-app-bridge-headers";
 
-export async function renderAuthPage(
+export async function redirectToAuthPage(
   params: BasicParams,
   request: Request,
   shop: string,
@@ -14,7 +14,7 @@ export async function renderAuthPage(
   const isXhrRequest = request.headers.get("authorization");
 
   if (isXhrRequest) {
-    respondWithAppBridgeRedirectHeaders(params, shop);
+    redirectWithAppBridgeHeaders(params, shop);
   } else if (isEmbeddedRequest) {
     redirectWithExitIframe(params, request, shop);
   } else {

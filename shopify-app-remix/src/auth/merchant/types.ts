@@ -4,10 +4,10 @@ import {
   ShopifyRestResources,
 } from "@shopify/shopify-api";
 
-import type { AdminContext, AppConfigArg } from "../config-types";
-import { BillingContext } from "../billing/types";
+import type { AdminContext, AppConfigArg } from "../../config-types";
+import { BillingContext } from "../../billing/types";
 
-interface OAuthContextInternal<
+interface MerchantContextInternal<
   Config extends AppConfigArg,
   Resources extends ShopifyRestResources = ShopifyRestResources
 > {
@@ -16,22 +16,22 @@ interface OAuthContextInternal<
   billing: BillingContext<Config>;
 }
 
-export interface EmbeddedOAuthContext<
+export interface EmbeddedMerchantContext<
   Config extends AppConfigArg,
   Resources extends ShopifyRestResources = ShopifyRestResources
-> extends OAuthContextInternal<Config, Resources> {
+> extends MerchantContextInternal<Config, Resources> {
   sessionToken: JwtPayload;
 }
-export interface NonEmbeddedOAuthContext<
+export interface NonEmbeddedMerchantContext<
   Config extends AppConfigArg,
   Resources extends ShopifyRestResources = ShopifyRestResources
-> extends OAuthContextInternal<Config, Resources> {}
+> extends MerchantContextInternal<Config, Resources> {}
 
-export type OAuthContext<
+export type MerchantContext<
   Config extends AppConfigArg,
   Resources extends ShopifyRestResources = ShopifyRestResources
 > = Config["isEmbeddedApp"] extends true
-  ? EmbeddedOAuthContext<Config, Resources>
+  ? EmbeddedMerchantContext<Config, Resources>
   : Config["isEmbeddedApp"] extends false
-  ? NonEmbeddedOAuthContext<Config, Resources>
+  ? NonEmbeddedMerchantContext<Config, Resources>
   : never;
