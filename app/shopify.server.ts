@@ -32,7 +32,7 @@ export const shopify = shopifyApp({
     callbackPath: process.env.SHOPIFY_APP_AUTH_CALLBACK_PATH,
   },
   webhooks: {
-    PRODUCTS_UPDATE: {
+    APP_UNINSTALLED: {
       deliveryMethod: DeliveryMethod.Http,
       callbackUrl: "/webhooks",
     },
