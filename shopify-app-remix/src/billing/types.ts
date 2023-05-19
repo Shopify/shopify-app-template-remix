@@ -1,10 +1,4 @@
-// TODO: Export this out of the library
-// https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28373243
-import {
-  CheckParams as BillingCheckParams,
-  RequestParams as BillingRequestParams,
-} from "node_modules/@shopify/shopify-api/lib/billing/types";
-
+import { BillingCheckParams, BillingRequestParams } from "@shopify/shopify-api";
 import { AppConfigArg } from "../config-types";
 
 export interface RequireBillingOptions<Config extends AppConfigArg>
