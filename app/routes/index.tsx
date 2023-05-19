@@ -3,7 +3,7 @@ import { ActionArgs, LoaderArgs, json } from "@remix-run/node";
 import type { HeadersFunction } from "@remix-run/node"; // or cloudflare/deno
 import { useLoaderData, useTransition } from "@remix-run/react";
 
-import { app } from "../shopify/app.server";
+import { shopify } from "../shopify.server";
 import {
   Card,
   Page,
@@ -21,7 +21,9 @@ import trophyImage from "../assets/home-trophy.png";
 import { useSubmit } from "@remix-run/react";
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const { admin, session, billing } = await app.authenticate.merchant(request);
+  const { admin, session, billing } = await shopify.authenticate.merchant(
+    request
+  );
   await billing.require({
     plans: ["remix1", "remix2"],
     onFailure: async () => await billing.request({ plan: "remix1" }),
@@ -31,7 +33,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export async function action({ request }: ActionArgs) {
-  const { admin, billing } = await app.authenticate.merchant(request);
+  const { admin, billing } = await shopify.authenticate.merchant(request);
   await billing.require({
     plans: ["remix1", "remix2"],
     onFailure: async () => await billing.request({ plan: "remix1" }),
