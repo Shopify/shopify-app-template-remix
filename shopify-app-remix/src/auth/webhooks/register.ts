@@ -1,4 +1,4 @@
-import { BasicParams } from "../types";
+import { BasicParams } from "../../types";
 
 import { RegisterWebhooksOptions } from "./types";
 

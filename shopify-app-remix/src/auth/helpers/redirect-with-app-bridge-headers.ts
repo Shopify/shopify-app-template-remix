@@ -1,6 +1,9 @@
-import { BasicParams } from "../types";
+import { BasicParams } from "../../types";
 
-export function respondWithAppBridgeRedirectHeaders(params: BasicParams, shop: string): never {
+export function redirectWithAppBridgeHeaders(
+  params: BasicParams,
+  shop: string
+): never {
   const { config } = params;
   const redirectUri = `${config.appUrl}${config.auth.path}?shop=${shop}`;
 

@@ -1,7 +1,11 @@
 import { redirect } from "@remix-run/server-runtime";
-import { BasicParams } from "../types";
+import { BasicParams } from "../../types";
 
-export function redirectWithExitIframe(params: BasicParams, request: Request, shop: string): never {
+export function redirectWithExitIframe(
+  params: BasicParams,
+  request: Request,
+  shop: string
+): never {
   const { api, config } = params;
   const url = new URL(request.url);
 

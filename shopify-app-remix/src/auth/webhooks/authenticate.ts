@@ -1,6 +1,6 @@
 import { ApiVersion, ShopifyRestResources } from "@shopify/shopify-api";
 
-import { BasicParams } from "../types";
+import { BasicParams } from "../../types";
 
 import { WebhookContext } from "./types";
 
