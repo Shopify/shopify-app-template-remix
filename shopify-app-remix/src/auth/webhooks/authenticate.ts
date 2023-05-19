@@ -1,12 +1,12 @@
 import { ApiVersion, ShopifyRestResources } from "@shopify/shopify-api";
 
-import { BasicParams } from "../../types";
+import { BasicParams, MandatoryTopics } from "../../types";
 
 import { WebhookContext } from "./types";
 
 export function authenticateWebhookFactory<
   Resources extends ShopifyRestResources,
-  Topics extends string | number | symbol
+  Topics extends string | number | symbol | MandatoryTopics
 >({ api, config, logger }: BasicParams) {
   return async function authenticate(
     request: Request

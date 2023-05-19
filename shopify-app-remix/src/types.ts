@@ -51,7 +51,12 @@ export interface ShopifyApp<Config extends AppConfigArg> {
     buyer: AuthenticateBuyer;
     webhook: AuthenticateWebhook<
       RestResourcesType<Config>,
-      keyof Config["webhooks"]
+      keyof Config["webhooks"] | MandatoryTopics
     >;
   };
 }
+
+export type MandatoryTopics =
+  | "CUSTOMERS_DATA_REQUEST"
+  | "CUSTOMERS_REDACT"
+  | "SHOP_REDACT";
