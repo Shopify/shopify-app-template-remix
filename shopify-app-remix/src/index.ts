@@ -13,7 +13,7 @@ import { SQLiteSessionStorage } from "@shopify/shopify-app-session-storage-sqlit
 
 import { AppConfig, AppConfigArg } from "./config-types";
 import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version";
-import { BasicParams, ShopifyApp } from "./types";
+import { BasicParams, MandatoryTopics, ShopifyApp } from "./types";
 import { registerWebhooksFactory } from "./auth/webhooks";
 import { AuthStrategy } from "./auth/merchant/authenticate";
 import { authenticateWebhookFactory } from "./auth/webhooks/authenticate";
@@ -56,7 +56,10 @@ export function shopifyApp<
     authenticate: {
       merchant: oauth.authenticateMerchant.bind(oauth),
       buyer: authenticateBuyerFactory(params),
-      webhook: authenticateWebhookFactory<Resources>(params),
+      webhook: authenticateWebhookFactory<
+        Resources,
+        keyof Config["webhooks"] | MandatoryTopics
+      >(params),
     },
   };
 }

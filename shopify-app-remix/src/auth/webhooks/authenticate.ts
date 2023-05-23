@@ -1,15 +1,16 @@
 import { ApiVersion, ShopifyRestResources } from "@shopify/shopify-api";
 
-import { BasicParams } from "../../types";
+import { BasicParams, MandatoryTopics } from "../../types";
 
 import { WebhookContext } from "./types";
 
 export function authenticateWebhookFactory<
-  Resources extends ShopifyRestResources
+  Resources extends ShopifyRestResources,
+  Topics extends string | number | symbol | MandatoryTopics
 >({ api, config, logger }: BasicParams) {
   return async function authenticate(
     request: Request
-  ): Promise<WebhookContext<Resources>> {
+  ): Promise<WebhookContext<Topics, Resources>> {
     // TODO: Webhooks can only be POST requests, we should fail early in any other scenario
     // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28378576
     const check = await api.webhooks.validate({
@@ -45,7 +46,7 @@ export function authenticateWebhookFactory<
     return {
       apiVersion: check.apiVersion,
       shop: check.domain,
-      topic: check.topic,
+      topic: check.topic as Topics,
       webhookId: check.webhookId,
       session,
       admin: {
