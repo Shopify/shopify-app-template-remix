@@ -4,6 +4,7 @@ import {
   ConfigInterface as ApiConfig,
   ConfigParams,
   FeatureDeprecatedError,
+  LATEST_API_VERSION,
   Shopify,
   ShopifyRestResources,
   shopifyApi,
@@ -83,6 +84,8 @@ function deriveApi<Resources extends ShopifyRestResources>(
     hostName: appUrl.host,
     hostScheme: appUrl.protocol.replace(":", "") as "http" | "https",
     userAgentPrefix,
+    isEmbeddedApp: appConfig.isEmbeddedApp ?? true,
+    apiVersion: appConfig.apiVersion ?? LATEST_API_VERSION,
   };
 
   return shopifyApi<Resources>(cleanApiConfig);
