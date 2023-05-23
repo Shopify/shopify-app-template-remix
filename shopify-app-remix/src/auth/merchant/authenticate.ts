@@ -171,7 +171,6 @@ export class AuthStrategy<
           });
         case error instanceof CookieNotFound:
           throw await this.handleAuthBeginRequest(request);
-          break;
         default:
           throw new Response(undefined, {
             status: 500,
@@ -202,6 +201,7 @@ export class AuthStrategy<
     const url = new URL(request.url);
 
     const shop = url.searchParams.get("shop")!;
+    const isEmbedded = url.searchParams.get("embedded") === "1";
 
     // Ensure app is installed
     logger.debug("Ensuring app is installed on shop", { shop });
@@ -210,18 +210,49 @@ export class AuthStrategy<
       api.session.getOfflineId(shop)
     );
 
-    // TODO We need to implement an app/uninstalled webhook handler to delete sessions for the shop
-    // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28375165
     if (!offlineSession) {
       logger.info("Shop hasn't installed app yet, redirecting to OAuth", {
         shop,
       });
-      if (url.searchParams.get("embedded") === "1") {
+      if (isEmbedded) {
         redirectWithExitIframe({ api, config, logger }, request, shop);
       } else {
-        await beginAuth({ api, config, logger }, request, false, shop);
+        throw await beginAuth({ api, config, logger }, request, false, shop);
       }
     }
+
+    if (config.isEmbeddedApp && !isEmbedded) {
+      try {
+        await this.testSession(offlineSession);
+      } catch (error) {
+        if (error instanceof HttpResponseError && error.response.code === 401) {
+          logger.info("Shop session is no longer valid, redirecting to OAuth", {
+            shop,
+          });
+          throw await beginAuth({ api, config, logger }, request, false, shop);
+        } else {
+          throw error;
+        }
+      }
+    }
+  }
+
+  private async testSession(session: Session): Promise<void> {
+    const { api } = this;
+
+    const client = new api.clients.Graphql({
+      session: session,
+    });
+
+    await client.query({
+      data: `#graphql
+          query {
+            shop {
+              name
+            }
+          }
+        `,
+    });
   }
 
   private async ensureAppIsEmbeddedIfRequired(request: Request) {
