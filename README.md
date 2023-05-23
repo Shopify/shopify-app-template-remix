@@ -19,6 +19,7 @@ But it's fairly stable now, so let's start dog fooding ASAP. We can support you 
 
 ## Resources
 
+- [Shopify App Remix]('./shopify-app-remix/README.md)
 - [Remix Docs](https://remix.run/docs/en/v1)
 - [App extensions](https://shopify.dev/docs/apps/app-extensions/list)
 - [Shopify Functions](https://shopify.dev/docs/api/functions)
