@@ -226,7 +226,7 @@ export class AuthStrategy<
         await this.testSession(offlineSession);
       } catch (error) {
         if (error instanceof HttpResponseError && error.response.code === 401) {
-          logger.info("Shop hasn't installed app yet, redirecting to OAuth", {
+          logger.info("Shop session is no longer valid, redirecting to OAuth", {
             shop,
           });
           throw await beginAuth({ api, config, logger }, request, false, shop);
