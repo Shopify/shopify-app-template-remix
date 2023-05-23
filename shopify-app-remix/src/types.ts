@@ -6,8 +6,8 @@ import {
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
 
 import { AppConfig, AppConfigArg } from "./config-types";
-import { MerchantContext } from "./auth/merchant/types";
-import { BuyerContext } from "./auth/buyer/types";
+import { AdminContext } from "./auth/admin/types";
+import { StorefrontContext } from "./auth/storefront/types";
 import { RegisterWebhooksOptions } from "./auth/webhooks/types";
 import { WebhookContext } from "./auth/webhooks/types";
 
@@ -21,12 +21,12 @@ type RegisterWebhooks = (
   options: RegisterWebhooksOptions
 ) => Promise<RegisterReturn>;
 
-type AuthenticateMerchant<
+type AuthenticateAdmin<
   Config extends AppConfigArg,
   Resources extends ShopifyRestResources = ShopifyRestResources
-> = (request: Request) => Promise<MerchantContext<Config, Resources>>;
+> = (request: Request) => Promise<AdminContext<Config, Resources>>;
 
-type AuthenticateBuyer = (request: Request) => Promise<BuyerContext>;
+type AuthenticateStorefront = (request: Request) => Promise<StorefrontContext>;
 
 type AuthenticateWebhook<
   Resources extends ShopifyRestResources = ShopifyRestResources,
@@ -47,8 +47,8 @@ export interface ShopifyApp<Config extends AppConfigArg> {
   config: AppConfig<SessionStorageType<Config>>;
   registerWebhooks: RegisterWebhooks;
   authenticate: {
-    merchant: AuthenticateMerchant<Config, RestResourcesType<Config>>;
-    buyer: AuthenticateBuyer;
+    admin: AuthenticateAdmin<Config, RestResourcesType<Config>>;
+    storefront: AuthenticateStorefront;
     webhook: AuthenticateWebhook<
       RestResourcesType<Config>,
       keyof Config["webhooks"] | MandatoryTopics

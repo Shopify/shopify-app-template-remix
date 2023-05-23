@@ -1,5 +1,5 @@
 import { JwtPayload } from "@shopify/shopify-api";
 
-export interface BuyerContext {
+export interface StorefrontContext {
   sessionToken: JwtPayload;
 }

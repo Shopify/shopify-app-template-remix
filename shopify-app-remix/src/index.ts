@@ -15,9 +15,9 @@ import { AppConfig, AppConfigArg } from "./config-types";
 import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version";
 import { BasicParams, MandatoryTopics, ShopifyApp } from "./types";
 import { registerWebhooksFactory } from "./auth/webhooks";
-import { AuthStrategy } from "./auth/merchant/authenticate";
+import { AuthStrategy } from "./auth/admin/authenticate";
 import { authenticateWebhookFactory } from "./auth/webhooks/authenticate";
-import { authenticateBuyerFactory } from "./auth/buyer/authenticate";
+import { authenticateStorefrontFactory } from "./auth/storefront/authenticate";
 
 export { ShopifyApp } from "./types";
 
@@ -54,8 +54,8 @@ export function shopifyApp<
     config,
     registerWebhooks: registerWebhooksFactory(params),
     authenticate: {
-      merchant: oauth.authenticateMerchant.bind(oauth),
-      buyer: authenticateBuyerFactory(params),
+      admin: oauth.authenticateAdmin.bind(oauth),
+      storefront: authenticateStorefrontFactory(params),
       webhook: authenticateWebhookFactory<
         Resources,
         keyof Config["webhooks"] | MandatoryTopics
