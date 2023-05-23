@@ -2,17 +2,11 @@
 
 This project contains a Shopify App powered by [Remix](https://remix.run/).
 
-# DISCLAIMER
+# WIP
 
-**Do not use this in production.**
+This is still WIP. API's may change, and you'll need to update the shopify-app-remix package once we release it.
 
-This is incomplete. It is a proof of concept. Use this for prototyping with the knowledge that:
-
-1. OAuth is incomplete. Some authentication flows are missing and this will break your app. If this happens, delete the token from prisma and delete your app and re-install.
-2. Package names and API designs wll change.
-3. There will be bugs, poor developer experiences and you may have to debug things on your own.
-
-But! If you're ready for life on the bleeding edge and your project can take that... we'd love your feedback.
+But it's fairly stable now, so let's start dog fooding ASAP. We can support you with maintenance caused by any shifting API's.
 
 ## Set up
 
