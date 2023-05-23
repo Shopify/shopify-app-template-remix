@@ -95,6 +95,8 @@ function deriveConfig<Storage extends SessionStorage>(
   appConfig: AppConfigArg,
   apiConfig: ApiConfig
 ): AppConfig<Storage> {
+  const authPathPrefix = appConfig.authPathPrefix || "/auth";
+
   return {
     ...appConfig,
     ...apiConfig,
@@ -102,15 +104,11 @@ function deriveConfig<Storage extends SessionStorage>(
     hooks: appConfig.hooks ?? {},
     sessionStorage: (appConfig.sessionStorage ??
       new SQLiteSessionStorage("database.sqlite")) as unknown as Storage,
-    // TODO: Replace these settings with just a prefix, and "hardcode" the actual paths
-    // E.g: User passes /auth, and we derive /auth/callback, /auth/session-token, etc
-    // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28356500
     auth: {
-      path: appConfig.auth?.path || "/auth",
-      callbackPath: appConfig.auth?.callbackPath || "/auth/callback",
-      sessionTokenPath:
-        appConfig.auth?.sessionTokenPath || "/auth/session-token",
-      exitIframePath: appConfig.auth?.exitIframePath || "/auth/exit-iframe",
+      path: authPathPrefix,
+      callbackPath: authPathPrefix + "/callback",
+      sessionTokenPath: authPathPrefix + "/session-token",
+      exitIframePath: authPathPrefix + "/auth/exit-iframe",
     },
   };
 }

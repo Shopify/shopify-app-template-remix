@@ -19,13 +19,13 @@ export interface AppConfigArg<
     "hostName" | "hostScheme" | "isEmbeddedApp" | "apiVersion"
   > {
   appUrl: string;
-  auth?: Partial<AuthConfig>;
   sessionStorage?: Storage;
   useOnlineTokens?: boolean;
   webhooks?: WebhookConfig;
   hooks?: HooksConfig;
   isEmbeddedApp?: boolean;
   apiVersion?: ApiVersion;
+  authPathPrefix?: string;
 }
 
 export interface AppConfig<S extends SessionStorage = SessionStorage>
