@@ -11,11 +11,11 @@ import {
 } from "@shopify/shopify-api";
 
 import { BasicParams } from "../../types";
-import { AdminContext, AppConfig, AppConfigArg } from "../../config-types";
+import { AdminApiContext, AppConfig, AppConfigArg } from "../../config-types";
 import { BillingContext } from "../../billing/types";
 import { requestBillingFactory, requireBillingFactory } from "../../billing";
 
-import { MerchantContext } from "./types";
+import { AdminContext } from "./types";
 import {
   beginAuth,
   getSessionTokenHeader,
@@ -46,9 +46,9 @@ export class AuthStrategy<
     this.logger = logger;
   }
 
-  public async authenticateMerchant(
+  public async authenticateAdmin(
     request: Request
-  ): Promise<MerchantContext<Config, Resources>> {
+  ): Promise<AdminContext<Config, Resources>> {
     const { api, logger, config } = this;
 
     rejectBotRequest({ api, logger, config }, request);
@@ -61,7 +61,7 @@ export class AuthStrategy<
     const isAuthCallbackRequest = url.pathname === config.auth.callbackPath;
     const sessionTokenHeader = getSessionTokenHeader(request);
 
-    logger.info("Authenticating merchant request");
+    logger.info("Authenticating admin request");
 
     let sessionContext: SessionContext;
     if (isBouncePage) {
@@ -94,7 +94,7 @@ export class AuthStrategy<
     }
 
     const context = {
-      admin: this.createAdminContext(request, sessionContext.session),
+      admin: this.createAdminApiContext(request, sessionContext.session),
       billing: this.createBillingContext(request, sessionContext.session),
       session: sessionContext.session,
     };
@@ -103,9 +103,9 @@ export class AuthStrategy<
       return {
         ...context,
         sessionToken: sessionContext!.token!,
-      } as MerchantContext<Config, Resources>;
+      } as AdminContext<Config, Resources>;
     } else {
-      return context as MerchantContext<Config, Resources>;
+      return context as AdminContext<Config, Resources>;
     }
   }
 
@@ -151,7 +151,7 @@ export class AuthStrategy<
         logger.info("Running afterAuth hook");
         await config.hooks.afterAuth({
           session,
-          admin: this.createAdminContext(request, session),
+          admin: this.createAdminApiContext(request, session),
         });
       }
 
@@ -500,10 +500,10 @@ export class AuthStrategy<
     };
   }
 
-  private createAdminContext(
+  private createAdminApiContext(
     request: Request,
     session: Session
-  ): AdminContext<Resources> {
+  ): AdminApiContext<Resources> {
     return {
       rest: this.overriddenRestClient(request, session),
       graphql: this.overriddenGraphqlClient(request, session),

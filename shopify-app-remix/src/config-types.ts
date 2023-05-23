@@ -57,10 +57,10 @@ export interface AfterAuthOptions<
   R extends ShopifyRestResources = ShopifyRestResources
 > {
   session: Session;
-  admin: AdminContext<R>;
+  admin: AdminApiContext<R>;
 }
 
-export interface AdminContext<
+export interface AdminApiContext<
   R extends ShopifyRestResources = ShopifyRestResources
 > {
   rest: InstanceType<Shopify["clients"]["Rest"]> & R;

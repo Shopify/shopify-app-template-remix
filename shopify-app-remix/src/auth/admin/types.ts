@@ -4,34 +4,34 @@ import {
   ShopifyRestResources,
 } from "@shopify/shopify-api";
 
-import type { AdminContext, AppConfigArg } from "../../config-types";
+import type { AdminApiContext, AppConfigArg } from "../../config-types";
 import { BillingContext } from "../../billing/types";
 
-interface MerchantContextInternal<
+interface AdminContextInternal<
   Config extends AppConfigArg,
   Resources extends ShopifyRestResources = ShopifyRestResources
 > {
   session: Session;
-  admin: AdminContext<Resources>;
+  admin: AdminApiContext<Resources>;
   billing: BillingContext<Config>;
 }
 
-export interface EmbeddedMerchantContext<
+export interface EmbeddedAdminContext<
   Config extends AppConfigArg,
   Resources extends ShopifyRestResources = ShopifyRestResources
-> extends MerchantContextInternal<Config, Resources> {
+> extends AdminContextInternal<Config, Resources> {
   sessionToken: JwtPayload;
 }
-export interface NonEmbeddedMerchantContext<
+export interface NonEmbeddedAdminContext<
   Config extends AppConfigArg,
   Resources extends ShopifyRestResources = ShopifyRestResources
-> extends MerchantContextInternal<Config, Resources> {}
+> extends AdminContextInternal<Config, Resources> {}
 
-export type MerchantContext<
+export type AdminContext<
   Config extends AppConfigArg,
   Resources extends ShopifyRestResources = ShopifyRestResources
 > = Config["isEmbeddedApp"] extends true
-  ? EmbeddedMerchantContext<Config, Resources>
+  ? EmbeddedAdminContext<Config, Resources>
   : Config["isEmbeddedApp"] extends false
-  ? NonEmbeddedMerchantContext<Config, Resources>
+  ? NonEmbeddedAdminContext<Config, Resources>
   : never;

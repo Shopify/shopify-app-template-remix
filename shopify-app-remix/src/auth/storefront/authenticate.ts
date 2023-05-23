@@ -1,23 +1,23 @@
 import { BasicParams } from "../../types";
 
-import { BuyerContext } from "./types";
+import { StorefrontContext } from "./types";
 import {
   getSessionTokenHeader,
   rejectBotRequest,
   validateSessionToken,
 } from "../helpers";
 
-export function authenticateBuyerFactory(params: BasicParams) {
-  return async function authenticateBuyer(
+export function authenticateStorefrontFactory(params: BasicParams) {
+  return async function authenticateStorefront(
     request: Request
-  ): Promise<BuyerContext> {
+  ): Promise<StorefrontContext> {
     const { logger } = params;
 
     rejectBotRequest(params, request);
 
     const sessionTokenHeader = getSessionTokenHeader(request);
 
-    logger.info("Authenticating buyer request");
+    logger.info("Authenticating storefront request");
 
     if (!sessionTokenHeader) {
       logger.debug("Request did not contain a session token");
