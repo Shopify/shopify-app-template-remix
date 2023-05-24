@@ -1,6 +1,7 @@
 import { redirect } from "@remix-run/server-runtime";
 import {
   CookieNotFound,
+  GraphqlParams,
   HttpResponseError,
   InvalidOAuthError,
   JwtPayload,
@@ -432,60 +433,77 @@ export class AuthStrategy<
   private overriddenRestClient(request: Request, session: Session) {
     const { api, config, logger } = this;
 
-    // TODO Evaluate memory and time costs for this
-    // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28376875
-    const client = new api.clients.Rest({ session });
-    const originalRequest = Reflect.get(client, "request");
+    const RestClient = api.clients.Rest;
+    const originalClient = new api.clients.Rest({ session });
+    const originalRequest = Reflect.get(originalClient, "request");
 
-    Reflect.set(client, "request", async (params: RequestParams) => {
-      try {
-        return await originalRequest.call(client, params);
-      } catch (error) {
-        if (error instanceof HttpResponseError && error.response.code === 401) {
-          await redirectToAuthPage(
-            { api, config, logger },
-            request,
-            session.shop
-          );
-        } else {
-          throw error;
+    class RemixRestClient extends RestClient {
+      protected async request(params: RequestParams): Promise<any> {
+        try {
+          return await originalRequest.call(this, params);
+        } catch (error) {
+          if (
+            error instanceof HttpResponseError &&
+            error.response.code === 401
+          ) {
+            await redirectToAuthPage(
+              { api, config, logger },
+              request,
+              session.shop
+            );
+          } else {
+            throw error;
+          }
         }
       }
-    });
+    }
 
-    // TODO This is not thread safe and will fail. Can we return this in a thread safe way without duplicating the resources?
-    // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28376875
+    const client = new RemixRestClient({ session });
+
     Object.entries(api.rest).forEach(([name, resource]) => {
-      resource.client = client;
-      Reflect.set(client, name, resource);
+      class RemixResource extends resource {
+        public static Client = RemixRestClient;
+      }
+
+      Reflect.defineProperty(RemixResource, "name", {
+        value: name,
+      });
+
+      Reflect.set(client, name, RemixResource);
     });
 
     return client as typeof client & Resources;
   }
 
   private overriddenGraphqlClient(request: Request, session: Session) {
-    const { api, config } = this;
+    const { api, config, logger } = this;
 
-    const client = new api.clients.Graphql({ session });
-    const originalQuery = Reflect.get(client, "query");
+    const GraphqlClient = api.clients.Graphql;
+    const originalClient = new GraphqlClient({ session });
+    const originalQuery = Reflect.get(originalClient, "query");
 
-    Reflect.set(client, "query", async (params: RequestParams) => {
-      try {
-        return await originalQuery.call(client, params);
-      } catch (error) {
-        if (error instanceof HttpResponseError && error.response.code === 401) {
-          await redirectToAuthPage(
-            { api, config, logger: this.logger },
-            request,
-            session.shop
-          );
-        } else {
-          throw error;
+    class RemixGraphqlClient extends GraphqlClient {
+      public async query(params: GraphqlParams) {
+        try {
+          return await originalQuery.call(this, params);
+        } catch (error) {
+          if (
+            error instanceof HttpResponseError &&
+            error.response.code === 401
+          ) {
+            await redirectToAuthPage(
+              { api, config, logger },
+              request,
+              session.shop
+            );
+          } else {
+            throw error;
+          }
         }
       }
-    });
+    }
 
-    return client;
+    return new RemixGraphqlClient({ session });
   }
 
   private createBillingContext(
