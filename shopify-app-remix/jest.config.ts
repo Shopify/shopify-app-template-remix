@@ -7,6 +7,8 @@ const config: Config = {
   moduleFileExtensions: ["ts", "js", "json"],
   watchPathIgnorePatterns: ["./node_modules"],
   testRegex: ".*\\.test\\.tsx?$",
+  collectCoverageFrom: ["src/**/*.ts"],
+  coveragePathIgnorePatterns: ["src/(.+/)?__tests__"],
 };
 
 export default config;
