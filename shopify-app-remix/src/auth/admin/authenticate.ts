@@ -479,7 +479,7 @@ export class AuthStrategy<
     const { api, config, logger } = this;
 
     const GraphqlClient = api.clients.Graphql;
-    const originalClient = new api.clients.Graphql({ session });
+    const originalClient = new GraphqlClient({ session });
     const originalQuery = Reflect.get(originalClient, "query");
 
     class RemixGraphqlClient extends GraphqlClient {
