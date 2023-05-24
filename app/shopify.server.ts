@@ -5,6 +5,7 @@ import {
   shopifyApp,
 } from "@shopify/shopify-app-remix";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
+import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
 
 // TODO figure out why this shows as an error in vscode only
 // @ts-ignore
@@ -17,6 +18,7 @@ export const shopify = shopifyApp({
   appUrl: process.env.SHOPIFY_APP_URL!,
   authPathPrefix: process.env.SHOPIFY_APP_AUTH_AUTHORIZATION_PATH,
   sessionStorage: new PrismaSessionStorage(prisma),
+  restResources,
   logger: {
     level: LogSeverity.Debug,
   },
