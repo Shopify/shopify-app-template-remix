@@ -10,9 +10,10 @@ But it's fairly stable now, so let's start dog fooding ASAP. We can support you 
 
 ## Set up
 
-1. Install dependencies: `pnpm/yarn/npm install`.
-1. Run `npx prisma migrate dev`
-1. Run `(cd shopify-app-remix && npm run build && npm pack) && npm add ./shopify-app-remix/shopify-shopify-app-remix-1.0.0.tgz && yarn/pnpm/npm run dev`.
+1. In `package.json`, remove the line that reads `"@shopify/shopify-app-remix": "file:shopify-app-remix/shopify-shopify-app-remix-1.0.0.tgz"`.
+1. Install dependencies: `npm install`.
+1. Run `npx prisma migrate dev`.
+1. Run `(cd shopify-app-remix && npm install && npm run build && npm pack) && npm add ./shopify-app-remix/shopify-shopify-app-remix-1.0.0.tgz && npm run dev`.
 
 > **Note**: You must use `npm` to build the `shopify-app-remix` package while it is internal, because `yarn pack` does not work properly.
 

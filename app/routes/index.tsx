@@ -21,21 +21,13 @@ import trophyImage from "../assets/home-trophy.png";
 import { useSubmit } from "@remix-run/react";
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const { admin, session, billing } = await shopify.authenticate.admin(request);
-  await billing.require({
-    plans: ["remix1", "remix2"],
-    onFailure: async () => await billing.request({ plan: "remix1" }),
-  });
+  const { admin, session } = await shopify.authenticate.admin(request);
 
   return json(await admin.rest.Product.count({ session }));
 };
 
 export async function action({ request }: ActionArgs) {
-  const { admin, billing } = await shopify.authenticate.admin(request);
-  await billing.require({
-    plans: ["remix1", "remix2"],
-    onFailure: async () => await billing.request({ plan: "remix1" }),
-  });
+  const { admin } = await shopify.authenticate.admin(request);
 
   await Promise.all(
     [...Array(5).keys()].map(async (i) => {
