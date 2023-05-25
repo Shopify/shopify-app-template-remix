@@ -1,8 +1,6 @@
 import { shopifyApp } from "../../..";
 import { getThrownResponse, testConfig } from "../../../__tests__/test-helper";
 
-jest.mock("isbot", () => jest.fn().mockReturnValue(true));
-
 describe("authorize.admin", () => {
   test("rejects bot requests", async () => {
     // GIVEN
@@ -11,7 +9,11 @@ describe("authorize.admin", () => {
     // WHEN
     const response = await getThrownResponse(
       shopify.authenticate.admin,
-      new Request(shopify.config.appUrl)
+      new Request(shopify.config.appUrl, {
+        headers: {
+          "User-Agent": "Googlebot",
+        },
+      })
     );
 
     // THEN
