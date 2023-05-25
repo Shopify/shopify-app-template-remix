@@ -2,7 +2,7 @@ import { shopifyApp } from "../../..";
 import { getThrownResponse, testConfig } from "../../../__tests__/test-helper";
 
 describe("authorize.admin", () => {
-  test("Uses AppBridge to get a session token if the URL is for session-token page", async () => {
+  test("Uses AppBridge to get a session token if the URL is for auth.patchSessionTokenPath", async () => {
     // GIVEN
     const config = testConfig();
     const shopify = shopifyApp(config);
@@ -24,7 +24,7 @@ describe("authorize.admin", () => {
     );
   });
 
-  test("Uses AppBridge to get a session token if the URL is for configured session-token page", async () => {
+  test("Uses AppBridge to get a session token if the URL is for auth.patchSessionTokenPath and authPathPrefix is configured", async () => {
     // GIVEN
     const authPathPrefix = "/shopify";
     const config = testConfig({ authPathPrefix });

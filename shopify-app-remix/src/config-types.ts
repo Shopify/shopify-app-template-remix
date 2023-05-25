@@ -41,7 +41,7 @@ interface AuthConfig {
   path: string;
   callbackPath: string;
   exitIframePath: string;
-  sessionTokenPath: string;
+  patchSessionTokenPath: string;
 }
 
 // TODO: The callbackUrl field should be optional (and eventually removed) in the library
