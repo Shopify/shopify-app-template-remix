@@ -7,7 +7,7 @@ import {
   testConfig,
 } from "../../../__tests__/test-helper";
 
-import * as mockResponses from "./responses";
+import * as mockResponses from "./mock-responses";
 
 describe("Webhook registration", () => {
   it("registers webhooks", async () => {

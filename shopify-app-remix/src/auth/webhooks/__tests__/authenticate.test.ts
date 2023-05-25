@@ -25,7 +25,6 @@ describe("Webhook validation", () => {
     const sessionStorage = new MemorySessionStorage();
     const config = testConfig({ sessionStorage, restResources });
     const shopify = shopifyApp(config);
-    const body = JSON.stringify({});
 
     const session = new Session({
       id: `offline_${TEST_SHOP}`,
@@ -47,8 +46,11 @@ describe("Webhook validation", () => {
     } = await shopify.authenticate.webhook(
       new Request(`${shopify.config.appUrl}/webhooks`, {
         method: "POST",
-        body,
-        headers: webhookHeaders(shopify.config.apiSecretKey, body),
+        body: JSON.stringify({}),
+        headers: webhookHeaders(
+          shopify.config.apiSecretKey,
+          JSON.stringify({})
+        ),
       })
     );
 
@@ -58,32 +60,66 @@ describe("Webhook validation", () => {
     expect(topic).toBe("APP_UNINSTALLED");
     expect(webhookId).toBe("1234567890");
     expect(actualSession).toBe(session);
-    expect(admin).toHaveProperty("rest");
-    expect(admin.rest).toHaveProperty("Product");
-    expect(admin).toHaveProperty("graphql");
+
+    expect(admin.rest.apiVersion).toBe("2023-01");
+    expect(admin.rest.session).toBe(session);
+
+    expect(admin.graphql.apiVersion).toBe("2023-01");
+    expect(admin.graphql.session).toBe(session);
   });
 
   it("throws a 400 on invalid HMAC", async () => {
     // GIVEN
     const config = testConfig();
     const shopify = shopifyApp(config);
-    const body = JSON.stringify({});
 
     // WHEN
-    const response = await getThrownResponse(() =>
-      shopify.authenticate.webhook(
-        new Request(`${shopify.config.appUrl}/webhooks`, {
-          method: "POST",
-          body,
-          headers: webhookHeaders(shopify.config.apiSecretKey, body, {
-            "X-Shopify-Hmac-Sha256": "invalid_hmac",
-          }),
-        })
-      )
+    const response = await getThrownResponse(
+      shopify.authenticate.webhook,
+      new Request(`${shopify.config.appUrl}/webhooks`, {
+        method: "POST",
+        body: JSON.stringify({}),
+        headers: webhookHeaders(
+          shopify.config.apiSecretKey,
+          JSON.stringify({}),
+          { "X-Shopify-Hmac-Sha256": "invalid_hmac" }
+        ),
+      })
     );
 
     // THEN
     expect(response.status).toBe(400);
+  });
+
+  [
+    "X-Shopify-Shop-Domain",
+    "X-Shopify-Topic",
+    "X-Shopify-API-Version",
+    "X-Shopify-Webhook-Id",
+    "X-Shopify-Hmac-Sha256",
+  ].forEach((header) => {
+    it(`throws a 400 when header ${header} is missing`, async () => {
+      // GIVEN
+      const config = testConfig();
+      const shopify = shopifyApp(config);
+
+      // WHEN
+      const response = await getThrownResponse(
+        shopify.authenticate.webhook,
+        new Request(`${shopify.config.appUrl}/webhooks`, {
+          method: "POST",
+          body: JSON.stringify({}),
+          headers: webhookHeaders(
+            shopify.config.apiSecretKey,
+            JSON.stringify({}),
+            { [header]: "" }
+          ),
+        })
+      );
+
+      // THEN
+      expect(response.status).toBe(400);
+    });
   });
 
   it("throws a 404 on missing sessions", async () => {
@@ -91,17 +127,18 @@ describe("Webhook validation", () => {
     const sessionStorage = new MemorySessionStorage();
     const config = testConfig({ sessionStorage });
     const shopify = shopifyApp(config);
-    const body = JSON.stringify({});
 
     // WHEN
-    const response = await getThrownResponse(() =>
-      shopify.authenticate.webhook(
-        new Request(`${shopify.config.appUrl}/webhooks`, {
-          method: "POST",
-          body,
-          headers: webhookHeaders(shopify.config.apiSecretKey, body),
-        })
-      )
+    const response = await getThrownResponse(
+      shopify.authenticate.webhook,
+      new Request(`${shopify.config.appUrl}/webhooks`, {
+        method: "POST",
+        body: JSON.stringify({}),
+        headers: webhookHeaders(
+          shopify.config.apiSecretKey,
+          JSON.stringify({})
+        ),
+      })
     );
 
     // THEN
