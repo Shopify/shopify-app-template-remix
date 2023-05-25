@@ -28,35 +28,52 @@ describe("JWT validation", () => {
     expect(sessionToken).toMatchObject(payload);
   });
 
-  it("throws a 401 on missing tokens", async () => {
+  it("throws a 401 on missing Authorization bearer token", async () => {
     // GIVEN
     const config = testConfig();
     const shopify = shopifyApp(config);
 
     // WHEN
-    const response = await getThrownResponse(() =>
-      shopify.authenticate.storefront(new Request(shopify.config.appUrl))
+    const response = await getThrownResponse(
+      shopify.authenticate.storefront,
+      new Request(shopify.config.appUrl)
     );
 
     // THEN
     expect(response.status).toBe(401);
   });
 
-  it("throws a 401 on invalid tokens", async () => {
+  it("throws a 401 on invalid Authorization bearer token", async () => {
     // GIVEN
     const config = testConfig();
     const shopify = shopifyApp(config);
 
     // WHEN
-    const response = await getThrownResponse(() =>
-      shopify.authenticate.storefront(
-        new Request(shopify.config.appUrl, {
-          headers: { Authorization: `Bearer this_is_not_a_valid_token` },
-        })
-      )
+    const response = await getThrownResponse(
+      shopify.authenticate.storefront,
+      new Request(shopify.config.appUrl, {
+        headers: { Authorization: `Bearer this_is_not_a_valid_token` },
+      })
     );
 
     // THEN
     expect(response.status).toBe(401);
+  });
+
+  it("rejects bot requests", async () => {
+    // GIVEN
+    const config = testConfig();
+    const shopify = shopifyApp(config);
+
+    // WHEN
+    const response = await getThrownResponse(
+      shopify.authenticate.storefront,
+      new Request(shopify.config.appUrl, {
+        headers: { "User-Agent": "Googlebot" },
+      })
+    );
+
+    // THEN
+    expect(response.status).toBe(410);
   });
 });

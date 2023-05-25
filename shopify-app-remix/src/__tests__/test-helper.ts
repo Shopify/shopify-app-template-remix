@@ -29,7 +29,6 @@ export function testConfig(
 export const SHOPIFY_HOST = "totally-real-host.myshopify.io";
 export const BASE64_HOST = Buffer.from(SHOPIFY_HOST).toString("base64");
 export const TEST_SHOP = "test-shop.myshopify.io";
-export const TEST_WEBHOOK_ID = "1234567890";
 
 interface TestJwt {
   token: string;
@@ -62,20 +61,25 @@ export function getJwt(
   return { token, payload };
 }
 
-export async function getThrownResponse(callback: Function): Promise<Response> {
+export async function getThrownResponse(
+  callback: Function,
+  request: Request
+): Promise<Response> {
   try {
-    await callback();
+    await callback(request);
   } catch (response) {
-    expect(response).toBeInstanceOf(Response);
+    if (!(response instanceof Response)) {
+      throw `${request.method} request to ${request.url} threw an error instead of a response: ${response}`;
+    }
     return response;
   }
 
-  fail("Expected a response to be thrown but none was");
+  throw `${request.method} request to ${request.url} did not throw`;
 }
 
 // TODO: Everything after this point is a copy of shopify-app-express and should be moved into a shared internal package
 // Not logging as issue. Will be taken care of in: https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=27471073
-export type MockBody =
+type MockBody =
   | string
   | {
       [key: string]: any;
