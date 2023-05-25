@@ -7,19 +7,25 @@ import {
   EventBridgeWebhookHandler,
   Shopify,
   Session,
+  ApiVersion,
 } from "@shopify/shopify-api";
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
 
 export interface AppConfigArg<
   Resources extends ShopifyRestResources = ShopifyRestResources,
   Storage extends SessionStorage = SessionStorage
-> extends Omit<ApiConfigArg<Resources>, "hostName" | "hostScheme"> {
+> extends Omit<
+    ApiConfigArg<Resources>,
+    "hostName" | "hostScheme" | "isEmbeddedApp" | "apiVersion"
+  > {
   appUrl: string;
-  auth?: Partial<AuthConfig>;
   sessionStorage?: Storage;
   useOnlineTokens?: boolean;
   webhooks?: WebhookConfig;
   hooks?: HooksConfig;
+  isEmbeddedApp?: boolean;
+  apiVersion?: ApiVersion;
+  authPathPrefix?: string;
 }
 
 export interface AppConfig<S extends SessionStorage = SessionStorage>

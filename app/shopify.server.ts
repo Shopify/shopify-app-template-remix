@@ -1,7 +1,6 @@
 import {
   BillingInterval,
   DeliveryMethod,
-  LATEST_API_VERSION,
   LogSeverity,
   shopifyApp,
 } from "@shopify/shopify-app-remix";
@@ -12,24 +11,16 @@ import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
 // @ts-ignore
 import prisma from "~/db.server";
 
-// TODO: reduce the number of arguments you need to pass in by defaulting as many as we can
-// https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28356500
 export const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY!,
   apiSecretKey: process.env.SHOPIFY_API_SECRET!,
   scopes: process.env.SCOPES?.split(",")!,
-  apiVersion: LATEST_API_VERSION,
-  sessionStorage: new PrismaSessionStorage(prisma),
   appUrl: process.env.SHOPIFY_APP_URL!,
-  isEmbeddedApp: true,
-  useOnlineTokens: true,
+  authPathPrefix: process.env.SHOPIFY_APP_AUTH_AUTHORIZATION_PATH,
+  sessionStorage: new PrismaSessionStorage(prisma),
   restResources,
   logger: {
     level: LogSeverity.Debug,
-  },
-  auth: {
-    path: process.env.SHOPIFY_APP_AUTH_AUTHORIZATION_PATH,
-    callbackPath: process.env.SHOPIFY_APP_AUTH_CALLBACK_PATH,
   },
   webhooks: {
     APP_UNINSTALLED: {
@@ -43,12 +34,7 @@ export const shopify = shopifyApp({
     },
   },
   billing: {
-    remix1: {
-      amount: 10,
-      currencyCode: "USD",
-      interval: BillingInterval.Annual,
-    },
-    remix2: {
+    monthly: {
       amount: 5,
       currencyCode: "EUR",
       interval: BillingInterval.Every30Days,
