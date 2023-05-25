@@ -6,6 +6,7 @@ import {
   FeatureDeprecatedError,
   LATEST_API_VERSION,
   Shopify,
+  ShopifyError,
   ShopifyRestResources,
   shopifyApi,
 } from "@shopify/shopify-api";
@@ -68,7 +69,15 @@ export function shopifyApp<
 function deriveApi<Resources extends ShopifyRestResources>(
   appConfig: AppConfigArg
 ): Shopify<Resources> {
-  const appUrl = new URL(appConfig.appUrl);
+  let appUrl: URL;
+  try {
+    appUrl = new URL(appConfig.appUrl);
+  } catch (error) {
+    throw new ShopifyError(
+      "Invalid appUrl provided. Please provide a valid URL."
+    );
+  }
+
   if (appUrl.hostname === "localhost" && !appUrl.port && process.env.PORT) {
     appUrl.port = process.env.PORT;
   }
