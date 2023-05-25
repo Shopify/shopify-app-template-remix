@@ -39,5 +39,4 @@
     "types": ["node", "jest"],
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/index.ts.old"],
-  "exclude": ["**/*.test.ts", "**/*.test.tsx", "**/test/*", "**/__tests__/*"]
 }
