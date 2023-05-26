@@ -20,6 +20,7 @@ import { ProductsCard } from "../components/ProductsCard.jsx";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import trophyImage from "../assets/home-trophy.png";
+import { useTranslation, Trans } from "react-i18next";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const { admin, session } = await shopify.authenticate.admin(request);
@@ -59,6 +60,7 @@ export async function action({ request }: ActionArgs) {
 export default function Index() {
   const { count } = useLoaderData();
   const { state, formData } = useNavigation();
+  const { t } = useTranslation();
 
   const isLoading =
     state === "loading" || formData?.get("action") === "create-products";
@@ -70,55 +72,57 @@ export default function Index() {
           <Card>
             <VerticalStack gap="5">
               <Text variant="headingMd" as="h2">
-                Nice work on building a Shopify app 🎉
+                {t("Index.heading")}
               </Text>
               <Grid columns={{ sm: 3 }}>
                 <Grid.Cell columnSpan={{ xs: 4, sm: 4, md: 4, lg: 9, xl: 9 }}>
                   <VerticalStack gap="5">
                     <Text variant="bodyMd" as="p">
-                      Your app is ready to explore! It contains everything you
-                      need to get started including the{" "}
-                      <Link url="https://polaris.shopify.com/" external>
-                        Polaris design system
-                      </Link>
-                      ,{" "}
-                      <Link
-                        url="https://shopify.dev/api/admin-graphql"
-                        external
-                      >
-                        Shopify Admin API
-                      </Link>
-                      , and{" "}
-                      <Link
-                        url="https://shopify.dev/apps/tools/app-bridge"
-                        external
-                      >
-                        App Bridge
-                      </Link>{" "}
-                      UI library and components.
+                      <Trans
+                        i18nKey="Index.yourAppIsReadyToExplore"
+                        components={{
+                          PolarisLink: (
+                            <Link url="https://polaris.shopify.com/" external />
+                          ),
+                          AdminApiLink: (
+                            <Link
+                              url="https://shopify.dev/api/admin-graphql"
+                              external
+                            />
+                          ),
+                          AppBridgeLink: (
+                            <Link
+                              url="https://shopify.dev/apps/tools/app-bridge"
+                              external
+                            />
+                          ),
+                        }}
+                      />
                     </Text>
 
                     <Text variant="bodyMd" as="p">
-                      Ready to go? Start populating your app with some sample
-                      products to view and test in your store.{" "}
+                      {t("Index.startPopulatingYourApp")}
                     </Text>
 
                     <Text variant="bodyMd" as="p">
-                      Learn more about building out your app in{" "}
-                      <Link
-                        url="https://shopify.dev/apps/getting-started/add-functionality"
-                        external
-                      >
-                        this Shopify tutorial
-                      </Link>{" "}
-                      📚{" "}
+                      <Trans
+                        i18nKey="Index.learnMore"
+                        components={{
+                          ShopifyTutorialLink: (
+                            <Link
+                              url="https://shopify.dev/apps/getting-started/add-functionality"
+                              external
+                            />
+                          ),
+                        }}
+                      />
                     </Text>
                   </VerticalStack>
                 </Grid.Cell>
                 <Grid.Cell columnSpan={{ xs: 2, sm: 2, md: 2, lg: 3, xl: 3 }}>
                   <Image
                     source={trophyImage}
-                    alt="Nice work on building a Shopify app"
+                    alt={t("Index.trophyAltText")}
                     width={120}
                   />
                 </Grid.Cell>

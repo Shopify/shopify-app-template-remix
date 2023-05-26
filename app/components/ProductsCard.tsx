@@ -7,6 +7,7 @@ import {
   HorizontalStack,
 } from "@shopify/polaris";
 import { Form } from "@remix-run/react";
+import { useTranslation } from "react-i18next";
 
 interface ProductsCardProps {
   count: number;
@@ -14,19 +15,19 @@ interface ProductsCardProps {
 }
 
 export function ProductsCard({ count, loading }: ProductsCardProps) {
+  const { t } = useTranslation();
   return (
     <Card>
       <VerticalStack gap="5">
         <Text variant="headingMd" as="h2">
-          Product Counter
+          {t("ProductsCard.title")}
         </Text>
         <Text variant="bodyMd" as="p">
-          Sample products are created with a default title and price. You can
-          remove them at any time.
+          {t("ProductsCard.description")}
         </Text>
         <VerticalStack gap="0">
           <Text variant="bodyMd" as="span">
-            TOTAL PRODUCTS
+            {t("ProductsCard.totalProductsHeading")}
           </Text>
           <Text variant="headingXl" as="span">
             {count}
@@ -36,7 +37,7 @@ export function ProductsCard({ count, loading }: ProductsCardProps) {
           <Form method={"post"}>
             <input type="hidden" name="action" value="create-products" />
             <Button primary loading={loading} submit>
-              Populate 5 products
+              {t("ProductsCard.populateProductsButton", { count: 5 }) || ""}
             </Button>
           </Form>
         </HorizontalStack>

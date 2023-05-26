@@ -7,10 +7,12 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import translations from "@shopify/polaris/locales/en.json";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
 import { json } from "@remix-run/node";
+import remixI18n from "./i18next.server";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 export const meta = () => ({
   charset: "utf-8",
@@ -20,16 +22,25 @@ export const meta = () => ({
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
-export function loader() {
+export async function loader({ request }) {
+  const locale = await remixI18n.getLocale(request);
   const apiKey = process.env.SHOPIFY_API_KEY;
-  return json({ apiKey });
+  const polarisTranslations = require(`@shopify/polaris/locales/${locale}.json`);
+  return json({ apiKey, locale, polarisTranslations });
 }
 
 export default function App() {
-  const { apiKey } = useLoaderData();
+  const { apiKey, locale, polarisTranslations } = useLoaderData();
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    if (locale != i18n.language) {
+      i18n.changeLanguage(locale);
+    }
+  }, [locale, i18n]);
 
   return (
-    <html lang="en">
+    <html lang={locale} dir={i18n.dir()}>
       <head>
         <Meta />
         <Links />
@@ -39,7 +50,7 @@ export default function App() {
         />
       </head>
       <body>
-        <PolarisAppProvider i18n={translations}>
+        <PolarisAppProvider i18n={polarisTranslations}>
           <Outlet />
         </PolarisAppProvider>
         <ScrollRestoration />
