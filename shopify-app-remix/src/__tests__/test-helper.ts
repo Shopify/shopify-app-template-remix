@@ -2,7 +2,11 @@ import crypto from "crypto";
 
 import fetchMock, { MockParams } from "jest-fetch-mock";
 import jwt from "jsonwebtoken";
-import { LATEST_API_VERSION, JwtPayload } from "@shopify/shopify-api";
+import {
+  LATEST_API_VERSION,
+  JwtPayload,
+  LogSeverity,
+} from "@shopify/shopify-api";
 import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memory";
 
 import { AppConfigArg } from "../config-types";
@@ -19,6 +23,7 @@ export function testConfig(
     appUrl: "https://my-test-app.myshopify.io",
     logger: {
       log: jest.fn(),
+      level: LogSeverity.Debug,
     },
     isEmbeddedApp: true,
     sessionStorage: new MemorySessionStorage(),
