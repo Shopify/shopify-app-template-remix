@@ -5,7 +5,7 @@ describe("authorize.admin", () => {
   test("Uses App Bridge to exit iFrame when the url matches auth.exitIframePath", async () => {
     // GIVEN
     const config = testConfig();
-    const shopify = shopifyApp(testConfig());
+    const shopify = shopifyApp(config);
 
     // WHEN
     const exitTo = encodeURIComponent(config.appUrl);
