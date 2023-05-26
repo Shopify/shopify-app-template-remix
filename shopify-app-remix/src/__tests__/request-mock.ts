@@ -1,103 +1,90 @@
 import fetchMock, { MockParams } from "jest-fetch-mock";
 
-type MockBody =
-  | string
-  | {
-      [key: string]: any;
-    };
-
-interface MockHeaders {
-  [key: string]: string;
+interface MockExternalRequestArg {
+  request?: Request;
+  response: Response;
 }
 
-interface MockExternalRequestArg {
-  request?: {
-    url?: string;
-    method?: string;
-    body?: MockBody;
-    headers?: MockHeaders;
-  };
-  response: {
-    body?: MockBody;
-    init?: MockParams;
-  };
+interface ResponseParams {
+  body: string;
+  init: MockParams;
 }
 
 let REQUEST_MOCKS: MockExternalRequestArg[] = [];
 
 let SKIP_MOCK_CHECKS = false;
 
-export function mockExternalRequest({
+export async function mockExternalRequest({
   request,
   response,
 }: MockExternalRequestArg) {
   REQUEST_MOCKS.push({ request, response });
 
-  fetchMock.mockResponse(
-    typeof response.body === "string"
-      ? response.body
-      : JSON.stringify(response.body),
-    response.init
-  );
+  const { body, init } = await mockParams(response);
+  fetchMock.mockResponse(body, init);
 }
 
-export function mockExternalRequests(...mocks: MockExternalRequestArg[]) {
-  const parsedResponses: [string, MockParams][] = mocks.map(
-    ({ request, response }) => {
-      REQUEST_MOCKS.push({ request, response });
+export async function mockExternalRequests(...mocks: MockExternalRequestArg[]) {
+  const parsedResponses: [string, MockParams][] = [];
+  for (const mock of mocks) {
+    const { request, response } = mock;
 
-      const bodyString =
-        typeof response.body === "string"
-          ? response.body
-          : JSON.stringify(response.body);
+    REQUEST_MOCKS.push({ request, response });
 
-      return response.init ? [bodyString, response.init] : [bodyString, {}];
-    }
-  );
+    const { body, init } = await mockParams(response);
+    parsedResponses.push([body, init]);
+  }
 
   fetchMock.mockResponses(...parsedResponses);
 }
 
-export function validateMocks() {
+async function mockParams(response: Response): Promise<ResponseParams> {
+  return {
+    body: await response.text(),
+    init: {
+      ...response,
+      headers: Object.fromEntries(response.headers.entries()),
+    },
+  };
+}
+
+export async function validateMocks() {
   if (REQUEST_MOCKS.length === 0 && fetchMock.mock.calls.length === 0) {
     return;
   }
 
   let matchedRequests: number = 0;
-  REQUEST_MOCKS.forEach(({ request }, index) => {
+
+  for (const [index, requestMock] of REQUEST_MOCKS.entries()) {
+    const { request } = requestMock;
+
     if (fetchMock.mock.calls.length === 0) {
-      return true;
+      continue;
     }
 
     matchedRequests++;
     const [url, init] = fetchMock.mock.calls[index];
 
-    const method = init?.method ?? "GET";
-    let body = init?.body as string;
-    if (typeof init?.body === "string") {
-      try {
-        body = JSON.parse(init?.body);
-      } catch (error) {
-        // Not JSON, that's fine
-      }
-    }
-
     const expected: { [key: string]: any } = {};
     const actual: { [key: string]: any } = {};
 
     if (request?.url) {
-      expected.url = request.url;
-      actual.url = url;
+      expected.url = new URL(request.url);
+      actual.url = new URL(url as string);
     }
 
     if (request?.method) {
       expected.method = request.method;
-      actual.method = method;
+      actual.method = init?.method;
     }
 
     if (request?.body) {
-      expected.body = request.body;
-      actual.body = body;
+      const bodyString = new TextDecoder("utf-8").decode(
+        request.body as any as Buffer
+      );
+
+      expected.body = expect.stringContaining(bodyString);
+      actual.body = init?.body?.toString();
     }
 
     if (request?.headers) {
@@ -112,10 +99,10 @@ export function validateMocks() {
     try {
       expect(actual).toEqual(expected);
     } catch (error) {
-      error.message = `${method} request made to ${url} does not match expectation:\n\n${error.message}`;
+      error.message = `${init?.method} request made to ${url} does not match expectation:\n\n${error.message}`;
       throw error;
     }
-  });
+  }
 
   if (REQUEST_MOCKS.length > matchedRequests) {
     throw new Error(
@@ -152,8 +139,8 @@ beforeEach(() => {
   fetchMock.resetMocks();
 });
 
-afterEach(() => {
+afterEach(async () => {
   if (!SKIP_MOCK_CHECKS) {
-    validateMocks();
+    await validateMocks();
   }
 });

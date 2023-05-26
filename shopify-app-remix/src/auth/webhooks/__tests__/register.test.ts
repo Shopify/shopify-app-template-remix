@@ -1,7 +1,11 @@
 import { Session } from "@shopify/shopify-api";
 
 import { DeliveryMethod, shopifyApp } from "../../..";
-import { TEST_SHOP, testConfig } from "../../../__tests__/test-helper";
+import {
+  GRAPHQL_URL,
+  TEST_SHOP,
+  testConfig,
+} from "../../../__tests__/test-helper";
 
 import * as mockResponses from "./mock-responses";
 import { mockExternalRequests } from "../../../__tests__/request-mock";
@@ -27,14 +31,24 @@ describe("Webhook registration", () => {
       accessToken: "totally_real_token",
     });
 
-    mockExternalRequests(
+    await mockExternalRequests(
       {
-        request: { body: expect.stringContaining("webhookSubscriptions") },
-        response: { body: mockResponses.EMPTY_WEBHOOK_RESPONSE },
+        request: new Request(GRAPHQL_URL, {
+          method: "POST",
+          body: "webhookSubscriptions",
+        }),
+        response: new Response(
+          JSON.stringify(mockResponses.EMPTY_WEBHOOK_RESPONSE)
+        ),
       },
       {
-        request: { body: expect.stringContaining("webhookSubscriptionCreate") },
-        response: { body: mockResponses.HTTP_WEBHOOK_CREATE_RESPONSE },
+        request: new Request(GRAPHQL_URL, {
+          method: "POST",
+          body: "webhookSubscriptionCreate",
+        }),
+        response: new Response(
+          JSON.stringify(mockResponses.HTTP_WEBHOOK_CREATE_RESPONSE)
+        ),
       }
     );
 
@@ -67,14 +81,26 @@ describe("Webhook registration", () => {
       accessToken: "totally_real_token",
     });
 
-    mockExternalRequests(
+    await mockExternalRequests(
       {
-        request: { body: expect.stringContaining("webhookSubscriptions") },
-        response: { body: mockResponses.EMPTY_WEBHOOK_RESPONSE },
+        request: new Request(GRAPHQL_URL, {
+          method: "POST",
+          body: "webhookSubscriptions",
+        }),
+        response: new Response(
+          JSON.stringify(mockResponses.EMPTY_WEBHOOK_RESPONSE)
+        ),
       },
       {
-        request: { body: expect.stringContaining("webhookSubscriptionCreate") },
-        response: { body: mockResponses.HTTP_WEBHOOK_CREATE_ERROR_RESPONSE },
+        request: new Request(GRAPHQL_URL, {
+          method: "POST",
+          body: "webhookSubscriptionCreate",
+        }),
+        response: new Response(
+          JSON.stringify({
+            body: mockResponses.HTTP_WEBHOOK_CREATE_ERROR_RESPONSE,
+          })
+        ),
       }
     );
 

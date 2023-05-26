@@ -12,16 +12,13 @@ describe("Request mocks", () => {
 
   it("can intercept fetch requests", async () => {
     // GIVEN
-    mockExternalRequest({
-      request: {
-        url: "https://my-example.shopify.io",
-        method: "GET",
+    await mockExternalRequest({
+      request: new Request("https://my-example.shopify.io", {
         headers: { bar: "baz" },
-      },
-      response: {
-        body: { responseFoo: "responseBar" },
-        init: { status: 200 },
-      },
+      }),
+      response: new Response(JSON.stringify({ responseFoo: "responseBar" }), {
+        status: 200,
+      }),
     });
 
     // WHEN
@@ -31,29 +28,21 @@ describe("Request mocks", () => {
     });
 
     // THEN
-    validateMocks();
+    await validateMocks();
   });
 
   it("can intercept multiple requests", async () => {
     // GIVEN
-    mockExternalRequests(
+    await mockExternalRequests(
       {
-        request: {
-          url: "https://my-example.shopify.io",
-          method: "GET",
-        },
-        response: {
-          init: { status: 200 },
-        },
+        request: new Request("https://my-example.shopify.io"),
+        response: new Response(),
       },
       {
-        request: {
-          url: "https://my-example.shopify.io",
+        request: new Request("https://my-example.shopify.io", {
           method: "POST",
-        },
-        response: {
-          init: { status: 200 },
-        },
+        }),
+        response: new Response(),
       }
     );
 
@@ -62,29 +51,21 @@ describe("Request mocks", () => {
     await fetch("https://my-example.shopify.io", { method: "POST" });
 
     // THEN
-    validateMocks();
+    await validateMocks();
   });
 
   it("detects failures after the first request", async () => {
     // GIVEN
-    mockExternalRequests(
+    await mockExternalRequests(
       {
-        request: {
-          url: "https://my-example.shopify.io",
-          method: "GET",
-        },
-        response: {
-          init: { status: 200 },
-        },
+        request: new Request("https://my-example.shopify.io"),
+        response: new Response(),
       },
       {
-        request: {
-          url: "https://my-example.shopify.io",
+        request: new Request("https://my-example.shopify.io", {
           method: "POST",
-        },
-        response: {
-          init: { status: 200 },
-        },
+        }),
+        response: new Response(),
       }
     );
 
@@ -93,18 +74,15 @@ describe("Request mocks", () => {
     await fetch("https://my-example.shopify.io", { method: "GET" });
 
     // THEN
-    expect(() => validateMocks()).toThrow(
+    await expect(validateMocks()).rejects.toThrow(
       "GET request made to https://my-example.shopify.io does not match expectation"
     );
   });
 
   it("matches responses automatically when no request mock is configured", async () => {
     // GIVEN
-    mockExternalRequest({
-      response: {
-        body: { responseFoo: "responseBar" },
-        init: { status: 200 },
-      },
+    await mockExternalRequest({
+      response: new Response(JSON.stringify({ responseFoo: "responseBar" })),
     });
 
     // WHEN
@@ -115,26 +93,22 @@ describe("Request mocks", () => {
     });
 
     // THEN
-    validateMocks();
+    await validateMocks();
   });
 
   ["url", "method", "body", "headers"].forEach((field) => {
     it(`can match requests without ${field}`, async () => {
       // GIVEN
-      const request = {
-        url: "https://my-example.shopify.io",
+      const request = new Request("https://my-example.shopify.io", {
         method: "POST",
-        body: { foo: "bar" },
+        body: JSON.stringify({ foo: "bar" }),
         headers: { bar: "baz" },
-      };
+      });
 
       delete (request as any)[field];
-      mockExternalRequest({
+      await mockExternalRequest({
         request,
-        response: {
-          body: { responseFoo: "responseBar" },
-          init: { status: 200 },
-        },
+        response: new Response(JSON.stringify({ responseFoo: "responseBar" })),
       });
 
       // WHEN
@@ -145,27 +119,23 @@ describe("Request mocks", () => {
       });
 
       // THEN
-      validateMocks();
+      await validateMocks();
     });
   });
 
   it("throws if an expected request isn't made", async () => {
     // GIVEN
-    mockExternalRequest({
-      request: {
-        url: "https://my-example.shopify.io",
+    await mockExternalRequest({
+      request: new Request("https://my-example.shopify.io", {
         method: "POST",
-        body: { foo: "bar" },
+        body: JSON.stringify({ foo: "bar" }),
         headers: { bar: "baz" },
-      },
-      response: {
-        body: { responseFoo: "responseBar" },
-        init: { status: 200 },
-      },
+      }),
+      response: new Response(JSON.stringify({ responseFoo: "responseBar" })),
     });
 
     // THEN
-    expect(() => validateMocks()).toThrow(
+    await expect(validateMocks()).rejects.toThrow(
       "Expected 1 request(s) to be made but they were not"
     );
   });
@@ -179,6 +149,8 @@ describe("Request mocks", () => {
     });
 
     // THEN
-    expect(() => validateMocks()).toThrow("1 unexpected request(s) were made");
+    await expect(validateMocks()).rejects.toThrow(
+      "1 unexpected request(s) were made"
+    );
   });
 });
