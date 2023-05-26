@@ -1,6 +1,6 @@
 import {
-  mockShopifyRequest,
-  mockShopifyRequests,
+  mockExternalRequest,
+  mockExternalRequests,
   skipMockChecks,
   validateMocks,
 } from "./request-mock";
@@ -12,7 +12,7 @@ describe("Request mocks", () => {
 
   it("can intercept fetch requests", async () => {
     // GIVEN
-    mockShopifyRequest({
+    mockExternalRequest({
       request: {
         url: "https://my-example.shopify.io",
         method: "GET",
@@ -36,7 +36,7 @@ describe("Request mocks", () => {
 
   it("can intercept multiple requests", async () => {
     // GIVEN
-    mockShopifyRequests(
+    mockExternalRequests(
       {
         request: {
           url: "https://my-example.shopify.io",
@@ -67,7 +67,7 @@ describe("Request mocks", () => {
 
   it("detects failures after the first request", async () => {
     // GIVEN
-    mockShopifyRequests(
+    mockExternalRequests(
       {
         request: {
           url: "https://my-example.shopify.io",
@@ -98,9 +98,9 @@ describe("Request mocks", () => {
     );
   });
 
-  it("doesn't require the request to be expected", async () => {
+  it("matches responses automatically when no request mock is configured", async () => {
     // GIVEN
-    mockShopifyRequest({
+    mockExternalRequest({
       response: {
         body: { responseFoo: "responseBar" },
         init: { status: 200 },
@@ -129,7 +129,7 @@ describe("Request mocks", () => {
       };
 
       delete (request as any)[field];
-      mockShopifyRequest({
+      mockExternalRequest({
         request,
         response: {
           body: { responseFoo: "responseBar" },
@@ -151,7 +151,7 @@ describe("Request mocks", () => {
 
   it("throws if an expected request isn't made", async () => {
     // GIVEN
-    mockShopifyRequest({
+    mockExternalRequest({
       request: {
         url: "https://my-example.shopify.io",
         method: "POST",

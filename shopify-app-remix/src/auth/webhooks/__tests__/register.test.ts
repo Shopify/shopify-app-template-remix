@@ -4,7 +4,7 @@ import { DeliveryMethod, shopifyApp } from "../../..";
 import { TEST_SHOP, testConfig } from "../../../__tests__/test-helper";
 
 import * as mockResponses from "./mock-responses";
-import { mockShopifyRequests } from "../../../__tests__/request-mock";
+import { mockExternalRequests } from "../../../__tests__/request-mock";
 
 describe("Webhook registration", () => {
   it("registers webhooks", async () => {
@@ -27,7 +27,7 @@ describe("Webhook registration", () => {
       accessToken: "totally_real_token",
     });
 
-    mockShopifyRequests(
+    mockExternalRequests(
       {
         request: { body: expect.stringContaining("webhookSubscriptions") },
         response: { body: mockResponses.EMPTY_WEBHOOK_RESPONSE },
@@ -67,7 +67,7 @@ describe("Webhook registration", () => {
       accessToken: "totally_real_token",
     });
 
-    mockShopifyRequests(
+    mockExternalRequests(
       {
         request: { body: expect.stringContaining("webhookSubscriptions") },
         response: { body: mockResponses.EMPTY_WEBHOOK_RESPONSE },

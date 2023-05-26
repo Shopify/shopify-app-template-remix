@@ -10,7 +10,7 @@ interface MockHeaders {
   [key: string]: string;
 }
 
-interface MockShopifyRequestArg {
+interface MockExternalRequestArg {
   request?: {
     url?: string;
     method?: string;
@@ -23,14 +23,14 @@ interface MockShopifyRequestArg {
   };
 }
 
-let REQUEST_MOCKS: MockShopifyRequestArg[] = [];
+let REQUEST_MOCKS: MockExternalRequestArg[] = [];
 
-export let SKIP_MOCK_CHECKS = false;
+let SKIP_MOCK_CHECKS = false;
 
-export function mockShopifyRequest({
+export function mockExternalRequest({
   request,
   response,
-}: MockShopifyRequestArg) {
+}: MockExternalRequestArg) {
   REQUEST_MOCKS.push({ request, response });
 
   fetchMock.mockResponse(
@@ -41,7 +41,7 @@ export function mockShopifyRequest({
   );
 }
 
-export function mockShopifyRequests(...mocks: MockShopifyRequestArg[]) {
+export function mockExternalRequests(...mocks: MockExternalRequestArg[]) {
   const parsedResponses: [string, MockParams][] = mocks.map(
     ({ request, response }) => {
       REQUEST_MOCKS.push({ request, response });
@@ -147,6 +147,7 @@ export function skipMockChecks(value: boolean) {
 }
 
 beforeEach(() => {
+  SKIP_MOCK_CHECKS = false;
   REQUEST_MOCKS = [];
   fetchMock.resetMocks();
 });
@@ -155,5 +156,4 @@ afterEach(() => {
   if (!SKIP_MOCK_CHECKS) {
     validateMocks();
   }
-  SKIP_MOCK_CHECKS = false;
 });
