@@ -33,6 +33,7 @@ export function testConfig(
 export const SHOPIFY_HOST = "totally-real-host.myshopify.io";
 export const BASE64_HOST = Buffer.from(SHOPIFY_HOST).toString("base64");
 export const TEST_SHOP = "test-shop.myshopify.io";
+export const GRAPHQL_URL = `https://${TEST_SHOP}/admin/api/${LATEST_API_VERSION}/graphql.json`;
 
 interface TestJwt {
   token: string;
