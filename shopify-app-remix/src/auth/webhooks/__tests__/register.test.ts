@@ -1,13 +1,10 @@
 import { Session } from "@shopify/shopify-api";
 
 import { DeliveryMethod, shopifyApp } from "../../..";
-import {
-  TEST_SHOP,
-  mockShopifyResponses,
-  testConfig,
-} from "../../../__tests__/test-helper";
+import { TEST_SHOP, testConfig } from "../../../__tests__/test-helper";
 
 import * as mockResponses from "./mock-responses";
+import { mockExternalRequests } from "../../../__tests__/request-mock";
 
 describe("Webhook registration", () => {
   it("registers webhooks", async () => {
@@ -30,9 +27,15 @@ describe("Webhook registration", () => {
       accessToken: "totally_real_token",
     });
 
-    mockShopifyResponses(
-      [mockResponses.EMPTY_WEBHOOK_RESPONSE],
-      [mockResponses.HTTP_WEBHOOK_CREATE_RESPONSE]
+    mockExternalRequests(
+      {
+        request: { body: expect.stringContaining("webhookSubscriptions") },
+        response: { body: mockResponses.EMPTY_WEBHOOK_RESPONSE },
+      },
+      {
+        request: { body: expect.stringContaining("webhookSubscriptionCreate") },
+        response: { body: mockResponses.HTTP_WEBHOOK_CREATE_RESPONSE },
+      }
     );
 
     // WHEN
@@ -64,9 +67,15 @@ describe("Webhook registration", () => {
       accessToken: "totally_real_token",
     });
 
-    mockShopifyResponses(
-      [mockResponses.EMPTY_WEBHOOK_RESPONSE],
-      [mockResponses.HTTP_WEBHOOK_CREATE_ERROR_RESPONSE]
+    mockExternalRequests(
+      {
+        request: { body: expect.stringContaining("webhookSubscriptions") },
+        response: { body: mockResponses.EMPTY_WEBHOOK_RESPONSE },
+      },
+      {
+        request: { body: expect.stringContaining("webhookSubscriptionCreate") },
+        response: { body: mockResponses.HTTP_WEBHOOK_CREATE_ERROR_RESPONSE },
+      }
     );
 
     // WHEN

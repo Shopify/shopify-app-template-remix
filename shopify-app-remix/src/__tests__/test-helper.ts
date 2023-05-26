@@ -1,6 +1,5 @@
 import crypto from "crypto";
 
-import fetchMock, { MockParams } from "jest-fetch-mock";
 import jwt from "jsonwebtoken";
 import {
   LATEST_API_VERSION,
@@ -80,35 +79,6 @@ export async function getThrownResponse(
   }
 
   throw `${request.method} request to ${request.url} did not throw`;
-}
-
-// TODO: Everything after this point is a copy of shopify-app-express and should be moved into a shared internal package
-// Not logging as issue. Will be taken care of in: https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=27471073
-type MockBody =
-  | string
-  | {
-      [key: string]: any;
-    };
-
-export function mockShopifyResponse(body: MockBody, init?: MockParams) {
-  fetchMock.mockResponse(
-    typeof body === "string" ? body : JSON.stringify(body),
-    init
-  );
-}
-
-export function mockShopifyResponses(
-  ...responses: ([MockBody] | [MockBody, MockParams])[]
-) {
-  const parsedResponses: [string, MockParams][] = responses.map(
-    ([body, init]) => {
-      const bodyString = typeof body === "string" ? body : JSON.stringify(body);
-
-      return init ? [bodyString, init] : [bodyString, {}];
-    }
-  );
-
-  fetchMock.mockResponses(...parsedResponses);
 }
 
 export function createTestHmac(secretKey: string, body: string): string {
