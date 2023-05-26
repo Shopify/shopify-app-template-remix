@@ -116,7 +116,7 @@ function deriveConfig<Storage extends SessionStorage>(
     auth: {
       path: authPathPrefix,
       callbackPath: authPathPrefix + "/callback",
-      sessionTokenPath: authPathPrefix + "/session-token",
+      patchSessionTokenPath: authPathPrefix + "/session-token",
       exitIframePath: authPathPrefix + "/auth/exit-iframe",
     },
   };

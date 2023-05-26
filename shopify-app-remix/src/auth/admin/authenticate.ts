@@ -56,7 +56,8 @@ export class AuthStrategy<
 
     const url = new URL(request.url);
 
-    const isBouncePage = url.pathname === config.auth.sessionTokenPath;
+    const isPatchSessionToken =
+      url.pathname === config.auth.patchSessionTokenPath;
     const isExitIframe = url.pathname === config.auth.exitIframePath;
     const isAuthRequest = url.pathname === config.auth.path;
     const isAuthCallbackRequest = url.pathname === config.auth.callbackPath;
@@ -65,7 +66,7 @@ export class AuthStrategy<
     logger.info("Authenticating admin request");
 
     let sessionContext: SessionContext;
-    if (isBouncePage) {
+    if (isPatchSessionToken) {
       logger.debug("Rendering bounce page");
       this.renderAppBridge();
     } else if (isExitIframe) {
@@ -404,7 +405,7 @@ export class AuthStrategy<
 
     // TODO Make sure this works on chrome without a tunnel (weird HTTPS redirect issue)
     // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28376650
-    throw redirect(`${config.auth.sessionTokenPath}?${params.toString()}`);
+    throw redirect(`${config.auth.patchSessionTokenPath}?${params.toString()}`);
   }
 
   private renderAppBridge(redirectTo?: string): never {
