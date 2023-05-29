@@ -155,8 +155,6 @@ export class AuthStrategy<
         throw error;
       }
 
-      logger.error("Error during OAuth callback", { error: error.message });
-
       if (error instanceof CookieNotFound) {
         throw await this.handleAuthBeginRequest(request);
       } else if (error instanceof InvalidHmacError) {
