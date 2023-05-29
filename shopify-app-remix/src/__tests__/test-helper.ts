@@ -7,6 +7,7 @@ import {
   LogSeverity,
   Session,
 } from "@shopify/shopify-api";
+import { SessionStorage } from "@shopify/shopify-app-session-storage";
 import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memory";
 
 import { AppConfigArg } from "../config-types";
@@ -14,7 +15,7 @@ import { AppConfigArg } from "../config-types";
 // eslint-disable-next-line import/no-mutable-exports
 export function testConfig(
   overrides: Partial<AppConfigArg> = {}
-): AppConfigArg {
+): AppConfigArg & { sessionStorage: SessionStorage } {
   return {
     apiKey: "testApiKey",
     apiSecretKey: "testApiSecretKey",
@@ -90,11 +91,7 @@ export function createTestHmac(secretKey: string, body: string): string {
     .digest("base64");
 }
 
-export async function setUpSessionStorage(
-  sessionOverrides: Partial<Session> = {}
-) {
-  const sessionStorage = new MemorySessionStorage();
-
+export async function setUpValidSession(sessionStorage: SessionStorage) {
   const session = new Session({
     id: `offline_${TEST_SHOP}`,
     shop: TEST_SHOP,
@@ -102,11 +99,10 @@ export async function setUpSessionStorage(
     state: "test",
     accessToken: "totally_real_token",
     scope: "testScope",
-    ...sessionOverrides,
   });
   await sessionStorage.storeSession(session);
 
-  return { sessionStorage, session };
+  return session;
 }
 
 export function signRequestCookie({

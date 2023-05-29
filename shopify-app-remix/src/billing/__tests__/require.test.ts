@@ -4,7 +4,7 @@ import { shopifyApp } from "../..";
 import {
   GRAPHQL_URL,
   getJwt,
-  setUpSessionStorage,
+  setUpValidSession,
   testConfig,
 } from "../../__tests__/test-helper";
 import { mockExternalRequest } from "../../__tests__/request-mock";
@@ -22,12 +22,9 @@ const BILLING_CONFIG: Shopify["config"]["billing"] = {
 describe("Billing require", () => {
   it("throws the returned response from onFailure when there is no payment", async () => {
     // GIVEN
-    const { sessionStorage } = await setUpSessionStorage();
-    const shopify = shopifyApp({
-      ...testConfig(),
-      sessionStorage,
-      billing: BILLING_CONFIG,
-    });
+    const config = testConfig();
+    await setUpValidSession(config.sessionStorage);
+    const shopify = shopifyApp({ ...config, billing: BILLING_CONFIG });
 
     mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -61,12 +58,9 @@ describe("Billing require", () => {
 
   it("returns true when there is payment", async () => {
     // GIVEN
-    const { sessionStorage } = await setUpSessionStorage();
-    const shopify = shopifyApp({
-      ...testConfig(),
-      sessionStorage,
-      billing: BILLING_CONFIG,
-    });
+    const config = testConfig();
+    await setUpValidSession(config.sessionStorage);
+    const shopify = shopifyApp({ ...config, billing: BILLING_CONFIG });
 
     mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
