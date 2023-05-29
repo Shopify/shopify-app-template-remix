@@ -4,6 +4,7 @@ import {
   GraphqlParams,
   HttpResponseError,
   InvalidHmacError,
+  InvalidOAuthError,
   JwtPayload,
   RequestParams,
   Session,
@@ -155,9 +156,14 @@ export class AuthStrategy<
         throw error;
       }
 
+      logger.error("Error during OAuth callback", { error: error.message });
+
       if (error instanceof CookieNotFound) {
         throw await this.handleAuthBeginRequest(request);
-      } else if (error instanceof InvalidHmacError) {
+      } else if (
+        error instanceof InvalidHmacError ||
+        error instanceof InvalidOAuthError
+      ) {
         throw new Response(undefined, {
           status: 400,
           statusText: "Invalid OAuth Request",
@@ -385,9 +391,16 @@ export class AuthStrategy<
       ? await api.auth.getEmbeddedAppUrl({ rawRequest: request })
       : `/?shop=${shop}&host=${encodeURIComponent(host)}`;
 
-    responseHeaders?.append("location", redirectUrl);
+    const headers = responseHeaders
+      ? Object.fromEntries(responseHeaders.entries())
+      : {};
 
-    throw redirect(redirectUrl, { headers: responseHeaders });
+    throw redirect(redirectUrl, {
+      headers: {
+        ...headers,
+        location: redirectUrl,
+      },
+    });
   }
 
   private redirectToBouncePage(url: URL): void {

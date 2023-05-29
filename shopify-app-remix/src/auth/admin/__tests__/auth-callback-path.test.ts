@@ -1,7 +1,8 @@
 import { mockExternalRequest } from "../../../__tests__/request-mock";
 import { shopifyApp } from "../../..";
 import {
-  SHOPIFY_HOST,
+  BASE64_HOST,
+  TEST_SHOP,
   getThrownResponse,
   signRequestCookie,
   testConfig,
@@ -51,7 +52,7 @@ describe("authorize.admin auth callback", () => {
       const callbackUrl = getCallbackUrl(config);
       const response = await getThrownResponse(
         shopify.authenticate.admin,
-        new Request(`${callbackUrl}?shop=${SHOPIFY_HOST}`)
+        new Request(`${callbackUrl}?shop=${TEST_SHOP}`)
       );
 
       // THEN
@@ -60,14 +61,14 @@ describe("authorize.admin auth callback", () => {
       );
 
       expect(response.status).toBe(302);
-      expect(hostname).toBe(SHOPIFY_HOST);
+      expect(hostname).toBe(TEST_SHOP);
       expect(searchParams.get("client_id")).toBe(config.apiKey);
       expect(searchParams.get("scope")).toBe(config.scopes!.toString());
       expect(searchParams.get("redirect_uri")).toBe(callbackUrl);
       expect(searchParams.get("state")).toStrictEqual(expect.any(String));
     });
 
-    test("throws a 400 if InvalidOAuthError error", async () => {
+    test("throws a 400 if there is no HMAC param", async () => {
       // GIVEN
       const config = testConfig();
       const shopify = shopifyApp(config);
@@ -75,7 +76,7 @@ describe("authorize.admin auth callback", () => {
       // WHEN
       const state = "nonce";
       const request = new Request(
-        `${getCallbackUrl(config)}?shop=${SHOPIFY_HOST}&state=${state}`
+        `${getCallbackUrl(config)}?shop=${TEST_SHOP}&state=${state}`
       );
 
       signRequestCookie({
@@ -95,7 +96,7 @@ describe("authorize.admin auth callback", () => {
       expect(response.statusText).toBe("Invalid OAuth Request");
     });
 
-    test("throws an 500 Response if the Request HMAC is invalid", async () => {
+    test("throws a 400 if the HMAC param is invalid", async () => {
       // GIVEN
       const config = testConfig();
       const shopify = shopifyApp(config);
@@ -105,7 +106,7 @@ describe("authorize.admin auth callback", () => {
       const request = new Request(
         `${getCallbackUrl(
           config
-        )}?shop=${SHOPIFY_HOST}&state=${state}&hmac=invalid`
+        )}?shop=${TEST_SHOP}&state=${state}&hmac=invalid`
       );
 
       signRequestCookie({
@@ -121,7 +122,7 @@ describe("authorize.admin auth callback", () => {
       );
 
       // THEN
-      expect(response.status).toBe(500);
+      expect(response.status).toBe(400);
     });
   });
 
@@ -132,7 +133,7 @@ describe("authorize.admin auth callback", () => {
       const shopify = shopifyApp(config);
 
       // WHEN
-      mockCodeExchangeRequest();
+      mockCodeExchangeRequest("offline");
       await getThrownResponse(
         shopify.authenticate.admin,
         await getValidCallbackRequest(config)
@@ -140,14 +141,15 @@ describe("authorize.admin auth callback", () => {
 
       // THEN
       const [session] = await config.sessionStorage!.findSessionsByShop(
-        SHOPIFY_HOST
+        TEST_SHOP
       );
+
       expect(session).toMatchObject({
         accessToken: "123abc",
-        id: "offline_totally-real-host.myshopify.io",
+        id: `offline_${TEST_SHOP}`,
         isOnline: false,
         scope: "read_products",
-        shop: "totally-real-host.myshopify.io",
+        shop: TEST_SHOP,
         state: "nonce",
       });
     });
@@ -158,7 +160,7 @@ describe("authorize.admin auth callback", () => {
       const shopify = shopifyApp(config);
 
       // WHEN
-      mockCodeExchangeRequest();
+      mockCodeExchangeRequest("offline");
       const response = await getThrownResponse(
         shopify.authenticate.admin,
         await getValidCallbackRequest(config)
@@ -170,11 +172,28 @@ describe("authorize.admin auth callback", () => {
       );
 
       expect(response.status).toBe(302);
-      expect(hostname).toBe(SHOPIFY_HOST);
+      expect(hostname).toBe(TEST_SHOP);
       expect(searchParams.get("client_id")).toBe(config.apiKey);
       expect(searchParams.get("scope")).toBe(config.scopes!.toString());
       expect(searchParams.get("redirect_uri")).toBe(getCallbackUrl(config));
       expect(searchParams.get("state")).toStrictEqual(expect.any(String));
+    });
+
+    test("Does not throw a 302 Response to begin auth if token was online", async () => {
+      // GIVEN
+      const config = testConfig({ useOnlineTokens: true });
+      const shopify = shopifyApp(config);
+
+      // WHEN
+      mockCodeExchangeRequest("online");
+      const response = await getThrownResponse(
+        shopify.authenticate.admin,
+        await getValidCallbackRequest(config)
+      );
+
+      // THEN
+      const { hostname } = new URL(response.headers.get("location")!);
+      expect(hostname).not.toBe(TEST_SHOP);
     });
 
     test("Runs the afterAuth hooks passing", async () => {
@@ -204,13 +223,11 @@ describe("authorize.admin auth callback", () => {
       const shopify = shopifyApp(config);
 
       // WHEN
-      mockCodeExchangeRequest();
+      mockCodeExchangeRequest("offline");
       const response = await getThrownResponse(
         shopify.authenticate.admin,
         await getValidCallbackRequest(config)
       );
-
-      console.log(response.status);
 
       // THEN
       expect(response.status).toBe(302);
@@ -227,7 +244,7 @@ describe("authorize.admin auth callback", () => {
       const shopify = shopifyApp(config);
 
       // WHEN
-      mockCodeExchangeRequest();
+      mockCodeExchangeRequest("offline");
       const request = await getValidCallbackRequest(config);
       const response = await getThrownResponse(
         shopify.authenticate.admin,
@@ -239,13 +256,13 @@ describe("authorize.admin auth callback", () => {
       const host = url.searchParams.get("host");
       expect(response.status).toBe(302);
       expect(response.headers.get("location")).toBe(
-        `/?shop=${SHOPIFY_HOST}&host=${host}`
+        `/?shop=${TEST_SHOP}&host=${host}`
       );
       expect(response.headers.get("set-cookie")).toBe(
         [
           "shopify_app_state=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT",
-          "shopify_app_session=offline_totally-real-host.myshopify.io;sameSite=lax; secure=true; path=/",
-          "shopify_app_session.sig=lmhk8PrLJWONI0Lpx8HrJCpAMfevFb7621vEiW1geHc=;sameSite=lax; secure=true; path=/",
+          `shopify_app_session=offline_${TEST_SHOP};sameSite=lax; secure=true; path=/`,
+          "shopify_app_session.sig=lOkBnaRYxL39cF4QYycrnwFwS5F9aeUHm/jTNY3qbTE=;sameSite=lax; secure=true; path=/",
         ].join(", ")
       );
     });
@@ -261,8 +278,7 @@ async function getValidCallbackRequest(config: ReturnType<typeof testConfig>) {
   const state = "nonce";
   const code = "code_from_shopify";
   const now = Math.trunc(Date.now() / 1000) - 2;
-  const host = Buffer.from(SHOPIFY_HOST, "utf-8").toString("base64");
-  const queryParams = `code=${code}&host=${host}&shop=${SHOPIFY_HOST}&state=${state}&timestamp=${now}`;
+  const queryParams = `code=${code}&host=${BASE64_HOST}&shop=${TEST_SHOP}&state=${state}&timestamp=${now}`;
   const hmac = await createSHA256HMAC(
     config.apiSecretKey,
     queryParams,
@@ -283,16 +299,35 @@ async function getValidCallbackRequest(config: ReturnType<typeof testConfig>) {
   return request;
 }
 
-function mockCodeExchangeRequest() {
+function mockCodeExchangeRequest(tokenType: "online" | "offline" = "offline") {
+  const responseBody = {
+    access_token: "123abc",
+    scope: "read_products",
+  };
+
   mockExternalRequest({
-    request: new Request(`https://${SHOPIFY_HOST}/admin/oauth/access_token`, {
+    request: new Request(`https://${TEST_SHOP}/admin/oauth/access_token`, {
       method: "POST",
     }),
-    response: new Response(
-      JSON.stringify({
-        access_token: "123abc",
-        scope: "read_products",
-      })
-    ),
+    response:
+      tokenType === "offline"
+        ? new Response(JSON.stringify(responseBody))
+        : new Response(
+            JSON.stringify({
+              ...responseBody,
+              expires_in: Math.trunc(Date.now() / 1000) + 3600,
+              associated_user_scope: "read_products",
+              associated_user: {
+                id: 902541635,
+                first_name: "John",
+                last_name: "Smith",
+                email: "john@example.com",
+                email_verified: true,
+                account_owner: true,
+                locale: "en",
+                collaborator: false,
+              },
+            })
+          ),
   });
 }
