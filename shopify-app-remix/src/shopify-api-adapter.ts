@@ -25,7 +25,11 @@ setAbstractRuntimeString(() => {
 
 setAbstractConvertHeadersFunc(
   async (headers: ShopifyHeaders, _adapterArgs: RemixAdapterArgs) => {
-    return Promise.resolve(flatHeaders(headers ?? {}));
+    const remixHeaders = new Headers();
+    flatHeaders(headers ?? {}).forEach(([key, value]) =>
+      remixHeaders.append(key, value)
+    );
+    return Promise.resolve(remixHeaders);
   }
 );
 

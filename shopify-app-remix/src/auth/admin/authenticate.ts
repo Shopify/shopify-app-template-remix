@@ -3,6 +3,7 @@ import {
   CookieNotFound,
   GraphqlParams,
   HttpResponseError,
+  InvalidHmacError,
   InvalidOAuthError,
   JwtPayload,
   RequestParams,
@@ -113,14 +114,10 @@ export class AuthStrategy<
 
   private async handleAuthBeginRequest(request: Request): Promise<never> {
     const { api, config, logger } = this;
-    const url = new URL(request.url);
 
     logger.info("Handling OAuth begin request");
 
-    const shop = api.utils.sanitizeShop(url.searchParams.get("shop")!);
-    if (!shop) {
-      throw new Error("Shop param is not present");
-    }
+    const shop = this.ensureValidShopParam(request);
 
     logger.debug("OAuth request contained valid shop", { shop });
     throw await beginAuth({ api, config, logger }, request, false, shop);
@@ -128,14 +125,10 @@ export class AuthStrategy<
 
   private async handleAuthCallbackRequest(request: Request): Promise<never> {
     const { api, config, logger } = this;
-    const url = new URL(request.url);
 
     logger.info("Handling OAuth callback request");
 
-    const shop = api.utils.sanitizeShop(url.searchParams.get("shop")!);
-    if (!shop) {
-      throw new Error("Shop param is not present");
-    }
+    const shop = this.ensureValidShopParam(request);
 
     try {
       const { session, headers: responseHeaders } = await api.auth.callback({
@@ -165,19 +158,21 @@ export class AuthStrategy<
 
       logger.error("Error during OAuth callback", { error: error.message });
 
-      switch (true) {
-        case error instanceof InvalidOAuthError:
-          throw new Response(undefined, {
-            status: 400,
-            statusText: "Invalid OAuth Request",
-          });
-        case error instanceof CookieNotFound:
-          throw await this.handleAuthBeginRequest(request);
-        default:
-          throw new Response(undefined, {
-            status: 500,
-            statusText: "Internal Server Error",
-          });
+      if (error instanceof CookieNotFound) {
+        throw await this.handleAuthBeginRequest(request);
+      } else if (
+        error instanceof InvalidHmacError ||
+        error instanceof InvalidOAuthError
+      ) {
+        throw new Response(undefined, {
+          status: 400,
+          statusText: "Invalid OAuth Request",
+        });
+      } else {
+        throw new Response(undefined, {
+          status: 500,
+          statusText: "Internal Server Error",
+        });
       }
     }
   }
@@ -255,6 +250,20 @@ export class AuthStrategy<
           }
         `,
     });
+  }
+
+  private ensureValidShopParam(request: Request): string {
+    const url = new URL(request.url);
+    const { api } = this;
+    const shop = api.utils.sanitizeShop(url.searchParams.get("shop")!);
+
+    if (!shop) {
+      throw new Response("Shop param is invalid", {
+        status: 400,
+      });
+    }
+
+    return shop;
   }
 
   private async ensureAppIsEmbeddedIfRequired(request: Request) {
@@ -382,8 +391,9 @@ export class AuthStrategy<
       ? await api.auth.getEmbeddedAppUrl({ rawRequest: request })
       : `/?shop=${shop}&host=${encodeURIComponent(host)}`;
 
-    const headers: { [key: string]: string } = {};
-    responseHeaders?.forEach(([key, value]) => (headers[key] = value));
+    const headers = responseHeaders
+      ? Object.fromEntries(responseHeaders.entries())
+      : {};
 
     throw redirect(redirectUrl, {
       headers: {

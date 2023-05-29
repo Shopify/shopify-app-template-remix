@@ -30,8 +30,6 @@ export interface NonEmbeddedAdminContext<
 export type AdminContext<
   Config extends AppConfigArg,
   Resources extends ShopifyRestResources = ShopifyRestResources
-> = Config["isEmbeddedApp"] extends true
-  ? EmbeddedAdminContext<Config, Resources>
-  : Config["isEmbeddedApp"] extends false
+> = Config["isEmbeddedApp"] extends false
   ? NonEmbeddedAdminContext<Config, Resources>
-  : never;
+  : EmbeddedAdminContext<Config, Resources>;
