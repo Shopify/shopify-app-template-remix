@@ -87,6 +87,9 @@ export class AuthStrategy<
         request,
         sessionToken
       );
+      // TODO: The code below assumes apps are always going to be embedded. We need to make sure it works for
+      // non-embedded apps too.
+      // https://github.com/Shopify/shopify-app-template-remix/issues/88
     } else {
       await this.validateUrlParams(request);
       await this.ensureInstalledOnShop(request);
@@ -181,15 +184,17 @@ export class AuthStrategy<
     const { api } = this;
     const url = new URL(request.url);
 
-    const host = api.utils.sanitizeHost(url.searchParams.get("host")!);
-    if (!host) {
-      throw new Error("Host param is not present");
-    }
+    if (this.config.isEmbeddedApp) {
+      const host = api.utils.sanitizeHost(url.searchParams.get("host")!);
+      if (!host) {
+        throw new Error("Host param is not present");
+      }
 
-    const shop = api.utils.sanitizeShop(url.searchParams.get("shop")!);
+      const shop = api.utils.sanitizeShop(url.searchParams.get("shop")!);
 
-    if (!shop) {
-      throw new Error("Shop param is not present");
+      if (!shop) {
+        throw new Error("Shop param is not present");
+      }
     }
   }
 
