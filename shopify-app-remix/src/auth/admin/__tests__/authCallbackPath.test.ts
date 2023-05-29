@@ -241,6 +241,13 @@ describe("authorize.admin auth callback", () => {
       expect(response.headers.get("location")).toBe(
         `/?shop=${SHOPIFY_HOST}&host=${host}`
       );
+      expect(response.headers.get("set-cookie")).toBe(
+        [
+          "shopify_app_state=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT",
+          "shopify_app_session=offline_totally-real-host.myshopify.io;sameSite=lax; secure=true; path=/",
+          "shopify_app_session.sig=lmhk8PrLJWONI0Lpx8HrJCpAMfevFb7621vEiW1geHc=;sameSite=lax; secure=true; path=/",
+        ].join(", ")
+      );
     });
   });
 });

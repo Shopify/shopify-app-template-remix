@@ -385,15 +385,9 @@ export class AuthStrategy<
       ? await api.auth.getEmbeddedAppUrl({ rawRequest: request })
       : `/?shop=${shop}&host=${encodeURIComponent(host)}`;
 
-    const headers: { [key: string]: string } = {};
-    responseHeaders?.forEach(([key, value]) => (headers[key] = value));
+    responseHeaders?.append("location", redirectUrl);
 
-    throw redirect(redirectUrl, {
-      headers: {
-        ...headers,
-        location: redirectUrl,
-      },
-    });
+    throw redirect(redirectUrl, { headers: responseHeaders });
   }
 
   private redirectToBouncePage(url: URL): void {
