@@ -13,7 +13,7 @@ import {
   TEST_SHOP,
   getJwt,
   getThrownResponse,
-  setUpSessionStorage,
+  setUpValidSession,
   signRequestCookie,
   testConfig,
 } from "../../__tests__/test-helper";
@@ -34,13 +34,12 @@ const BILLING_CONFIG: Shopify["config"]["billing"] = {
 
 describe("Billing request", () => {
   // TODO: This is currently blocked because the authenticator doesn't work properly with non-embedded apps
-  it.skip("redirects to payment confirmation URL when successful and at the top level for non-embedded apps", async () => {
+  it("redirects to payment confirmation URL when successful and at the top level for non-embedded apps", async () => {
     // GIVEN
-    const { sessionStorage, session } = await setUpSessionStorage();
     const config = testConfig();
+    const session = await setUpValidSession(config.sessionStorage);
     const shopify = shopifyApp({
       ...config,
-      sessionStorage,
       isEmbeddedApp: false,
       billing: BILLING_CONFIG,
     });
@@ -50,7 +49,9 @@ describe("Billing request", () => {
       response: new Response(responses.PURCHASE_SUBSCRIPTION_RESPONSE),
     });
 
-    const request = new Request(`${shopify.config.appUrl}/billing`);
+    const request = new Request(
+      `${shopify.config.appUrl}/billing?shop=${TEST_SHOP}`
+    );
     signRequestCookie({
       request,
       cookieName: SESSION_COOKIE_NAME,
@@ -75,12 +76,9 @@ describe("Billing request", () => {
 
   it("redirects to exit-iframe with payment confirmation URL when successful using app bridge when embedded", async () => {
     // GIVEN
-    const { sessionStorage } = await setUpSessionStorage();
-    const shopify = shopifyApp({
-      ...testConfig(),
-      sessionStorage,
-      billing: BILLING_CONFIG,
-    });
+    const config = testConfig();
+    await setUpValidSession(config.sessionStorage);
+    const shopify = shopifyApp({ ...config, billing: BILLING_CONFIG });
 
     mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -120,12 +118,9 @@ describe("Billing request", () => {
 
   it("returns redirection headers when successful during fetch requests", async () => {
     // GIVEN
-    const { sessionStorage } = await setUpSessionStorage();
-    const shopify = shopifyApp({
-      ...testConfig(),
-      sessionStorage,
-      billing: BILLING_CONFIG,
-    });
+    const config = testConfig();
+    await setUpValidSession(config.sessionStorage);
+    const shopify = shopifyApp({ ...config, billing: BILLING_CONFIG });
 
     mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -157,11 +152,10 @@ describe("Billing request", () => {
 
   it("redirects to authentication when at the top level when Shopify invalidated the session", async () => {
     // GIVEN
-    const { sessionStorage, session } = await setUpSessionStorage();
     const config = testConfig();
+    const session = await setUpValidSession(config.sessionStorage);
     const shopify = shopifyApp({
       ...config,
-      sessionStorage,
       isEmbeddedApp: false,
       billing: BILLING_CONFIG,
     });
@@ -202,12 +196,9 @@ describe("Billing request", () => {
 
   it("redirects to exit-iframe with authentication using app bridge when embedded and Shopify invalidated the session", async () => {
     // GIVEN
-    const { sessionStorage } = await setUpSessionStorage();
-    const shopify = shopifyApp({
-      ...testConfig(),
-      sessionStorage,
-      billing: BILLING_CONFIG,
-    });
+    const config = testConfig();
+    await setUpValidSession(config.sessionStorage);
+    const shopify = shopifyApp({ ...config, billing: BILLING_CONFIG });
 
     mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -250,12 +241,9 @@ describe("Billing request", () => {
 
   it("returns redirection headers during fetch requests when Shopify invalidated the session", async () => {
     // GIVEN
-    const { sessionStorage } = await setUpSessionStorage();
-    const shopify = shopifyApp({
-      ...testConfig(),
-      sessionStorage,
-      billing: BILLING_CONFIG,
-    });
+    const config = testConfig();
+    await setUpValidSession(config.sessionStorage);
+    const shopify = shopifyApp({ ...config, billing: BILLING_CONFIG });
 
     mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -293,11 +281,10 @@ describe("Billing request", () => {
 
   it("throws errors other than authentication errors", async () => {
     // GIVEN
-    const { sessionStorage, session } = await setUpSessionStorage();
     const config = testConfig();
+    const session = await setUpValidSession(config.sessionStorage);
     const shopify = shopifyApp({
       ...config,
-      sessionStorage,
       isEmbeddedApp: false,
       billing: BILLING_CONFIG,
     });
@@ -330,12 +317,9 @@ describe("Billing request", () => {
 
   it("throws a BillingError when the response contains user errors", async () => {
     // GIVEN
-    const { sessionStorage } = await setUpSessionStorage();
-    const shopify = shopifyApp({
-      ...testConfig(),
-      sessionStorage,
-      billing: BILLING_CONFIG,
-    });
+    const config = testConfig();
+    await setUpValidSession(config.sessionStorage);
+    const shopify = shopifyApp({ ...config, billing: BILLING_CONFIG });
 
     mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
