@@ -1,7 +1,7 @@
 import { shopifyApp } from "../../..";
 import { getThrownResponse, testConfig } from "../../../__tests__/test-helper";
 
-describe("authorize.admin", () => {
+describe("authorize.admin exit iframe path", () => {
   test("Uses App Bridge to exit iFrame when the url matches auth.exitIframePath", async () => {
     // GIVEN
     const config = testConfig();
