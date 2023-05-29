@@ -88,3 +88,25 @@ export function createTestHmac(secretKey: string, body: string): string {
     .update(body, "utf8")
     .digest("base64");
 }
+
+export function signRequestCookie({
+  request,
+  cookieName,
+  cookieValue,
+  apiSecretKey,
+}: {
+  request: Request;
+  cookieName: string;
+  cookieValue: string;
+  apiSecretKey: string;
+}) {
+  const signedCookieValue = createTestHmac(apiSecretKey, cookieValue);
+
+  request.headers.set(
+    "Cookie",
+    [
+      `${cookieName}=${cookieValue}`,
+      `${cookieName}.sig=${signedCookieValue}`,
+    ].join(";")
+  );
+}

@@ -1,8 +1,8 @@
 import { shopifyApp } from "../../..";
 import {
   SHOPIFY_HOST,
-  createTestHmac,
   getThrownResponse,
+  signRequestCookie,
   testConfig,
 } from "../../../__tests__/test-helper";
 
@@ -14,10 +14,9 @@ describe("authorize.admin auth callback", () => {
       const shopify = shopifyApp(config);
 
       // WHEN
-      const url = `${shopify.config.appUrl}/auth/callback`;
       const response = await getThrownResponse(
         shopify.authenticate.admin,
-        new Request(url)
+        new Request(getCallbackUrl(config))
       );
 
       // THEN
@@ -31,10 +30,9 @@ describe("authorize.admin auth callback", () => {
       const shopify = shopifyApp(config);
 
       // WHEN
-      const url = `${shopify.config.appUrl}/auth/callback?shop=invalid`;
       const response = await getThrownResponse(
         shopify.authenticate.admin,
-        new Request(url)
+        new Request(`${getCallbackUrl(config)}?shop=invalid`)
       );
 
       // THEN
@@ -48,7 +46,7 @@ describe("authorize.admin auth callback", () => {
       const shopify = shopifyApp(config);
 
       // WHEN
-      const callbackUrl = `${shopify.config.appUrl}/auth/callback`;
+      const callbackUrl = getCallbackUrl(config);
       const response = await getThrownResponse(
         shopify.authenticate.admin,
         new Request(`${callbackUrl}?shop=${SHOPIFY_HOST}`)
@@ -75,22 +73,20 @@ describe("authorize.admin auth callback", () => {
       // WHEN
       const cookieName = "shopify_app_state";
       const state = "nonce";
-      const signedState = createTestHmac(config.apiSecretKey, state);
-      const callbackUrl = `${shopify.config.appUrl}/auth/callback`;
-      const code = "code_from_shopify";
+      const request = new Request(
+        `${getCallbackUrl(config)}?shop=${SHOPIFY_HOST}&state=${state}`
+      );
+
+      signRequestCookie({
+        request,
+        cookieName,
+        cookieValue: state,
+        apiSecretKey: config.apiSecretKey,
+      });
+
       const response = await getThrownResponse(
         shopify.authenticate.admin,
-        new Request(
-          `${callbackUrl}?shop=${SHOPIFY_HOST}&state=${state}&code=${code}`,
-          {
-            headers: {
-              Cookie: [
-                `${cookieName}=${state}`,
-                `${cookieName}.sig=${signedState}`,
-              ].join(";"),
-            },
-          }
-        )
+        request
       );
 
       // THEN
@@ -106,22 +102,22 @@ describe("authorize.admin auth callback", () => {
       // WHEN
       const cookieName = "shopify_app_state";
       const state = "nonce";
-      const signedState = createTestHmac(config.apiSecretKey, state);
-      const callbackUrl = `${shopify.config.appUrl}/auth/callback`;
-      const code = "code_from_shopify";
+      const request = new Request(
+        `${getCallbackUrl(
+          config
+        )}?shop=${SHOPIFY_HOST}&state=${state}&hmac=invalid`
+      );
+
+      signRequestCookie({
+        request,
+        cookieName,
+        cookieValue: state,
+        apiSecretKey: config.apiSecretKey,
+      });
+
       const response = await getThrownResponse(
         shopify.authenticate.admin,
-        new Request(
-          `${callbackUrl}?shop=${SHOPIFY_HOST}&state=${state}&code=${code}&hmac=invalid`,
-          {
-            headers: {
-              Cookie: [
-                `${cookieName}=${state}`,
-                `${cookieName}.sig=${signedState}`,
-              ].join(";"),
-            },
-          }
-        )
+        request
       );
 
       // THEN
@@ -151,3 +147,7 @@ describe("authorize.admin auth callback", () => {
     });
   });
 });
+
+function getCallbackUrl(appConfig: ReturnType<typeof testConfig>) {
+  return `${appConfig.appUrl}/auth/callback`;
+}
