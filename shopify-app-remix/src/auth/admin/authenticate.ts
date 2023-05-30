@@ -9,6 +9,7 @@ import {
   RequestParams,
   Session,
   Shopify,
+  ShopifyError,
   ShopifyRestResources,
 } from "@shopify/shopify-api";
 
@@ -184,7 +185,7 @@ export class AuthStrategy<
     if (this.config.isEmbeddedApp) {
       const host = api.utils.sanitizeHost(url.searchParams.get("host")!);
       if (!host) {
-        throw new Error("Host search param is not present");
+        throw new ShopifyError("Host search param is not present");
       }
     }
 
@@ -192,7 +193,7 @@ export class AuthStrategy<
     // but an alternative would be to show a page for the user to fill in the shop, like shopify_app does.
     const shop = api.utils.sanitizeShop(url.searchParams.get("shop")!);
     if (!shop) {
-      throw new Error("Shop search param is not present");
+      throw new ShopifyError("Shop search param is not present");
     }
   }
 
@@ -223,7 +224,12 @@ export class AuthStrategy<
 
     if (config.isEmbeddedApp && !isEmbedded) {
       try {
+        logger.debug("Ensuring offline session is valid before embedding", {
+          shop,
+        });
         await this.testSession(offlineSession);
+
+        logger.debug("Offline session is still valid, embedding app", { shop });
       } catch (error) {
         if (error instanceof HttpResponseError && error.response.code === 401) {
           logger.info("Shop session is no longer valid, redirecting to OAuth", {
@@ -246,12 +252,12 @@ export class AuthStrategy<
 
     await client.query({
       data: `#graphql
-          query {
-            shop {
-              name
-            }
+        query {
+          shop {
+            name
           }
-        `,
+        }
+      `,
     });
   }
 
