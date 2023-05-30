@@ -324,7 +324,10 @@ export class AuthStrategy<
         rawRequest: request,
       });
       if (!sessionId) {
-        throw new Error("Session ID not found in cookies");
+        logger.debug("Session id not found in cookies, redirecting to OAuth", {
+          shop,
+        });
+        throw await beginAuth({ api, config, logger }, request, false, shop);
       }
 
       return { session: await this.loadSession(request, shop, sessionId) };
@@ -527,7 +530,7 @@ export class AuthStrategy<
     const { api, logger, config } = this;
 
     return {
-      require: requireBillingFactory({ api, logger, config }, session),
+      require: requireBillingFactory({ api, logger, config }, request, session),
       request: requestBillingFactory({ api, logger, config }, request, session),
     };
   }

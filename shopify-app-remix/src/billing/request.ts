@@ -37,6 +37,9 @@ export function requestBillingFactory<Config extends AppConfigArg>(
       });
     } catch (error) {
       if (error instanceof HttpResponseError && error.response.code === 401) {
+        logger.debug("API token was invalid, redirecting to OAuth", {
+          shop: session.shop,
+        });
         throw await redirectToAuthPage(params, request, session.shop);
       } else {
         throw error;
