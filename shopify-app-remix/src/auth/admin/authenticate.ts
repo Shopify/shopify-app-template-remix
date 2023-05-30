@@ -72,8 +72,10 @@ export class AuthStrategy<
       logger.debug("Rendering bounce page");
       this.renderAppBridge();
     } else if (isExitIframe) {
-      logger.debug("Rendering exit iframe page");
-      this.renderAppBridge(url.searchParams.get("exitIframe")!);
+      const destination = url.searchParams.get("exitIframe")!;
+
+      logger.debug("Rendering exit iframe page", { destination });
+      this.renderAppBridge(destination);
     } else if (isAuthCallbackRequest) {
       throw await this.handleAuthCallbackRequest(request);
     } else if (isAuthRequest) {

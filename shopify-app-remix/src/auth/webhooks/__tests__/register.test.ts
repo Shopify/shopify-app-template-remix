@@ -1,6 +1,6 @@
-import { Session } from "@shopify/shopify-api";
+import { DeliveryMethod, Session } from "@shopify/shopify-api";
 
-import { DeliveryMethod, shopifyApp } from "../../..";
+import { shopifyApp } from "../../..";
 import {
   GRAPHQL_URL,
   TEST_SHOP,

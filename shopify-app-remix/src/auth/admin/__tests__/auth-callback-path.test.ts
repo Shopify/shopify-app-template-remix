@@ -124,6 +124,29 @@ describe("authorize.admin auth callback path", () => {
       // THEN
       expect(response.status).toBe(400);
     });
+
+    test("throws a 500 if any other errors are thrown", async () => {
+      // GIVEN
+      const config = testConfig();
+      const shopify = shopifyApp({
+        ...config,
+        hooks: {
+          afterAuth: () => {
+            throw new Error("test");
+          },
+        },
+      });
+
+      // WHEN
+      mockCodeExchangeRequest("offline");
+      const response = await getThrownResponse(
+        shopify.authenticate.admin,
+        await getValidCallbackRequest(config)
+      );
+
+      // THEN
+      expect(response.status).toBe(500);
+    });
   });
 
   describe("Success states", () => {

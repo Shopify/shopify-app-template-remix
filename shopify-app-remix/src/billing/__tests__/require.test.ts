@@ -17,6 +17,7 @@ import {
   testConfig,
 } from "../../__tests__/test-helper";
 import { mockExternalRequest } from "../../__tests__/request-mock";
+import { APP_BRIDGE_REAUTH_HEADER } from "../../auth/helpers/redirect-with-app-bridge-headers";
 
 import * as responses from "./mock-responses";
 
@@ -238,9 +239,7 @@ describe("Billing require", () => {
     // THEN
     expect(response.status).toEqual(401);
 
-    const reauthUrl = new URL(
-      response.headers.get("X-Shopify-API-Request-Failure-Reauthorize-Url")!
-    );
+    const reauthUrl = new URL(response.headers.get(APP_BRIDGE_REAUTH_HEADER)!);
     expect(reauthUrl.origin).toEqual(shopify.config.appUrl);
     expect(reauthUrl.pathname).toEqual(shopify.config.auth.path);
   });

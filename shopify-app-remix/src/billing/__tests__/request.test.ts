@@ -21,6 +21,7 @@ import {
   mockExternalRequest,
   mockExternalRequests,
 } from "../../__tests__/request-mock";
+import { APP_BRIDGE_REAUTH_HEADER } from "../../auth/helpers/redirect-with-app-bridge-headers";
 
 import * as responses from "./mock-responses";
 
@@ -145,9 +146,9 @@ describe("Billing request", () => {
 
     // THEN
     expect(response.status).toEqual(302);
-    expect(
-      response.headers.get("X-Shopify-API-Request-Failure-Reauthorize-Url")
-    ).toEqual(responses.CONFIRMATION_URL);
+    expect(response.headers.get(APP_BRIDGE_REAUTH_HEADER)).toEqual(
+      responses.CONFIRMATION_URL
+    );
   });
 
   it("redirects to authentication when at the top level when Shopify invalidated the session", async () => {
@@ -272,9 +273,7 @@ describe("Billing request", () => {
     // THEN
     expect(response.status).toEqual(401);
 
-    const reauthUrl = new URL(
-      response.headers.get("X-Shopify-API-Request-Failure-Reauthorize-Url")!
-    );
+    const reauthUrl = new URL(response.headers.get(APP_BRIDGE_REAUTH_HEADER)!);
     expect(reauthUrl.origin).toEqual(shopify.config.appUrl);
     expect(reauthUrl.pathname).toEqual(shopify.config.auth.path);
   });
