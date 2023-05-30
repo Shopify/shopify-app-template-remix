@@ -347,10 +347,6 @@ export class AuthStrategy<
       ? api.session.getJwtSessionId(shop, payload.sub)
       : api.session.getOfflineId(shop);
 
-    if (!sessionId) {
-      throw new Error("Session ID not found in JWT token");
-    }
-
     const session = await this.loadSession(request, shop, sessionId);
 
     logger.debug("Found session, request is valid", { shop });

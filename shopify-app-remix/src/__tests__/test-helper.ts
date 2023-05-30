@@ -36,6 +36,7 @@ export const SHOPIFY_HOST = "totally-real-host.myshopify.io";
 export const BASE64_HOST = Buffer.from(SHOPIFY_HOST).toString("base64");
 export const TEST_SHOP = "test-shop.myshopify.io";
 export const GRAPHQL_URL = `https://${TEST_SHOP}/admin/api/${LATEST_API_VERSION}/graphql.json`;
+const USER_ID = 12345;
 
 interface TestJwt {
   token: string;
@@ -52,7 +53,7 @@ export function getJwt(
     iss: `${TEST_SHOP}/admin`,
     dest: `https://${TEST_SHOP}`,
     aud: apiKey,
-    sub: "12345",
+    sub: `${USER_ID}`,
     exp: date.getTime() / 1000 + 3600,
     nbf: date.getTime() / 1000 - 3600,
     iat: date.getTime() / 1000 - 3600,
@@ -91,14 +92,40 @@ export function createTestHmac(secretKey: string, body: string): string {
     .digest("base64");
 }
 
-export async function setUpValidSession(sessionStorage: SessionStorage) {
+export async function setUpValidSession(
+  sessionStorage: SessionStorage,
+  isOnline: boolean = false
+): Promise<Session> {
+  const overrides: Partial<Session> = {};
+  let id = `offline_${TEST_SHOP}`;
+  if (isOnline) {
+    id = `${TEST_SHOP}_${USER_ID}`;
+    // Expires one day from now
+    overrides.expires = new Date(Date.now() + 1000 * 3600 * 24);
+    overrides.onlineAccessInfo = {
+      associated_user_scope: "testScope",
+      expires_in: 3600 * 24,
+      associated_user: {
+        id: USER_ID,
+        account_owner: true,
+        collaborator: true,
+        email: "test@test.test",
+        email_verified: true,
+        first_name: "Test",
+        last_name: "User",
+        locale: "en-US",
+      },
+    };
+  }
+
   const session = new Session({
-    id: `offline_${TEST_SHOP}`,
+    id,
     shop: TEST_SHOP,
-    isOnline: false,
+    isOnline,
     state: "test",
     accessToken: "totally_real_token",
     scope: "testScope",
+    ...overrides,
   });
   await sessionStorage.storeSession(session);
 
