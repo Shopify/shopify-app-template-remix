@@ -3,7 +3,7 @@ import { AppConfigArg } from "../config-types";
 
 export interface RequireBillingOptions<Config extends AppConfigArg>
   extends Omit<BillingCheckParams, "session" | "plans"> {
-  onFailure: (error: any) => Promise<void>;
+  onFailure: (error: any) => Promise<Response>;
   plans: (keyof Config["billing"])[];
 }
 

@@ -181,15 +181,18 @@ export class AuthStrategy<
     const { api } = this;
     const url = new URL(request.url);
 
-    const host = api.utils.sanitizeHost(url.searchParams.get("host")!);
-    if (!host) {
-      throw new Error("Host param is not present");
+    if (this.config.isEmbeddedApp) {
+      const host = api.utils.sanitizeHost(url.searchParams.get("host")!);
+      if (!host) {
+        throw new Error("Host search param is not present");
+      }
     }
 
+    // There's an assumption here that the shop search param will always be present. If it isn't, we'll throw an error
+    // but an alternative would be to show a page for the user to fill in the shop, like shopify_app does.
     const shop = api.utils.sanitizeShop(url.searchParams.get("shop")!);
-
     if (!shop) {
-      throw new Error("Shop param is not present");
+      throw new Error("Shop search param is not present");
     }
   }
 

@@ -42,7 +42,9 @@ async function mockParams(response: Response): Promise<ResponseParams> {
   return {
     body: await response.text(),
     init: {
-      ...response,
+      status: response.status,
+      statusText: response.statusText,
+      url: response.url,
       headers: Object.fromEntries(response.headers.entries()),
     },
   };
@@ -75,7 +77,7 @@ export async function validateMocks() {
 
     if (request?.method) {
       expected.method = request.method;
-      actual.method = init?.method;
+      actual.method = init?.method || "GET";
     }
 
     if (request?.body) {
