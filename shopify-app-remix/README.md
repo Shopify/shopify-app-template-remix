@@ -36,9 +36,6 @@ Create `app/shopify.server.js`. We will use this file to configure our Shopify a
 ```ts
 // app/shopify.server.js
 import { LATEST_API_VERSION, shopifyApp } from "@shopify/shopify-app-remix";
-import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
-
-import prisma from "~/db.server";
 
 export const shopify = shopifyApp({
   apiKey: "1707326264fde5037c658n120626ce3f",
@@ -46,7 +43,6 @@ export const shopify = shopifyApp({
   appUrl: process.env.SHOPIFY_APP_URL!,
   scopes: ["read_products"],
   apiVersion: LATEST_API_VERSION,
-  restResources,
   isEmbeddedApp: true,
 });
 ```
@@ -89,23 +85,22 @@ To load your app within the Shopify Admin, you need to:
 
 ## Authenticating admin requests
 
-To access merchant data pass a request from a route `loader` or `action`. This will either redirect the merchant to install your app or it will give you access to API functions.
-
-Here is how you might use the Admin REST API:
+`shopifyApp` provides methods for authenticating admin requests. To authenticate admin requests you can call `shopify.authenticate.admin(request)` in a loader or an action:
 
 ```ts
-// routes/**/*.tsx
-import { shopify } from "../shopify.server";
-import { LoaderArgs, json } from "@remix-run/node";
-
+// app/routes/**/*.tsx
 export const loader = async ({ request }: LoaderArgs) => {
-  const { admin, session } = await shopify.authenticate.admin(request);
+  await shopify.authenticate.admin(request);
 
-  return json(await admin.rest.Product.count({ session }));
+  return null;
 };
 ```
 
-Here is how you might use the Admin GraphQL API:
+If there is a session for this user, this loader will return null. If there is no session for the user, the loader will throw the appropriate redirect Response.
+
+### Using the Shopify admin GraphQL API
+
+To acces the [Shopify Admin GraphQL API](https://shopify.dev/docs/api/admin-graphql) pass a request from a loader or an action to `shopify.authenticate.admin`. This will either redirect the merchant to install your app or it will give you access to API functions. E.g:
 
 ```ts
 // routes/**/*.tsx
@@ -139,11 +134,40 @@ export async function action({ request }: ActionArgs) {
 }
 ```
 
+### Using the Shopify admin REST API
+
+`shopify.authenticate.admin` can returns methods for interacting with [Shopify Admin REST API](https://shopify.dev/docs/api/admin-rest). To access the [Shopify Admin REST API](https://shopify.dev/docs/api/admin-rest) first configure `shopifyApp` with the REST resources you would like to use:
+
+```ts
+// app/routes/**/*.tsx
+import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
+
+export const shopify = shopifyApp({
+  restResources,
+  // ...etc
+});
+```
+
+Next pass a request to `shopify.authenticate.admin` in a loader or an action. This will either redirect the merchant to install your app or it will give you access to API functions. E.g:
+
+```ts
+// app/routes/**/*.tsx
+export const loader = async ({ request }: LoaderArgs) => {
+  const { admin, session } = await shopify.authenticate.admin(request);
+  const data = await admin.rest.Product.count({ session });
+
+  return json(data);
+};
+```
+
 ## Authenticating webhook requests
 
 Your app must respond to [mandatory webhook topics](https://shopify.dev/docs/apps/webhooks/configuration/mandatory-webhooks). In addition, your app can register [optional webhook topics](https://shopify.dev/docs/api/admin-rest/2023-04/resources/webhook#event-topics).
 
-To setup webhooks first we need to configure `shopifyApp`:
+To setup webhooks first we need to configure `shopifyApp` with 2 pieces:
+
+1. The webhooks you want to subscribe to. In this example we subscribe to the `APP_UNINSTALLED` topic.
+2. The code to register topics to subscribe to after a merchant instllas you app. Here `shopifyApp` provides an `afterAuth` hook which will be called after a user installs your app. In our example the hook simply calls `shopify.registerWebhooks` to reguister the `APP_UNINSTALLED` topic.
 
 ```ts
 // shopify.server.js
