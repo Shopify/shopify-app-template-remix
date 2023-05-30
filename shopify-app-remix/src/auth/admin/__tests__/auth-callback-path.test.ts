@@ -9,7 +9,7 @@ import {
 } from "../../../__tests__/test-helper";
 import { HashFormat, createSHA256HMAC } from "@shopify/shopify-api/runtime";
 
-describe("authorize.admin auth callback", () => {
+describe("authorize.admin auth callback path", () => {
   describe("errors", () => {
     test("throws an error if the shop param is missing", async () => {
       // GIVEN
