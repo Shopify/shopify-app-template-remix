@@ -5,9 +5,7 @@ import {
   LATEST_API_VERSION,
   JwtPayload,
   LogSeverity,
-  Session,
 } from "@shopify/shopify-api";
-import { SessionStorage } from "@shopify/shopify-app-session-storage";
 import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memory";
 
 import { AppConfigArg } from "../config-types";
@@ -15,7 +13,7 @@ import { AppConfigArg } from "../config-types";
 // eslint-disable-next-line import/no-mutable-exports
 export function testConfig(
   overrides: Partial<AppConfigArg> = {}
-): AppConfigArg & { sessionStorage: SessionStorage } {
+): AppConfigArg {
   return {
     apiKey: "testApiKey",
     apiSecretKey: "testApiSecretKey",
@@ -50,7 +48,7 @@ export function getJwt(
   const date = new Date();
   const payload = {
     iss: `${TEST_SHOP}/admin`,
-    dest: `https://${TEST_SHOP}`,
+    dest: TEST_SHOP,
     aud: apiKey,
     sub: "12345",
     exp: date.getTime() / 1000 + 3600,
@@ -89,20 +87,6 @@ export function createTestHmac(secretKey: string, body: string): string {
     .createHmac("sha256", secretKey)
     .update(body, "utf8")
     .digest("base64");
-}
-
-export async function setUpValidSession(sessionStorage: SessionStorage) {
-  const session = new Session({
-    id: `offline_${TEST_SHOP}`,
-    shop: TEST_SHOP,
-    isOnline: false,
-    state: "test",
-    accessToken: "totally_real_token",
-    scope: "testScope",
-  });
-  await sessionStorage.storeSession(session);
-
-  return session;
 }
 
 export function signRequestCookie({

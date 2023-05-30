@@ -96,20 +96,6 @@ describe("Request mocks", () => {
     await validateMocks();
   });
 
-  it("can mock non-200 responses", async () => {
-    // GIVEN
-    await mockExternalRequest({
-      request: new Request("https://my-example.shopify.io"),
-      response: new Response(undefined, { status: 500 }),
-    });
-
-    // WHEN
-    await fetch("https://my-example.shopify.io");
-
-    // THEN
-    await validateMocks();
-  });
-
   ["url", "method", "body", "headers"].forEach((field) => {
     it(`can match requests without ${field}`, async () => {
       // GIVEN

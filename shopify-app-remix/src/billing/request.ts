@@ -63,11 +63,11 @@ function redirectOutOfApp(
   // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28374220
   if (isXhrRequest) {
     // TODO Check this with the beta flag disabled (with the bounce page)
-    // Remix is not including the X-Shopify-API-Request-Failure-Reauthorize-Url when throwing a Response
+    // Remix is not including the X-Shopify-API-Request-Failure-Reauthorize-Url when throwing a 401 Response
     // https://github.com/remix-run/remix/issues/5356
     throw new Response(undefined, {
-      status: 302,
-      statusText: "Redirect",
+      status: 401,
+      statusText: "Unauthorized",
       headers: {
         "X-Shopify-API-Request-Failure-Reauthorize-Url": url,
       },
@@ -81,7 +81,6 @@ function redirectOutOfApp(
 
     return redirect(`${config.auth.exitIframePath}?${params.toString()}`);
   } else {
-    // This will only ever happen for non-embedded apps, because the authenticator will stop before reaching this point
     return redirect(url);
   }
 }
