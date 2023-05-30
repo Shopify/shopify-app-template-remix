@@ -1,9 +1,7 @@
-import semver from "semver";
 import "./shopify-api-adapter";
 import {
   ConfigInterface as ApiConfig,
   ConfigParams,
-  FeatureDeprecatedError,
   LATEST_API_VERSION,
   Shopify,
   ShopifyError,
@@ -20,6 +18,7 @@ import { registerWebhooksFactory } from "./auth/webhooks";
 import { AuthStrategy } from "./auth/admin/authenticate";
 import { authenticateWebhookFactory } from "./auth/webhooks/authenticate";
 import { authenticateStorefrontFactory } from "./auth/storefront/authenticate";
+import { overrideLogger } from "./override-logger";
 
 export { ShopifyApp } from "./types";
 
@@ -37,12 +36,10 @@ export function shopifyApp<
 >(appConfig: Config): ShopifyApp<Config> {
   const api = deriveApi<Resources>(appConfig);
   const config = deriveConfig<Storage>(appConfig, api.config);
-  const logger = overrideLoggerPackage(api.logger);
+  const logger = overrideLogger(api.logger);
 
   if (appConfig.webhooks) {
-    // TODO: The any is a temporary workaround until the library supports the new webhook format
-    // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28352645
-    api.webhooks.addHandlers(appConfig.webhooks as any);
+    api.webhooks.addHandlers(appConfig.webhooks);
   }
 
   const params: BasicParams = { api, config, logger };
@@ -119,42 +116,5 @@ function deriveConfig<Storage extends SessionStorage>(
       patchSessionTokenPath: authPathPrefix + "/session-token",
       exitIframePath: authPathPrefix + "/exit-iframe",
     },
-  };
-}
-
-// TODO This has been copied from shopify-app-express, it should be extracted into a shared package
-// https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28358070
-function overrideLoggerPackage(logger: Shopify["logger"]): Shopify["logger"] {
-  const baseContext = { package: "shopify-app" };
-
-  const warningFunction: Shopify["logger"]["warning"] = (
-    message,
-    context = {}
-  ) => logger.warning(message, { ...baseContext, ...context });
-
-  function deprecated(warningFunction: Shopify["logger"]["warning"]) {
-    return function (version: string, message: string): Promise<void> {
-      if (semver.gte(SHOPIFY_REMIX_LIBRARY_VERSION, version)) {
-        throw new FeatureDeprecatedError(
-          `Feature was deprecated in version ${version}`
-        );
-      }
-
-      return warningFunction(`[Deprecated | ${version}] ${message}`);
-    };
-  }
-
-  return {
-    ...logger,
-    log: (severity, message, context = {}) =>
-      logger.log(severity, message, { ...baseContext, ...context }),
-    debug: (message, context = {}) =>
-      logger.debug(message, { ...baseContext, ...context }),
-    info: (message, context = {}) =>
-      logger.info(message, { ...baseContext, ...context }),
-    warning: warningFunction,
-    error: (message, context = {}) =>
-      logger.error(message, { ...baseContext, ...context }),
-    deprecated: deprecated(warningFunction),
   };
 }
