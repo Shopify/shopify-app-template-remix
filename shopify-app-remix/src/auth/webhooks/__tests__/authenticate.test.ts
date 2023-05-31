@@ -91,35 +91,33 @@ describe("Webhook validation", () => {
     expect(response.status).toBe(400);
   });
 
-  [
+  it.each([
     "X-Shopify-Shop-Domain",
     "X-Shopify-Topic",
     "X-Shopify-API-Version",
     "X-Shopify-Webhook-Id",
     "X-Shopify-Hmac-Sha256",
-  ].forEach((header) => {
-    it(`throws a 400 when header ${header} is missing`, async () => {
-      // GIVEN
-      const config = testConfig();
-      const shopify = shopifyApp(config);
+  ])("throws a 400 when header %s is missing", async (header) => {
+    // GIVEN
+    const config = testConfig();
+    const shopify = shopifyApp(config);
 
-      // WHEN
-      const response = await getThrownResponse(
-        shopify.authenticate.webhook,
-        new Request(`${shopify.config.appUrl}/webhooks`, {
-          method: "POST",
-          body: JSON.stringify({}),
-          headers: webhookHeaders(
-            shopify.config.apiSecretKey,
-            JSON.stringify({}),
-            { [header]: "" }
-          ),
-        })
-      );
+    // WHEN
+    const response = await getThrownResponse(
+      shopify.authenticate.webhook,
+      new Request(`${shopify.config.appUrl}/webhooks`, {
+        method: "POST",
+        body: JSON.stringify({}),
+        headers: webhookHeaders(
+          shopify.config.apiSecretKey,
+          JSON.stringify({}),
+          { [header]: "" }
+        ),
+      })
+    );
 
-      // THEN
-      expect(response.status).toBe(400);
-    });
+    // THEN
+    expect(response.status).toBe(400);
   });
 
   it("throws a 404 on missing sessions", async () => {

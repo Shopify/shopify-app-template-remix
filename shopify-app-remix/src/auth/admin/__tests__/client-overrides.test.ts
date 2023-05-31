@@ -21,26 +21,30 @@ import { APP_BRIDGE_REAUTH_HEADER } from "../../../auth/helpers/redirect-with-ap
 import { AdminApiContext } from "../../../config-types";
 
 describe("admin.authenticate context", () => {
-  const TEST_CASES = {
-    "REST client": {
+  const TEST_CASES = [
+    {
+      testGroup: "REST client",
       mockRequest: mockRestRequest,
       action: async (admin: AdminApiContext, _session: Session) =>
         await admin.rest.get({ path: "/customers.json" }),
     },
-    "REST resources": {
+    {
+      testGroup: "REST resources",
       mockRequest: mockRestRequest,
       action: async (admin: AdminApiContext, session: Session) =>
         await admin.rest.Customer.all({ session }),
     },
-    "GraphQL client": {
+    {
+      testGroup: "GraphQL client",
       mockRequest: mockGraphqlRequest,
       action: async (admin: AdminApiContext, _session: Session) =>
         await admin.graphql.query({ data: "{ shop { name } }" }),
     },
-  };
+  ];
 
-  Object.entries(TEST_CASES).forEach(([testGroup, { mockRequest, action }]) => {
-    describe(testGroup, () => {
+  describe.each(TEST_CASES)(
+    "$_testGroup",
+    ({ testGroup: _testGroup, mockRequest, action }) => {
       it("redirects to auth when request receives a 401 response and not embedded", async () => {
         // GIVEN
         const { admin, session } = await setUpNonEmbeddedFlow();
@@ -141,8 +145,8 @@ describe("admin.authenticate context", () => {
         expect(pathname).toEqual(shopify.config.auth.path);
         expect(searchParams.get("shop")).toEqual(TEST_SHOP);
       });
-    });
-  });
+    }
+  );
 
   async function setUpEmbeddedFlow() {
     const shopify = shopifyApp({ ...testConfig(), restResources });
