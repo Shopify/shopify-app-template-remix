@@ -1,6 +1,7 @@
 import { shopifyApp } from "../../..";
 import {
-  SHOPIFY_HOST,
+  TEST_SHOP,
+  expectBeginAuthRedirect,
   getThrownResponse,
   testConfig,
 } from "../../../__tests__/test-helper";
@@ -44,25 +45,13 @@ describe("authorize.admin auth path", () => {
     const shopify = shopifyApp(config);
 
     // WHEN
-    const url = `${shopify.config.appUrl}/auth?shop=${SHOPIFY_HOST}`;
+    const url = `${shopify.config.appUrl}/auth?shop=${TEST_SHOP}`;
     const response = await getThrownResponse(
       shopify.authenticate.admin,
       new Request(url)
     );
 
     // THEN
-    const { hostname, pathname, searchParams } = new URL(
-      response.headers.get("location")!
-    );
-
-    expect(response.status).toBe(302);
-    expect(hostname).toBe(SHOPIFY_HOST);
-    expect(pathname).toBe("/admin/oauth/authorize");
-    expect(searchParams.get("client_id")).toBe(config.apiKey);
-    expect(searchParams.get("scope")).toBe(config.scopes!.toString());
-    expect(searchParams.get("redirect_uri")).toBe(
-      `${config.appUrl}/auth/callback`
-    );
-    expect(searchParams.get("state")).toStrictEqual(expect.any(String));
+    expectBeginAuthRedirect(shopify.config, response);
   });
 });

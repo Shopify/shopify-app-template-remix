@@ -184,7 +184,10 @@ export class AuthStrategy<
     if (this.config.isEmbeddedApp) {
       const host = api.utils.sanitizeHost(url.searchParams.get("host")!);
       if (!host) {
-        throw new Error("Host search param is not present");
+        throw new Response(undefined, {
+          status: 400,
+          statusText: "Bad Request",
+        });
       }
     }
 
@@ -192,7 +195,7 @@ export class AuthStrategy<
     // but an alternative would be to show a page for the user to fill in the shop, like shopify_app does.
     const shop = api.utils.sanitizeShop(url.searchParams.get("shop")!);
     if (!shop) {
-      throw new Error("Shop search param is not present");
+      throw new Response(undefined, { status: 400, statusText: "Bad Request" });
     }
   }
 
@@ -223,15 +226,44 @@ export class AuthStrategy<
 
     if (config.isEmbeddedApp && !isEmbedded) {
       try {
+        logger.debug("Ensuring offline session is valid before embedding", {
+          shop,
+        });
         await this.testSession(offlineSession);
+
+        logger.debug("Offline session is still valid, embedding app", { shop });
       } catch (error) {
-        if (error instanceof HttpResponseError && error.response.code === 401) {
-          logger.info("Shop session is no longer valid, redirecting to OAuth", {
-            shop,
-          });
-          throw await beginAuth({ api, config, logger }, request, false, shop);
+        if (error instanceof HttpResponseError) {
+          if (error.response.code === 401) {
+            logger.info(
+              "Shop session is no longer valid, redirecting to OAuth",
+              {
+                shop,
+              }
+            );
+            throw await beginAuth(
+              { api, config, logger },
+              request,
+              false,
+              shop
+            );
+          } else {
+            const message = JSON.stringify(error.response.body, null, 2);
+            logger.error(
+              `Unexpected error during session validation: ${message}`,
+              { shop }
+            );
+
+            throw new Response(undefined, {
+              status: error.response.code,
+              statusText: error.response.statusText,
+            });
+          }
         } else {
-          throw error;
+          throw new Response(undefined, {
+            status: 500,
+            statusText: "Internal Server Error",
+          });
         }
       }
     }
@@ -246,12 +278,12 @@ export class AuthStrategy<
 
     await client.query({
       data: `#graphql
-          query {
-            shop {
-              name
-            }
+        query {
+          shop {
+            name
           }
-        `,
+        }
+      `,
     });
   }
 
