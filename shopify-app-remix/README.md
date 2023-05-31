@@ -18,7 +18,7 @@ To follow these usage guides, you will need to:
 
 ## Getting started
 
-We will start with a brand new Remix app that uses the indie-stack:
+This package works with any Remix app. If you're starting an app from scratch, you can create a brand new Remix app that uses the indie-stack:
 
 ```bash
 npx create-remix@latest --template remix-run/indie-stack
@@ -43,19 +43,17 @@ export const shopify = shopifyApp({
   appUrl: process.env.SHOPIFY_APP_URL!,
   scopes: ["read_products"],
   apiVersion: LATEST_API_VERSION,
-  isEmbeddedApp: true,
 });
 ```
 
 | option        | description                                                                                                                                                    |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
 | apiKey        | The Client ID for your app. Copy it from your app in the Shopify partners dashboard. This is public.                                                           |
 | apiSecretKey  | The API Secret for your app. Copy it from your app in the Shopify partners dashboard. This is private. Do not commit this.                                     |
 | appUrl        | This is the URL for your app.                                                                                                                                  |
 | scopes        | What permissions your app needs. [More information](https://shopify.dev/docs/api/usage/access-scopes).                                                         |
 | apiVersion    | What versions of the [Admin API's](https://shopify.dev/docs/api/) do you want to use. If you are creating anew app use LATEST_API_VERSION.                     |
-| restResources | What version of the [Shopify Admin REST API](https://shopify.dev/docs/api/admin-rest) do you want to use. If you are creating anew app use LATEST_API_VERSION. |
-| isEmbeddedApp | Should your app render inside admin. Shopify prefers embedded unless your app has special requirements.                                                        |
+| restResources | What version of the [Shopify Admin REST API](https://shopify.dev/docs/api/admin-rest) do you want to use. If you are creating anew app use LATEST_API_VERSION. |     |
 
 This will require some environment variables. So let's create an `.env` file:
 
