@@ -10,6 +10,7 @@ import {
   signRequestCookie,
   testConfig,
 } from "../../../__tests__/test-helper";
+import { APP_BRIDGE_REAUTH_HEADER } from "../../../auth/helpers/redirect-with-app-bridge-headers";
 
 describe("authorize.session token header path", () => {
   describe("errors", () => {
@@ -52,7 +53,7 @@ describe("authorize.session token header path", () => {
         expect(response.status).toBe(401);
 
         const { origin, pathname, searchParams } = new URL(
-          response.headers.get("X-Shopify-API-Request-Failure-Reauthorize-Url")!
+          response.headers.get(APP_BRIDGE_REAUTH_HEADER)!
         );
         expect(origin).toBe(shopify.config.appUrl);
         expect(pathname).toBe(shopify.config.auth.path);
@@ -83,7 +84,7 @@ describe("authorize.session token header path", () => {
         expect(response.status).toBe(401);
 
         const { origin, pathname, searchParams } = new URL(
-          response.headers.get("X-Shopify-API-Request-Failure-Reauthorize-Url")!
+          response.headers.get(APP_BRIDGE_REAUTH_HEADER)!
         );
         expect(origin).toBe(shopify.config.appUrl);
         expect(pathname).toBe(shopify.config.auth.path);

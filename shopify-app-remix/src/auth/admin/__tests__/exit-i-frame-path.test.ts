@@ -56,4 +56,20 @@ describe("authorize.admin exit iframe path", () => {
       `<script>shopify.redirectTo("${decodeURIComponent(exitTo)}")</script>`
     );
   });
+
+  test("Allows relative paths as exitIframe param", async () => {
+    // GIVEN
+    const shopify = shopifyApp(testConfig());
+
+    // WHEN
+    const exitTo = encodeURIComponent("/my-path");
+    const url = `${shopify.config.appUrl}${shopify.config.auth.exitIframePath}?exitIframe=${exitTo}`;
+    const response = await getThrownResponse(
+      shopify.authenticate.admin,
+      new Request(url)
+    );
+
+    // THEN
+    expect(response.status).toBe(200);
+  });
 });
