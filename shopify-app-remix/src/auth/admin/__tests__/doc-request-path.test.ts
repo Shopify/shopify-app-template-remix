@@ -1,8 +1,7 @@
 import {
-  HttpResponseError,
+  LogSeverity,
   SESSION_COOKIE_NAME,
   Session,
-  ShopifyError,
 } from "@shopify/shopify-api";
 
 import { shopifyApp } from "../../..";
@@ -11,6 +10,7 @@ import {
   GRAPHQL_URL,
   SHOPIFY_HOST,
   TEST_SHOP,
+  expectBeginAuthRedirect,
   getJwt,
   getThrownResponse,
   setUpValidSession,
@@ -21,26 +21,26 @@ import { signRequestCookie } from "../../../__tests__/test-helper";
 
 describe("authorize.admin doc request path", () => {
   describe("errors", () => {
-    [
-      { shop: TEST_SHOP, host: undefined, expected: ShopifyError },
-      { shop: TEST_SHOP, host: "some-domain.test", expected: ShopifyError },
-      { shop: undefined, host: BASE64_HOST, expected: ShopifyError },
-      { shop: "invalid", host: BASE64_HOST, expected: ShopifyError },
-    ].forEach(({ shop, host, expected }) => {
-      it(`throws if the shop is ${shop} and the host is ${host}`, async () => {
-        // GIVEN
-        const shopify = shopifyApp(testConfig());
-        const searchParams = new URLSearchParams();
-        if (shop) searchParams.set("shop", shop);
-        if (host) searchParams.set("host", host);
+    it.each([
+      { shop: TEST_SHOP, host: undefined },
+      { shop: TEST_SHOP, host: "invalid-domain.test" },
+      { shop: undefined, host: BASE64_HOST },
+      { shop: "invalid", host: BASE64_HOST },
+    ])("throws when %s", async ({ shop, host }) => {
+      // GIVEN
+      const shopify = shopifyApp(testConfig());
+      const searchParams = new URLSearchParams();
+      if (shop) searchParams.set("shop", shop);
+      if (host) searchParams.set("host", host);
 
-        // THEN
-        await expect(() =>
-          shopify.authenticate.admin(
-            new Request(`${shopify.config.appUrl}?${searchParams.toString()}`)
-          )
-        ).rejects.toThrowError(expected);
-      });
+      // WHEN
+      const response = await getThrownResponse(
+        shopify.authenticate.admin,
+        new Request(`${shopify.config.appUrl}?${searchParams.toString()}`)
+      );
+
+      // THEN
+      expect(response.status).toBe(400);
     });
 
     it("redirects to auth when not embedded and there is no offline session", async () => {
@@ -56,11 +56,7 @@ describe("authorize.admin doc request path", () => {
       );
 
       // THEN
-      expect(response.status).toBe(302);
-
-      const { hostname, pathname } = new URL(response.headers.get("location")!);
-      expect(hostname).toBe(TEST_SHOP);
-      expect(pathname).toBe("/admin/oauth/authorize");
+      expectBeginAuthRedirect(shopify.config, response);
     });
 
     it("redirects to exit-iframe when embedded and there is no offline session", async () => {
@@ -109,31 +105,38 @@ describe("authorize.admin doc request path", () => {
       );
 
       // THEN
-      expect(response.status).toBe(302);
-
-      const { hostname, pathname } = new URL(response.headers.get("location")!);
-      expect(hostname).toBe(TEST_SHOP);
-      expect(pathname).toBe("/admin/oauth/authorize");
+      expectBeginAuthRedirect(shopify.config, response);
     });
 
-    it("throws other errors when not embedded on an embedded app and the request fails", async () => {
+    it("returns non-401 codes when not embedded on an embedded app and the request fails", async () => {
       // GIVEN
       const shopify = shopifyApp(testConfig());
       await setUpValidSession(shopify.config.sessionStorage);
 
       await mockExternalRequest({
         request: new Request(GRAPHQL_URL, { method: "POST" }),
-        response: new Response(undefined, { status: 500 }),
+        response: new Response(
+          JSON.stringify({
+            errors: [{ message: "something went wrong!" }],
+          }),
+          { status: 500, statusText: "Internal Server Error" }
+        ),
       });
 
-      // THEN
-      await expect(() =>
-        shopify.authenticate.admin(
-          new Request(
-            `${shopify.config.appUrl}?shop=${TEST_SHOP}&host=${BASE64_HOST}`
-          )
+      // WHEN
+      const response = await getThrownResponse(
+        shopify.authenticate.admin,
+        new Request(
+          `${shopify.config.appUrl}?shop=${TEST_SHOP}&host=${BASE64_HOST}`
         )
-      ).rejects.toThrowError(HttpResponseError);
+      );
+
+      // THEN
+      expect(response.status).toBe(500);
+      expect(shopify.config.logger.log).toHaveBeenCalledWith(
+        LogSeverity.Error,
+        expect.stringContaining("something went wrong!")
+      );
     });
 
     it("redirects to the embedded app URL if there is a valid session but the app isn't embedded yet", async () => {
@@ -289,11 +292,7 @@ describe("authorize.admin doc request path", () => {
       );
 
       // THEN
-      expect(response.status).toBe(302);
-
-      const { hostname, pathname } = new URL(response.headers.get("location")!);
-      expect(hostname).toBe(TEST_SHOP);
-      expect(pathname).toBe("/admin/oauth/authorize");
+      expectBeginAuthRedirect(shopify.config, response);
     });
 
     it("redirects to auth if there is no session for non-embedded apps when at the top level", async () => {
@@ -318,11 +317,7 @@ describe("authorize.admin doc request path", () => {
       );
 
       // THEN
-      expect(response.status).toBe(302);
-
-      const { hostname, pathname } = new URL(response.headers.get("location")!);
-      expect(hostname).toBe(TEST_SHOP);
-      expect(pathname).toBe("/admin/oauth/authorize");
+      expectBeginAuthRedirect(shopify.config, response);
     });
 
     it("redirects to auth if the session is no longer valid for non-embedded apps when at the top level", async () => {
@@ -349,11 +344,7 @@ describe("authorize.admin doc request path", () => {
       );
 
       // THEN
-      expect(response.status).toBe(302);
-
-      const { hostname, pathname } = new URL(response.headers.get("location")!);
-      expect(hostname).toBe(TEST_SHOP);
-      expect(pathname).toBe("/admin/oauth/authorize");
+      expectBeginAuthRedirect(shopify.config, response);
     });
   });
 

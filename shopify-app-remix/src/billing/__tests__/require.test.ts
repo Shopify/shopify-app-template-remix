@@ -10,6 +10,7 @@ import {
   BASE64_HOST,
   GRAPHQL_URL,
   TEST_SHOP,
+  expectBeginAuthRedirect,
   getJwt,
   getThrownResponse,
   setUpValidSession,
@@ -141,11 +142,7 @@ describe("Billing require", () => {
     );
 
     // THEN
-    expect(response.status).toEqual(302);
-
-    const locationUrl = new URL(response.headers.get("Location")!);
-    expect(locationUrl.host).toEqual(TEST_SHOP);
-    expect(locationUrl.pathname).toEqual("/admin/oauth/authorize");
+    expectBeginAuthRedirect(shopify.config, response);
   });
 
   it("redirects to exit-iframe with authentication using app bridge when embedded and Shopify invalidated the session", async () => {
