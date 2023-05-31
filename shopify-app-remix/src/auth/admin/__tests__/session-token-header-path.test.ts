@@ -31,8 +31,8 @@ describe("authorize.session token header path", () => {
       expect(response.status).toBe(401);
     });
 
-    [true, false].forEach((isOnline) => {
-      it(`returns app bridge redirection headers if there is no session (isOnline: ${isOnline})`, async () => {
+    describe.each([true, false])("when isOnline: %s", (isOnline) => {
+      it(`returns app bridge redirection headers if there is no session`, async () => {
         // GIVEN
         const shopify = shopifyApp(testConfig({ useOnlineTokens: isOnline }));
 
@@ -60,7 +60,7 @@ describe("authorize.session token header path", () => {
         expect(searchParams.get("shop")).toBe(TEST_SHOP);
       });
 
-      it(`returns app bridge redirection headers if the session is no longer valid (isOnline: ${isOnline})`, async () => {
+      it(`returns app bridge redirection headers if the session is no longer valid`, async () => {
         // GIVEN
         const shopify = shopifyApp(
           testConfig({ useOnlineTokens: isOnline, scopes: ["otherTestScope"] })
@@ -93,9 +93,10 @@ describe("authorize.session token header path", () => {
     });
   });
 
-  describe("success", () => {
-    [true, false].forEach((isOnline) => {
-      it(`returns context when session exists for embedded apps (isOnline: ${isOnline})`, async () => {
+  describe.each([true, false])(
+    "success cases when isOnline: %s",
+    (isOnline) => {
+      it("returns context when session exists for embedded apps", async () => {
         // GIVEN
         const shopify = shopifyApp(testConfig({ useOnlineTokens: isOnline }));
 
@@ -124,7 +125,7 @@ describe("authorize.session token header path", () => {
         expect(admin.graphql.session).toBe(testSession);
       });
 
-      it(`returns context when session exists for non-embedded apps (isOnline: ${isOnline})`, async () => {
+      it("returns context when session exists for non-embedded apps", async () => {
         // GIVEN
         const shopify = shopifyApp({
           ...testConfig(),
@@ -158,6 +159,6 @@ describe("authorize.session token header path", () => {
         expect(admin.rest.session).toBe(testSession);
         expect(admin.graphql.session).toBe(testSession);
       });
-    });
-  });
+    }
+  );
 });

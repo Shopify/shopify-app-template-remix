@@ -68,34 +68,32 @@ describe("override logger", () => {
     );
   });
 
-  [
+  it.each([
     LogSeverity.Debug,
     LogSeverity.Info,
     LogSeverity.Warning,
     LogSeverity.Error,
-  ].forEach((level) => {
-    it(`logs messages normally at level ${level}`, () => {
-      // GIVEN
-      const logger = overrideLogger(shopifyApi(VALID_API_CONFIG).logger);
+  ])("logs messages normally at level %s", (level) => {
+    // GIVEN
+    const logger = overrideLogger(shopifyApi(VALID_API_CONFIG).logger);
 
-      // WHEN
-      switch (level) {
-        case LogSeverity.Debug:
-          logger.debug("Test debug message");
-          break;
-        case LogSeverity.Info:
-          logger.info("Test info message");
-          break;
-        case LogSeverity.Warning:
-          logger.warning("Test warning message");
-          break;
-        case LogSeverity.Error:
-          logger.error("Test error message");
-          break;
-      }
+    // WHEN
+    switch (level) {
+      case LogSeverity.Debug:
+        logger.debug("Test debug message");
+        break;
+      case LogSeverity.Info:
+        logger.info("Test info message");
+        break;
+      case LogSeverity.Warning:
+        logger.warning("Test warning message");
+        break;
+      case LogSeverity.Error:
+        logger.error("Test error message");
+        break;
+    }
 
-      // THEN
-      expect(LOG_FN).toHaveBeenCalledWith(level, expect.anything());
-    });
+    // THEN
+    expect(LOG_FN).toHaveBeenCalledWith(level, expect.anything());
   });
 });

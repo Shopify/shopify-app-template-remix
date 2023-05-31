@@ -2,6 +2,7 @@ import { redirect } from "@remix-run/server-runtime";
 import {
   CookieNotFound,
   GraphqlParams,
+  GraphqlQueryError,
   HttpResponseError,
   InvalidHmacError,
   InvalidOAuthError,
@@ -239,9 +240,7 @@ export class AuthStrategy<
           if (error.response.code === 401) {
             logger.info(
               "Shop session is no longer valid, redirecting to OAuth",
-              {
-                shop,
-              }
+              { shop }
             );
             throw await beginAuth(
               { api, config, logger },
@@ -261,7 +260,17 @@ export class AuthStrategy<
               statusText: error.response.statusText,
             });
           }
-        } else {
+        } else if (error instanceof GraphqlQueryError) {
+          const context: Record<string, string> = { shop };
+          if (error.response) {
+            context.response = JSON.stringify(error.response);
+          }
+
+          logger.error(
+            `Unexpected error during session validation: ${error.message}`,
+            context
+          );
+
           throw new Response(undefined, {
             status: 500,
             statusText: "Internal Server Error",

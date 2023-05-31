@@ -110,8 +110,9 @@ describe("Request mocks", () => {
     await validateMocks();
   });
 
-  ["url", "method", "body", "headers"].forEach((field) => {
-    it(`can match requests without ${field}`, async () => {
+  it.each(["url", "method", "body", "headers"])(
+    "can match requests without %s",
+    async (field) => {
       // GIVEN
       const request = new Request("https://my-example.shopify.io", {
         method: "POST",
@@ -134,8 +135,8 @@ describe("Request mocks", () => {
 
       // THEN
       await validateMocks();
-    });
-  });
+    }
+  );
 
   it("throws if an expected request isn't made", async () => {
     // GIVEN

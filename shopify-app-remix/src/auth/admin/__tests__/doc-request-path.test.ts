@@ -116,9 +116,7 @@ describe("authorize.admin doc request path", () => {
       await mockExternalRequest({
         request: new Request(GRAPHQL_URL, { method: "POST" }),
         response: new Response(
-          JSON.stringify({
-            errors: [{ message: "something went wrong!" }],
-          }),
+          JSON.stringify({ errors: [{ message: "Something went wrong!" }] }),
           { status: 500, statusText: "Internal Server Error" }
         ),
       });
@@ -135,7 +133,35 @@ describe("authorize.admin doc request path", () => {
       expect(response.status).toBe(500);
       expect(shopify.config.logger.log).toHaveBeenCalledWith(
         LogSeverity.Error,
-        expect.stringContaining("something went wrong!")
+        expect.stringContaining("Something went wrong!")
+      );
+    });
+
+    it("returns a 500 when not embedded on an embedded app and the request fails", async () => {
+      // GIVEN
+      const shopify = shopifyApp(testConfig());
+      await setUpValidSession(shopify.config.sessionStorage);
+
+      await mockExternalRequest({
+        request: new Request(GRAPHQL_URL, { method: "POST" }),
+        response: new Response(
+          JSON.stringify({ errors: ["Something went wrong!"] })
+        ),
+      });
+
+      // WHEN
+      const response = await getThrownResponse(
+        shopify.authenticate.admin,
+        new Request(
+          `${shopify.config.appUrl}?shop=${TEST_SHOP}&host=${BASE64_HOST}`
+        )
+      );
+
+      // THEN
+      expect(response.status).toBe(500);
+      expect(shopify.config.logger.log).toHaveBeenCalledWith(
+        LogSeverity.Error,
+        expect.stringContaining("Something went wrong!")
       );
     });
 
@@ -348,9 +374,10 @@ describe("authorize.admin doc request path", () => {
     });
   });
 
-  describe("success", () => {
-    [true, false].forEach((isOnline) => {
-      it(`returns the context if the session is valid and the app is embedded (isOnline: ${isOnline})`, async () => {
+  describe.each([true, false])(
+    "success cases when isOnline: %s",
+    (isOnline) => {
+      it("returns the context if the session is valid and the app is embedded", async () => {
         // GIVEN
         const shopify = shopifyApp(testConfig({ useOnlineTokens: isOnline }));
 
@@ -380,7 +407,7 @@ describe("authorize.admin doc request path", () => {
         expect(admin.graphql.session).toBe(testSession);
       });
 
-      it(`returns the context if the session is valid and the app is not embedded (isOnline: ${isOnline}`, async () => {
+      it("returns the context if the session is valid and the app is not embedded", async () => {
         // GIVEN
         const shopify = shopifyApp({ ...testConfig(), isEmbeddedApp: false });
 
@@ -411,6 +438,6 @@ describe("authorize.admin doc request path", () => {
         expect(admin.rest.session).toBe(testSession);
         expect(admin.graphql.session).toBe(testSession);
       });
-    });
-  });
+    }
+  );
 });
