@@ -30,8 +30,8 @@
   },
   "devDependencies": {
     "@remix-run/dev": "^1.15.0",
-    "@shopify/app": "^0.0.0-nightly-0",
-    "@shopify/cli": "^0.0.0-nightly-0"
+    "@shopify/app": "^3",
+    "@shopify/cli": "^3"
   },
   "workspaces": {
     "packages": [
