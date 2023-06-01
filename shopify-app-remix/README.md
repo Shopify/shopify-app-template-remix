@@ -46,14 +46,16 @@ export const shopify = shopifyApp({
 });
 ```
 
+A description of these config options:
+
 | option        | description                                                                                                                                                    |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | apiKey        | The Client ID for your app. Copy it from your app in the Shopify partners dashboard. This is public.                                                           |
 | apiSecretKey  | The API Secret for your app. Copy it from your app in the Shopify partners dashboard. This is private. Do not commit this.                                     |
 | appUrl        | This is the URL for your app.                                                                                                                                  |
 | scopes        | What permissions your app needs. [More information](https://shopify.dev/docs/api/usage/access-scopes).                                                         |
 | apiVersion    | What versions of the [Admin API's](https://shopify.dev/docs/api/) do you want to use. If you are creating anew app use LATEST_API_VERSION.                     |
-| restResources | What version of the [Shopify Admin REST API](https://shopify.dev/docs/api/admin-rest) do you want to use. If you are creating anew app use LATEST_API_VERSION. |     |
+| restResources | What version of the [Shopify Admin REST API](https://shopify.dev/docs/api/admin-rest) do you want to use. If you are creating anew app use LATEST_API_VERSION. |
 
 This will require some environment variables. So let's create an `.env` file:
 
@@ -274,7 +276,3 @@ const shopify = shopifyApp({
 ```
 
 Note that this requires a `schema.prisma` file as defined in the README for [Prisma app session storage](https://github.com/Shopify/shopify-app-js/blob/release-candidate/packages/shopify-app-session-storage-prisma/README.md)
-
-## Next steps
-
-Now that your app is up and running, you can learn more about the `shopifyApp` object in [the reference docs](./docs/reference/shopifyApp.md).
