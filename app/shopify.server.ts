@@ -40,4 +40,5 @@ export const shopify = shopifyApp({
       interval: BillingInterval.Every30Days,
     },
   },
+  apiVersion: "2019-04" as any,
 });

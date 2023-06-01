@@ -1,7 +1,7 @@
 import React from "react";
 import { ActionArgs, LoaderArgs, json } from "@remix-run/node";
 import type { HeadersFunction } from "@remix-run/node"; // or cloudflare/deno
-import { useLoaderData, useTransition } from "@remix-run/react";
+import { useActionData, useLoaderData, useTransition } from "@remix-run/react";
 
 import { shopify } from "../shopify.server";
 import {
@@ -10,14 +10,14 @@ import {
   Layout,
   TextContainer,
   Image,
-  Stack,
+  HorizontalStack,
   Link,
   Heading,
 } from "@shopify/polaris";
-import { ProductsCard } from "../components/ProductsCard.jsx";
+import { ProductsCard } from "../components/ProductsCard.js";
+import { ListProductsCard } from "../components/ListProductsCard";
 // TODO figure out why this shows as an error in vscode only
 // @ts-ignore
-import trophyImage from "../assets/home-trophy.png";
 import { useSubmit } from "@remix-run/react";
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -28,119 +28,112 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export async function action({ request }: ActionArgs) {
   const { admin } = await shopify.authenticate.admin(request);
+  const action = (await request.formData()).get("action");
+  console.log("~ACTION~", action);
 
-  await Promise.all(
-    [...Array(5).keys()].map(async (i) => {
-      await admin.graphql.query({
+  switch (action) {
+    case "create-products":
+      await Promise.all(
+        [...Array(5).keys()].map(async i => {
+          await admin.graphql.query({
+            data: {
+              query: `#graphql
+                mutation populateProduct($input: ProductInput!) {
+                  productCreate(input: $input) {
+                    product {
+                      id
+                    }
+                  }
+                }
+              `,
+              variables: {
+                input: {
+                  title: `${randomTitle()}`,
+                  variants: [{ price: randomPrice() }],
+                },
+              },
+            },
+          });
+        })
+      );
+
+      const result = await admin.rest.get({ path: "/products/count.json" });
+
+      // TODO: Returning the parsed body as a string/object might be confusing for Remix users. We should consider returning
+      // the body as a stream, or renaming it to something that indicates it's a string.
+      // https://github.com/Shopify/shopify-app-template-remix/issues/55
+      return json(result.body);
+
+    case "list-products":
+      const res = await admin.graphql.query({
         data: {
           query: `#graphql
-            mutation populateProduct($input: ProductInput!) {
-              productCreate(input: $input) {
-                product {
-                  id
+            query getProducts {
+              products(first: 100) {
+                edges {
+                  node {
+                    id
+                    title
+                    handle
+                  }
                 }
               }
             }
           `,
-          variables: {
-            input: {
-              title: `${randomTitle()}`,
-              variants: [{ price: randomPrice() }],
-            },
-          },
         },
       });
-    })
-  );
 
-  const result = await admin.rest.get({ path: "/products/count.json" });
+      return json(res.body);
 
-  // TODO: Returning the parsed body as a string/object might be confusing for Remix users. We should consider returning
-  // the body as a stream, or renaming it to something that indicates it's a string.
-  // https://github.com/Shopify/shopify-app-template-remix/issues/55
-  return json(result.body);
+    default:
+      console.log("NO ACTION");
+      return null;
+  }
 }
 
 export default function Index() {
   const data = useLoaderData();
+  const actionData = useActionData();
   const transition = useTransition();
   const submit = useSubmit();
+
+  console.log("data", actionData, "|||");
 
   function handlePopulateProducts() {
     submit({ action: "create-products" }, { replace: true, method: "POST" });
   }
 
+  const handleProductList = () => {
+    submit({ action: "list-products" }, { replace: true, method: "POST" });
+  };
+
   const populatingProducts =
     transition.state == "submitting" &&
     transition.submission.formData.get("action") == "create-products";
 
+  const fetchingProductList =
+    transition.state == "submitting" &&
+    transition.submission.formData.get("action") == "list-products";
+
   return (
     <Page narrowWidth>
       <Layout>
-        <Layout.Section>
-          <Card sectioned>
-            <Stack
-              wrap={false}
-              spacing="extraTight"
-              distribution="trailing"
-              alignment="center"
-            >
-              <Stack.Item fill>
-                <TextContainer spacing="loose">
-                  <Heading>Nice work on building a Shopify app 🎉</Heading>
-                  <p>
-                    Your app is ready to explore! It contains everything you
-                    need to get started including the{" "}
-                    <Link url="https://polaris.shopify.com/" external>
-                      Polaris design system
-                    </Link>
-                    ,{" "}
-                    <Link url="https://shopify.dev/api/admin-graphql" external>
-                      Shopify Admin API
-                    </Link>
-                    , and{" "}
-                    <Link
-                      url="https://shopify.dev/apps/tools/app-bridge"
-                      external
-                    >
-                      App Bridge
-                    </Link>{" "}
-                    UI library and components.
-                  </p>
-                  <p>
-                    Ready to go? Start populating your app with some sample
-                    products to view and test in your store.{" "}
-                  </p>
-                  <p>
-                    Learn more about building out your app in{" "}
-                    <Link
-                      url="https://shopify.dev/apps/getting-started/add-functionality"
-                      external
-                    >
-                      this Shopify tutorial
-                    </Link>{" "}
-                    📚{" "}
-                  </p>
-                </TextContainer>
-              </Stack.Item>
-              <Stack.Item>
-                <div style={{ padding: "0 20px" }}>
-                  <Image
-                    source={trophyImage}
-                    alt="Nice work on building a Shopify app"
-                    width={120}
-                  />
-                </div>
-              </Stack.Item>
-            </Stack>
-          </Card>
-        </Layout.Section>
         <Layout.Section>
           <ProductsCard
             count={data?.count}
             handlePopulate={handlePopulateProducts}
             populating={populatingProducts}
           />
+          <ListProductsCard
+            loading={fetchingProductList}
+            handleList={handleProductList}
+            products={actionData?.data?.products?.edges}
+          />
+        </Layout.Section>
+        <Layout.Section>
+          <HorizontalStack align="center">
+            <Link url="/info">Click me to go to /info</Link>
+          </HorizontalStack>
         </Layout.Section>
       </Layout>
     </Page>

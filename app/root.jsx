@@ -14,7 +14,7 @@ import { json } from "@remix-run/node";
 
 export const meta = () => ({
   charset: "utf-8",
-  title: "New Remix App",
+  title: "App Config ToolKit",
   viewport: "width=device-width,initial-scale=1",
 });
 
