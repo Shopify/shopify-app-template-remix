@@ -44,7 +44,7 @@ describe("admin.authenticate context", () => {
   ];
 
   describe.each(TEST_CASES)(
-    "$_testGroup",
+    "$testGroup",
     ({ testGroup: _testGroup, mockRequest, action }) => {
       it("redirects to auth when request receives a 401 response and not embedded", async () => {
         // GIVEN
