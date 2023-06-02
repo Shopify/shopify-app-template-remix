@@ -48,9 +48,8 @@ type SessionStorageType<Config extends AppConfigArg> =
  *
  */
 export interface ShopifyApp<Config extends AppConfigArg> {
-  // TODO: We should not export this.  Let's only export sessionStorage
-  // It's the only thing a partner is likely to need.
-  config: AppConfig<SessionStorageType<Config>>;
+  // TODO: TSDOC THIS
+  sessionStorage: SessionStorageType<Config>;
   /**
    * Register webhook topics for a store using the given session. Most likely you want to use this in combination with the afterAuth hook.
    *
