@@ -43,12 +43,160 @@ type SessionStorageType<Config extends AppConfigArg> =
     ? Config["sessionStorage"]
     : SessionStorage;
 
+/**
+ * An object your app can use to interact with Shopify.
+ *
+ */
 export interface ShopifyApp<Config extends AppConfigArg> {
+  // TODO: We should not export this.  Let's only export sessionStorage
+  // It's the only thing a partner is likely to need.
   config: AppConfig<SessionStorageType<Config>>;
+  /**
+   * Register webhook topics for a store using the given session. Most likely you want to use this in combination with the afterAuth hook.
+   *
+   * @example
+   * Registering webhooks when a merchant installs your app.
+   * ```ts
+   * import { DeliveryMethod, shopifyApp } from "@shopify/shopify-app-remix";
+   *
+   * export const shopify = shopifyApp({
+   *   hooks: {
+   *     afterAuth: async ({ session }) => {
+   *       shopify.registerWebhooks({ session });
+   *     }
+   *   },
+   *   webhooks: {
+   *     APP_UNINSTALLED: {
+   *       deliveryMethod: DeliveryMethod.Http,
+   *        callbackUrl: "/webhooks",
+   *     },
+   *   },
+   *   // ...etc
+   * });
+   * ```
+   */
   registerWebhooks: RegisterWebhooks;
+
+  /**
+   * Ways to authenticate requests from different surfaces across Shopify.
+   *
+   */
   authenticate: {
+    /**
+     * Authenticate an admin Request and get back an authenticated admin context.  Use the authenticated admin context to interact with Shopify
+     *
+     * Examples of when to use this are requests from your app's UI, or requests from admin extensions.
+     *
+     * If there is no session for the Request, this will redirect the merchant to correct auth flows.
+     *
+     * @param request `Request` The incoming request to authenticate
+     * @returns `Promise<AdminContext<Config, Resources>>` An authenticated admin context
+     *
+     * @example
+     * Registering webhooks and seeding data when a merchant installs your app.
+     * ```ts
+     * // app/shopify.server.ts
+     * import { LATEST_API_VERSION, shopifyApp } from "@shopify/shopify-app-remix";
+     * import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
+     *
+     * export const shopify = shopifyApp({
+     *   restResources,
+     *   // ...etc
+     * });
+     *
+     * // app/routes/**\/*.jsx
+     * import { LoaderArgs, json } from "@remix-run/node";
+     * import { shopify } from "../../shopify.server";
+     *
+     * export async function loader({ request }: LoaderArgs) {
+     *   const {admin, session, sessionToken, billing} = shopify.authenticate.admin(request);
+     *
+     *   return json(await admin.rest.Product.count({ session }));
+     * }
+     * ```
+     */
     admin: AuthenticateAdmin<Config, RestResourcesType<Config>>;
+
+    /**
+     * Authenticate a storefront request and get back a session token
+     *
+     * An example of when to use this is a request from a checkout extension.
+     *
+     * @param request `Request` The incoming request to authenticate
+     * @returns `Promise<StorefrontContext>` An authenticated storefront context
+     *
+     * @example
+     * Authenticating a request from a checkout extension
+     *
+     * ```ts
+     * // app/routes/api/checkout.jsx
+     * import { LoaderArgs, json } from "@remix-run/node";
+     * import { shopify } from "../../shopify.server";
+     * import { getWidgets } from "~/db/widgets";
+     *
+     * export async function loader({ request }: LoaderArgs) {
+     *   const {sessionToken} = shopify.authenticate.storefront(request);
+     *
+     *   return json(await getWidgets(sessionToken));
+     * }
+     * ```
+     */
     storefront: AuthenticateStorefront;
+
+    /**
+     * Authenticate a Shopify webhook request, get back an authenticated admin context and details on the webhook request
+     *
+     * @param request `Request` The incoming request to authenticate
+     * @returns `Promise<StorefrontContext>` An authenticated storefront context
+     *
+     * @example
+     * Authenticating a webhook request
+     *
+     * ```ts
+     * // app/routes/api/checkout.jsx
+     * import {
+     *   DeliveryMethod,
+     *   shopifyApp,
+     * } from "@shopify/shopify-app-remix";
+     *
+     * export const shopify = shopifyApp({
+     *   webhooks: {
+     *    APP_UNINSTALLED: {
+     *       deliveryMethod: DeliveryMethod.Http,
+     *       callbackUrl: "/webhooks",
+     *     },
+     *   },
+     *   hooks: {
+     *     afterAuth: async ({ session }) => {
+     *       shopify.registerWebhooks({ session });
+     *     },
+     *   },
+     *   // ...etc
+     * });
+     *
+     * // app/routes/webhooks.ts
+     * import { ActionArgs } from "@remix-run/node";
+     * import { shopify } from "../shopify.server";
+     * import db from "../db.server";
+     *
+     * export const action = async ({ request }: ActionArgs) => {
+     *   const { topic, shop, admin } = await shopify.authenticate.webhook(request);
+     *
+     *   switch (topic) {
+     *     case "APP_UNINSTALLED":
+     *       await db.session.deleteMany({ where: { shop } });
+     *       break;
+     *     case "CUSTOMERS_DATA_REQUEST":
+     *     case "CUSTOMERS_REDACT":
+     *     case "SHOP_REDACT":
+     *     default:
+     *       throw new Response("Unhandled webhook topic", { status: 404 });
+     *   }
+     *
+     *   throw new Response();
+     * };
+     * ```
+     */
     webhook: AuthenticateWebhook<
       RestResourcesType<Config>,
       keyof Config["webhooks"] | MandatoryTopics
