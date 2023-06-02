@@ -29,6 +29,25 @@ export {
   BillingInterval,
 } from "@shopify/shopify-api";
 
+/**
+ * Creates an object your app will use to interact with Shopify.
+ *
+ * @param appConfig Configuration options for your shopify app.  For example, the scopes your app needs.
+ * @returns `ShopifyApp` An object constructed using your appConfig.  It has methods for interacting with Shopify.
+ *
+ * @example
+ * The minimum viable configuration
+ * ```ts
+ * import { shopifyApp } from "@shopify/shopify-app-remix";
+ *
+ * export const shopify = shopifyApp({
+ *   apiKey: process.env.SHOPIFY_API_KEY!,
+ *   apiSecretKey: process.env.SHOPIFY_API_SECRET!,
+ *   scopes: process.env.SCOPES?.split(",")!,
+ *   appUrl: process.env.SHOPIFY_APP_URL!,
+ * });
+ * ```
+ */
 export function shopifyApp<
   Config extends AppConfigArg<Resources, Storage>,
   Resources extends ShopifyRestResources,
