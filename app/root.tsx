@@ -11,23 +11,27 @@ import React from "react";
 import { useEffect } from "react";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
-import { json } from "@remix-run/node";
+import { LinksFunction, MetaFunction, json } from "@remix-run/node";
 import { useTranslation } from "react-i18next";
 import remixI18n from "./i18next.server";
 
-export const meta = () => ({
+export const meta: MetaFunction = ({ data }) => ({
   charset: "utf-8",
-  title: "New Remix App",
+  title: data.title,
   viewport: "width=device-width,initial-scale=1",
 });
 
-export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: polarisStyles },
+];
 
 export async function loader({ request }) {
-  const locale = await remixI18n.getLocale(request);
   const apiKey = process.env.SHOPIFY_API_KEY;
+  const t = await remixI18n.getFixedT(request);
+  const title = t("Index.title");
+  const locale = await remixI18n.getLocale(request);
   const polarisTranslations = require(`@shopify/polaris/locales/${locale}.json`);
-  return json({ apiKey, locale, polarisTranslations });
+  return json({ apiKey, title, locale, polarisTranslations });
 }
 
 export default function App() {
