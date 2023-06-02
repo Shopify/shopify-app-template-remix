@@ -64,7 +64,7 @@ export interface AppConfigArg<
    *
    * {@link https://shopify.dev/docs/apps/webhooks}
    *
-   * This should be in used in conjunction with the afterAuth hook to register webhook topics when a user installs your app
+   * This can be in used in conjunction with the afterAuth hook to register webhook topics when a user installs your app.  Or you can use this function in other processes such as background jobs.
    *
    * @example
    * Registering for a webhook when a merchant uninstalls your app.
@@ -165,7 +165,7 @@ export interface AppConfigArg<
   apiVersion?: ApiVersion;
 
   /**
-   * A path that Shopify can reserve for auth related stuff.
+   * A path that Shopify can reserve for auth related endpoints.
    *
    * This must match a $ route in your Remix app.  That route must export a loader function that calls `shopify.authenticate.admin(request)`.
    *
@@ -224,6 +224,10 @@ export interface WebhookConfig {
 interface HooksConfig {
   /**
    * A function to call after a merchant installs your app
+   *
+   * @param context - An object with context about the request that triggered the hook.
+   * @param context.session - The session of the merchant that installed your app. This is the output of sessionStorage.loadSession in case people want to load their own.
+   * @param context.admin - An object with access to the Shopify Admin API's.
    *
    * @example
    * Registering webhooks and seeding data when a merchant installs your app.

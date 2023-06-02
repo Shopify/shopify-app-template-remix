@@ -33,7 +33,7 @@ export {
  * Creates an object your app will use to interact with Shopify.
  *
  * @param appConfig Configuration options for your shopify app.  For example, the scopes your app needs.
- * @returns `ShopifyApp<Config>` An Object with methods for interacting with Shopify
+ * @returns `ShopifyApp` An object constructed using your appConfig.  It has methods for interacting with Shopify.
  *
  * @example
  * The minimum viable configuration
