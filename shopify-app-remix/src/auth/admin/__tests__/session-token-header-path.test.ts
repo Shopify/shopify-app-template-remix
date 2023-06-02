@@ -2,6 +2,7 @@ import { SESSION_COOKIE_NAME, Session } from "@shopify/shopify-api";
 
 import { shopifyApp } from "../../..";
 import {
+  APP_URL,
   BASE64_HOST,
   TEST_SHOP,
   getJwt,
@@ -21,10 +22,9 @@ describe("authorize.session token header path", () => {
       // WHEN
       const response = await getThrownResponse(
         shopify.authenticate.admin,
-        new Request(
-          `${shopify.config.appUrl}?shop=${TEST_SHOP}&host=${BASE64_HOST}`,
-          { headers: { Authorization: "Bearer im-a-valid-token-promise" } }
-        )
+        new Request(`${APP_URL}?shop=${TEST_SHOP}&host=${BASE64_HOST}`, {
+          headers: { Authorization: "Bearer im-a-valid-token-promise" },
+        })
       );
 
       // THEN
@@ -37,26 +37,22 @@ describe("authorize.session token header path", () => {
         const shopify = shopifyApp(testConfig({ useOnlineTokens: isOnline }));
 
         // WHEN
-        const { token } = getJwt(
-          shopify.config.apiKey,
-          shopify.config.apiSecretKey
-        );
+        const { token } = getJwt();
         const response = await getThrownResponse(
           shopify.authenticate.admin,
-          new Request(
-            `${shopify.config.appUrl}?shop=${TEST_SHOP}&host=${BASE64_HOST}`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          )
+          new Request(`${APP_URL}?shop=${TEST_SHOP}&host=${BASE64_HOST}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
         );
 
         // THEN
-        expect(response.status).toBe(401);
-
         const { origin, pathname, searchParams } = new URL(
           response.headers.get(APP_BRIDGE_REAUTH_HEADER)!
         );
-        expect(origin).toBe(shopify.config.appUrl);
-        expect(pathname).toBe(shopify.config.auth.path);
+
+        expect(response.status).toBe(401);
+        expect(origin).toBe(APP_URL);
+        expect(pathname).toBe("/auth");
         expect(searchParams.get("shop")).toBe(TEST_SHOP);
       });
 
@@ -65,19 +61,15 @@ describe("authorize.session token header path", () => {
         const shopify = shopifyApp(
           testConfig({ useOnlineTokens: isOnline, scopes: ["otherTestScope"] })
         );
-        await setUpValidSession(shopify.config.sessionStorage, isOnline);
+        await setUpValidSession(shopify.sessionStorage, isOnline);
 
         // WHEN
-        const { token } = getJwt(
-          shopify.config.apiKey,
-          shopify.config.apiSecretKey
-        );
+        const { token } = getJwt();
         const response = await getThrownResponse(
           shopify.authenticate.admin,
-          new Request(
-            `${shopify.config.appUrl}?shop=${TEST_SHOP}&host=${BASE64_HOST}`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          )
+          new Request(`${APP_URL}?shop=${TEST_SHOP}&host=${BASE64_HOST}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
         );
 
         // THEN
@@ -86,8 +78,8 @@ describe("authorize.session token header path", () => {
         const { origin, pathname, searchParams } = new URL(
           response.headers.get(APP_BRIDGE_REAUTH_HEADER)!
         );
-        expect(origin).toBe(shopify.config.appUrl);
-        expect(pathname).toBe(shopify.config.auth.path);
+        expect(origin).toBe(APP_URL);
+        expect(pathname).toBe("/auth");
         expect(searchParams.get("shop")).toBe(TEST_SHOP);
       });
     });
@@ -101,21 +93,17 @@ describe("authorize.session token header path", () => {
         const shopify = shopifyApp(testConfig({ useOnlineTokens: isOnline }));
 
         const testSession = await setUpValidSession(
-          shopify.config.sessionStorage,
+          shopify.sessionStorage,
           isOnline
         );
 
         // WHEN
-        const { token, payload } = getJwt(
-          shopify.config.apiKey,
-          shopify.config.apiSecretKey
-        );
+        const { token, payload } = getJwt();
         const { sessionToken, admin, session } =
           await shopify.authenticate.admin(
-            new Request(
-              `${shopify.config.appUrl}?shop=${TEST_SHOP}&host=${BASE64_HOST}`,
-              { headers: { Authorization: `Bearer ${token}` } }
-            )
+            new Request(`${APP_URL}?shop=${TEST_SHOP}&host=${BASE64_HOST}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            })
           );
 
         // THEN
@@ -134,21 +122,17 @@ describe("authorize.session token header path", () => {
         });
 
         let testSession: Session;
-        testSession = await setUpValidSession(shopify.config.sessionStorage);
+        testSession = await setUpValidSession(shopify.sessionStorage);
         if (isOnline) {
-          testSession = await setUpValidSession(
-            shopify.config.sessionStorage,
-            true
-          );
+          testSession = await setUpValidSession(shopify.sessionStorage, true);
         }
 
         // WHEN
         const request = new Request(
-          `${shopify.config.appUrl}?shop=${TEST_SHOP}&host=${BASE64_HOST}`
+          `${APP_URL}?shop=${TEST_SHOP}&host=${BASE64_HOST}`
         );
         signRequestCookie({
           request,
-          apiSecretKey: shopify.config.apiSecretKey,
           cookieName: SESSION_COOKIE_NAME,
           cookieValue: testSession.id,
         });

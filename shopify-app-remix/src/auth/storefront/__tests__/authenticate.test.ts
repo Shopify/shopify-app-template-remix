@@ -1,5 +1,6 @@
 import { shopifyApp } from "../../..";
 import {
+  APP_URL,
   getJwt,
   getThrownResponse,
   testConfig,
@@ -10,14 +11,11 @@ describe("JWT validation", () => {
     // GIVEN
     const config = testConfig();
     const shopify = shopifyApp(config);
-    const { token, payload } = getJwt(
-      shopify.config.apiKey,
-      shopify.config.apiSecretKey
-    );
+    const { token, payload } = getJwt();
 
     // WHEN
     const { sessionToken } = await shopify.authenticate.storefront(
-      new Request(shopify.config.appUrl, {
+      new Request(APP_URL, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -36,7 +34,7 @@ describe("JWT validation", () => {
     // WHEN
     const response = await getThrownResponse(
       shopify.authenticate.storefront,
-      new Request(shopify.config.appUrl)
+      new Request(APP_URL)
     );
 
     // THEN
@@ -51,7 +49,7 @@ describe("JWT validation", () => {
     // WHEN
     const response = await getThrownResponse(
       shopify.authenticate.storefront,
-      new Request(shopify.config.appUrl, {
+      new Request(APP_URL, {
         headers: { Authorization: `Bearer this_is_not_a_valid_token` },
       })
     );
@@ -68,7 +66,7 @@ describe("JWT validation", () => {
     // WHEN
     const response = await getThrownResponse(
       shopify.authenticate.storefront,
-      new Request(shopify.config.appUrl, {
+      new Request(APP_URL, {
         headers: { "User-Agent": "Googlebot" },
       })
     );

@@ -7,6 +7,7 @@ import {
 
 import { shopifyApp } from "../..";
 import {
+  APP_URL,
   BASE64_HOST,
   GRAPHQL_URL,
   TEST_SHOP,
@@ -43,11 +44,9 @@ describe("Billing require", () => {
     });
 
     const { billing } = await shopify.authenticate.admin(
-      new Request(`${shopify.config.appUrl}/billing`, {
+      new Request(`${APP_URL}/billing`, {
         headers: {
-          Authorization: `Bearer ${
-            getJwt(shopify.config.apiKey, shopify.config.apiSecretKey).token
-          }`,
+          Authorization: `Bearer ${getJwt().token}`,
         },
       })
     );
@@ -79,11 +78,9 @@ describe("Billing require", () => {
     });
 
     const { billing } = await shopify.authenticate.admin(
-      new Request(`${shopify.config.appUrl}/billing`, {
+      new Request(`${APP_URL}/billing`, {
         headers: {
-          Authorization: `Bearer ${
-            getJwt(shopify.config.apiKey, shopify.config.apiSecretKey).token
-          }`,
+          Authorization: `Bearer ${getJwt().token}`,
         },
       })
     );
@@ -102,13 +99,12 @@ describe("Billing require", () => {
 
   it("redirects to authentication when at the top level when Shopify invalidated the session", async () => {
     // GIVEN
-    const config = testConfig();
-    const session = await setUpValidSession(config.sessionStorage);
-    const shopify = shopifyApp({
-      ...config,
+    const config = testConfig({
       isEmbeddedApp: false,
       billing: BILLING_CONFIG,
     });
+    const session = await setUpValidSession(config.sessionStorage);
+    const shopify = shopifyApp(config);
 
     mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -118,14 +114,11 @@ describe("Billing require", () => {
       }),
     });
 
-    const request = new Request(
-      `${shopify.config.appUrl}/billing?shop=${TEST_SHOP}`
-    );
+    const request = new Request(`${APP_URL}/billing?shop=${TEST_SHOP}`);
     signRequestCookie({
       request,
       cookieName: SESSION_COOKIE_NAME,
       cookieValue: session.id,
-      apiSecretKey: config.apiSecretKey,
     });
 
     const { billing } = await shopify.authenticate.admin(request);
@@ -134,7 +127,7 @@ describe("Billing require", () => {
     const response = await getThrownResponse(
       async () =>
         billing.require({
-          plans: [responses.PLAN_1],
+          plans: [responses.PLAN_1 as unknown as never],
           onFailure: async () => {
             throw new Error("This should not be called");
           },
@@ -143,7 +136,7 @@ describe("Billing require", () => {
     );
 
     // THEN
-    expectBeginAuthRedirect(shopify.config, response);
+    expectBeginAuthRedirect(config, response);
   });
 
   it("redirects to exit-iframe with authentication using app bridge when embedded and Shopify invalidated the session", async () => {
@@ -160,12 +153,9 @@ describe("Billing require", () => {
       }),
     });
 
-    const token = getJwt(
-      shopify.config.apiKey,
-      shopify.config.apiSecretKey
-    ).token;
+    const { token } = getJwt();
     const request = new Request(
-      `${shopify.config.appUrl}/billing?embedded=1&shop=${TEST_SHOP}&host=${BASE64_HOST}&id_token=${token}`
+      `${APP_URL}/billing?embedded=1&shop=${TEST_SHOP}&host=${BASE64_HOST}&id_token=${token}`
     );
 
     const { billing } = await shopify.authenticate.admin(request);
@@ -189,11 +179,11 @@ describe("Billing require", () => {
       response.headers.get("Location")!,
       "http://test.test"
     );
-    expect(locationUrl.pathname).toEqual(shopify.config.auth.exitIframePath);
+    expect(locationUrl.pathname).toEqual("/auth/exit-iframe");
     expect(locationUrl.searchParams.get("shop")).toEqual(TEST_SHOP);
     expect(locationUrl.searchParams.get("host")).toEqual(BASE64_HOST);
     expect(locationUrl.searchParams.get("exitIframe")).toEqual(
-      `${shopify.config.auth.path}?shop=${TEST_SHOP}`
+      `/auth?shop=${TEST_SHOP}`
     );
   });
 
@@ -211,11 +201,9 @@ describe("Billing require", () => {
       }),
     });
 
-    const request = new Request(`${shopify.config.appUrl}/billing`, {
+    const request = new Request(`${APP_URL}/billing`, {
       headers: {
-        Authorization: `Bearer ${
-          getJwt(shopify.config.apiKey, shopify.config.apiSecretKey).token
-        }`,
+        Authorization: `Bearer ${getJwt().token}`,
       },
     });
 
@@ -237,8 +225,8 @@ describe("Billing require", () => {
     expect(response.status).toEqual(401);
 
     const reauthUrl = new URL(response.headers.get(APP_BRIDGE_REAUTH_HEADER)!);
-    expect(reauthUrl.origin).toEqual(shopify.config.appUrl);
-    expect(reauthUrl.pathname).toEqual(shopify.config.auth.path);
+    expect(reauthUrl.origin).toEqual(APP_URL);
+    expect(reauthUrl.pathname).toEqual("/auth");
   });
 
   it("throws errors other than authentication errors", async () => {
@@ -259,14 +247,11 @@ describe("Billing require", () => {
       }),
     });
 
-    const request = new Request(
-      `${shopify.config.appUrl}/billing?shop=${TEST_SHOP}`
-    );
+    const request = new Request(`${APP_URL}/billing?shop=${TEST_SHOP}`);
     signRequestCookie({
       request,
       cookieName: SESSION_COOKIE_NAME,
       cookieValue: session.id,
-      apiSecretKey: config.apiSecretKey,
     });
 
     const { billing } = await shopify.authenticate.admin(request);

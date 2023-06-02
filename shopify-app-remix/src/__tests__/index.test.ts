@@ -1,7 +1,8 @@
 import fs from "fs";
 import path from "path";
-import { LATEST_API_VERSION, ShopifyError } from "@shopify/shopify-api";
+import { ShopifyError } from "@shopify/shopify-api";
 import { SQLiteSessionStorage } from "@shopify/shopify-app-session-storage-sqlite";
+import * as shopifyApiPackage from "@shopify/shopify-api";
 
 import {
   shopifyApp,
@@ -39,8 +40,6 @@ describe("shopifyApp", () => {
 
     // THEN
     expect(shopify).toBeDefined();
-    expect(shopify.config).toBeDefined();
-    expect(shopify.config.apiKey).toBe(config.apiKey);
   });
 
   it("fails with an invalid config", () => {
@@ -49,27 +48,35 @@ describe("shopifyApp", () => {
 
   it("fixes the port if it's not set", () => {
     // GIVEN
+    jest.spyOn(shopifyApiPackage, "shopifyApi");
     process.env.PORT = "1234";
 
     // WHEN
-    const config = testConfig({ appUrl: "http://localhost" });
-    const shopify = shopifyApp(config);
+    shopifyApp(testConfig({ appUrl: "http://localhost" }));
 
     // THEN
-    expect(shopify.config.appUrl).toBe("http://localhost:1234");
+    expect(shopifyApiPackage.shopifyApi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        appUrl: "http://localhost:1234",
+      })
+    );
   });
 
   it("applies user agent prefix", () => {
     // GIVEN
+    jest.spyOn(shopifyApiPackage, "shopifyApi");
     const config = testConfig({
       userAgentPrefix: "test",
     });
 
     // WHEN
-    const shopify = shopifyApp(config);
+    shopifyApp(config);
 
     // THEN
-    expect(shopify.config.userAgentPrefix).toMatch(
+    const { userAgentPrefix } = (shopifyApiPackage.shopifyApi as any).mock
+      .calls[1][0];
+
+    expect(userAgentPrefix).toMatch(
       /^test \| Shopify Remix Library v[0-9]+\.[0-9]+\.[0-9]+$/
     );
   });
@@ -78,12 +85,10 @@ describe("shopifyApp", () => {
     // This test doesn't actually test anything, but it's here to make sure that we're actually importing the values
     [APP_LATEST_API_VERSION, LogSeverity, DeliveryMethod, BillingInterval];
   });
-});
 
-describe("default config values", () => {
-  it("appropriately defaults values", () => {
+  it("defaults sessionStorage", () => {
     // GIVEN
-    const config: AppConfigArg = testConfig();
+    const config: AppConfigArg = testConfig({ sessionStorage: undefined });
     delete config.sessionStorage;
     delete config.isEmbeddedApp;
     delete config.apiVersion;
@@ -96,8 +101,6 @@ describe("default config values", () => {
     const shopify = shopifyApp(config);
 
     // THEN
-    expect(shopify.config.sessionStorage).toBeInstanceOf(SQLiteSessionStorage);
-    expect(shopify.config.isEmbeddedApp).toBe(true);
-    expect(shopify.config.apiVersion).toBe(LATEST_API_VERSION);
+    expect(shopify.sessionStorage).toBeInstanceOf(SQLiteSessionStorage);
   });
 });

@@ -7,6 +7,7 @@ import {
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
 
 import {
+  APP_URL,
   BASE64_HOST,
   TEST_SHOP,
   getJwt,
@@ -100,7 +101,7 @@ describe("admin.authenticate context", () => {
 
       it("redirects to exit iframe when request receives a 401 response and embedded", async () => {
         // GIVEN
-        const { shopify, admin, session } = await setUpEmbeddedFlow();
+        const { admin, session } = await setUpEmbeddedFlow();
         const requestMock = await mockRequest();
 
         // WHEN
@@ -114,19 +115,20 @@ describe("admin.authenticate context", () => {
 
         const { pathname, searchParams } = new URL(
           response.headers.get("Location")!,
-          shopify.config.appUrl
+          APP_URL
         );
-        expect(pathname).toEqual(shopify.config.auth.exitIframePath);
+
+        expect(pathname).toEqual("/auth/exit-iframe");
         expect(searchParams.get("shop")).toEqual(TEST_SHOP);
         expect(searchParams.get("host")).toEqual(BASE64_HOST);
         expect(searchParams.get("exitIframe")).toEqual(
-          `${shopify.config.auth.path}?shop=${TEST_SHOP}`
+          `/auth?shop=${TEST_SHOP}`
         );
       });
 
       it("returns app bridge redirection headers when request receives a 401 response on fetch requests", async () => {
         // GIVEN
-        const { shopify, admin, session } = await setUpFetchFlow();
+        const { admin, session } = await setUpFetchFlow();
         const requestMock = await mockRequest();
 
         // WHEN
@@ -141,8 +143,8 @@ describe("admin.authenticate context", () => {
         const { origin, pathname, searchParams } = new URL(
           response.headers.get(APP_BRIDGE_REAUTH_HEADER)!
         );
-        expect(origin).toEqual(shopify.config.appUrl);
-        expect(pathname).toEqual(shopify.config.auth.path);
+        expect(origin).toEqual(APP_URL);
+        expect(pathname).toEqual("/auth");
         expect(searchParams.get("shop")).toEqual(TEST_SHOP);
       });
     }
@@ -150,14 +152,11 @@ describe("admin.authenticate context", () => {
 
   async function setUpEmbeddedFlow() {
     const shopify = shopifyApp({ ...testConfig(), restResources });
-    await setUpValidSession(shopify.config.sessionStorage);
+    await setUpValidSession(shopify.sessionStorage);
 
-    const { token } = getJwt(
-      shopify.config.apiKey,
-      shopify.config.apiSecretKey
-    );
+    const { token } = getJwt();
     const request = new Request(
-      `${shopify.config.appUrl}?embedded=1&shop=${TEST_SHOP}&host=${BASE64_HOST}&id_token=${token}`
+      `${APP_URL}?embedded=1&shop=${TEST_SHOP}&host=${BASE64_HOST}&id_token=${token}`
     );
 
     return {
@@ -168,13 +167,10 @@ describe("admin.authenticate context", () => {
 
   async function setUpFetchFlow() {
     const shopify = shopifyApp({ ...testConfig(), restResources });
-    await setUpValidSession(shopify.config.sessionStorage);
+    await setUpValidSession(shopify.sessionStorage);
 
-    const { token } = getJwt(
-      shopify.config.apiKey,
-      shopify.config.apiSecretKey
-    );
-    const request = new Request(shopify.config.appUrl, {
+    const { token } = getJwt();
+    const request = new Request(APP_URL, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -190,12 +186,11 @@ describe("admin.authenticate context", () => {
       restResources,
       isEmbeddedApp: false,
     });
-    const session = await setUpValidSession(shopify.config.sessionStorage);
+    const session = await setUpValidSession(shopify.sessionStorage);
 
-    const request = new Request(`${shopify.config.appUrl}?shop=${TEST_SHOP}`);
+    const request = new Request(`${APP_URL}?shop=${TEST_SHOP}`);
     signRequestCookie({
       request,
-      apiSecretKey: shopify.config.apiSecretKey,
       cookieName: SESSION_COOKIE_NAME,
       cookieValue: session.id,
     });
@@ -210,6 +205,11 @@ describe("admin.authenticate context", () => {
     const requestMock = new Request(
       `https://${TEST_SHOP}/admin/api/${LATEST_API_VERSION}/customers.json`
     );
+
+    console.log(
+      `https://${TEST_SHOP}/admin/api/${LATEST_API_VERSION}/customers.json`
+    );
+
     await mockExternalRequest({
       request: requestMock,
       response: new Response(undefined, { status }),

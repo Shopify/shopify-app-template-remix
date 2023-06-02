@@ -83,7 +83,6 @@ describe("authorize.admin auth callback path", () => {
         request,
         cookieName: "shopify_app_state",
         cookieValue: state,
-        apiSecretKey: config.apiSecretKey,
       });
 
       const response = await getThrownResponse(
@@ -113,7 +112,6 @@ describe("authorize.admin auth callback path", () => {
         request,
         cookieName: "shopify_app_state",
         cookieValue: state,
-        apiSecretKey: config.apiSecretKey,
       });
 
       const response = await getThrownResponse(
@@ -316,7 +314,6 @@ async function getValidCallbackRequest(config: ReturnType<typeof testConfig>) {
     request,
     cookieName,
     cookieValue: state,
-    apiSecretKey: config.apiSecretKey,
   });
 
   return request;

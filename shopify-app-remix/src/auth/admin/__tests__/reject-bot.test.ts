@@ -1,5 +1,9 @@
 import { shopifyApp } from "../../..";
-import { getThrownResponse, testConfig } from "../../../__tests__/test-helper";
+import {
+  APP_URL,
+  getThrownResponse,
+  testConfig,
+} from "../../../__tests__/test-helper";
 
 describe("authorize.admin", () => {
   test("rejects bot requests", async () => {
@@ -9,7 +13,7 @@ describe("authorize.admin", () => {
     // WHEN
     const response = await getThrownResponse(
       shopify.authenticate.admin,
-      new Request(shopify.config.appUrl, {
+      new Request(APP_URL, {
         headers: {
           "User-Agent": "Googlebot",
         },

@@ -4,6 +4,7 @@ import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memor
 
 import { shopifyApp } from "../../..";
 import {
+  APP_URL,
   TEST_SHOP,
   createTestHmac,
   getThrownResponse,
@@ -44,13 +45,10 @@ describe("Webhook validation", () => {
       topic,
       webhookId,
     } = await shopify.authenticate.webhook(
-      new Request(`${shopify.config.appUrl}/webhooks`, {
+      new Request(`${APP_URL}/webhooks`, {
         method: "POST",
         body: JSON.stringify({}),
-        headers: webhookHeaders(
-          shopify.config.apiSecretKey,
-          JSON.stringify({})
-        ),
+        headers: webhookHeaders(JSON.stringify({})),
       })
     );
 
@@ -76,14 +74,12 @@ describe("Webhook validation", () => {
     // WHEN
     const response = await getThrownResponse(
       shopify.authenticate.webhook,
-      new Request(`${shopify.config.appUrl}/webhooks`, {
+      new Request(`${APP_URL}/webhooks`, {
         method: "POST",
         body: JSON.stringify({}),
-        headers: webhookHeaders(
-          shopify.config.apiSecretKey,
-          JSON.stringify({}),
-          { "X-Shopify-Hmac-Sha256": "invalid_hmac" }
-        ),
+        headers: webhookHeaders(JSON.stringify({}), {
+          "X-Shopify-Hmac-Sha256": "invalid_hmac",
+        }),
       })
     );
 
@@ -105,14 +101,10 @@ describe("Webhook validation", () => {
     // WHEN
     const response = await getThrownResponse(
       shopify.authenticate.webhook,
-      new Request(`${shopify.config.appUrl}/webhooks`, {
+      new Request(`${APP_URL}/webhooks`, {
         method: "POST",
         body: JSON.stringify({}),
-        headers: webhookHeaders(
-          shopify.config.apiSecretKey,
-          JSON.stringify({}),
-          { [header]: "" }
-        ),
+        headers: webhookHeaders(JSON.stringify({}), { [header]: "" }),
       })
     );
 
@@ -129,13 +121,10 @@ describe("Webhook validation", () => {
     // WHEN
     const response = await getThrownResponse(
       shopify.authenticate.webhook,
-      new Request(`${shopify.config.appUrl}/webhooks`, {
+      new Request(`${APP_URL}/webhooks`, {
         method: "POST",
         body: JSON.stringify({}),
-        headers: webhookHeaders(
-          shopify.config.apiSecretKey,
-          JSON.stringify({})
-        ),
+        headers: webhookHeaders(JSON.stringify({})),
       })
     );
 
@@ -145,7 +134,6 @@ describe("Webhook validation", () => {
 });
 
 function webhookHeaders(
-  apiSecretKey: string,
   body: string,
   overrides: Partial<WebhookHeaders> = {}
 ): WebhookHeaders {
@@ -154,7 +142,7 @@ function webhookHeaders(
     "X-Shopify-Topic": "app/uninstalled",
     "X-Shopify-API-Version": "2023-01",
     "X-Shopify-Webhook-Id": "1234567890",
-    "X-Shopify-Hmac-Sha256": createTestHmac(apiSecretKey, body),
+    "X-Shopify-Hmac-Sha256": createTestHmac(body),
     ...overrides,
   };
 }
