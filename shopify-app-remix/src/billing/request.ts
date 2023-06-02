@@ -1,4 +1,8 @@
-import { HttpResponseError, Session } from "@shopify/shopify-api";
+import {
+  BillingRequestResponseObject,
+  HttpResponseError,
+  Session,
+} from "@shopify/shopify-api";
 import { redirect } from "@remix-run/server-runtime";
 
 import { BasicParams } from "../types";
@@ -27,14 +31,14 @@ export function requestBillingFactory<Config extends AppConfigArg>(
       returnUrl,
     });
 
-    let redirectUrl: string;
-
+    let result: BillingRequestResponseObject;
     try {
-      redirectUrl = await api.billing.request({
+      result = await api.billing.request({
         plan: plan as string,
         session,
         isTest,
         returnUrl,
+        returnObject: true,
       });
     } catch (error) {
       if (error instanceof HttpResponseError && error.response.code === 401) {
@@ -46,7 +50,8 @@ export function requestBillingFactory<Config extends AppConfigArg>(
         throw error;
       }
     }
-    throw redirectOutOfApp(params, request, redirectUrl);
+
+    throw redirectOutOfApp(params, request, result.confirmationUrl);
   };
 }
 

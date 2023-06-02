@@ -24,7 +24,7 @@ export const EXISTING_SUBSCRIPTION = JSON.stringify({
         edges: [],
         pageInfo: { hasNextPage: false, endCursor: null },
       },
-      activeSubscriptions: [{ name: PLAN_1, test: true }],
+      activeSubscriptions: [{ id: "gid://123", name: PLAN_1, test: true }],
     },
   },
 });
@@ -32,6 +32,11 @@ export const EXISTING_SUBSCRIPTION = JSON.stringify({
 export const PURCHASE_SUBSCRIPTION_RESPONSE = JSON.stringify({
   data: {
     appSubscriptionCreate: {
+      appSubscription: {
+        id: "gid://123",
+        name: PLAN_1,
+        test: true,
+      },
       confirmationUrl: CONFIRMATION_URL,
       userErrors: [],
     },
@@ -41,6 +46,11 @@ export const PURCHASE_SUBSCRIPTION_RESPONSE = JSON.stringify({
 export const PURCHASE_SUBSCRIPTION_RESPONSE_WITH_USER_ERRORS = JSON.stringify({
   data: {
     appSubscriptionCreate: {
+      appSubscription: {
+        id: "gid://123",
+        name: PLAN_1,
+        test: true,
+      },
       confirmationUrl: CONFIRMATION_URL,
       userErrors: ["Oops, something went wrong"],
     },

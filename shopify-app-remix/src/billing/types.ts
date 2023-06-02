@@ -1,4 +1,9 @@
-import { BillingCheckParams, BillingRequestParams } from "@shopify/shopify-api";
+import {
+  BillingCheckParams,
+  BillingCheckResponseObject,
+  BillingRequestParams,
+} from "@shopify/shopify-api";
+
 import { AppConfigArg } from "../config-types";
 
 export interface RequireBillingOptions<Config extends AppConfigArg>
@@ -13,6 +18,8 @@ export interface RequestBillingOptions<Config extends AppConfigArg>
 }
 
 export interface BillingContext<Config extends AppConfigArg> {
-  require: (options: RequireBillingOptions<Config>) => Promise<boolean>;
+  require: (
+    options: RequireBillingOptions<Config>
+  ) => Promise<BillingCheckResponseObject>;
   request: (options: RequestBillingOptions<Config>) => Promise<never>;
 }
