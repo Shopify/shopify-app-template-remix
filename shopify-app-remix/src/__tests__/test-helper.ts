@@ -18,7 +18,7 @@ export function testConfig(
 ): AppConfigArg & { sessionStorage: SessionStorage } {
   return {
     apiKey: API_KEY,
-    apiSecretKey: "testApiSecretKey",
+    apiSecretKey: API_SECRET_KEY,
     scopes: ["testScope"],
     apiVersion: LATEST_API_VERSION,
     appUrl: APP_URL,

@@ -206,10 +206,6 @@ describe("admin.authenticate context", () => {
       `https://${TEST_SHOP}/admin/api/${LATEST_API_VERSION}/customers.json`
     );
 
-    console.log(
-      `https://${TEST_SHOP}/admin/api/${LATEST_API_VERSION}/customers.json`
-    );
-
     await mockExternalRequest({
       request: requestMock,
       response: new Response(undefined, { status }),
