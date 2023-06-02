@@ -1,3 +1,4 @@
+import React from "react";
 import { PassThrough } from "stream";
 import { renderToPipeableStream } from "react-dom/server";
 import type { AppLoadContext, EntryContext } from "@remix-run/node";
@@ -11,7 +12,10 @@ import { resolve } from "path";
 import i18next from "i18next";
 import i18nextOptions from "./i18nextOptions";
 import i18nextServer from "./i18next.server";
-import React from "react";
+import {
+  loadLocalePolyfills,
+  loadPluralRulesPolyfills,
+} from "./utils/polyfill";
 
 const ABORT_DELAY = 5_000;
 
@@ -22,8 +26,11 @@ export default async function handleRequest(
   remixContext: EntryContext,
   loadContext: AppLoadContext
 ) {
+  await loadLocalePolyfills();
+
   // Detect locale from the request
   const lng = await i18nextServer.getLocale(request);
+  await loadPluralRulesPolyfills(i18nextOptions.fallbackLng, lng);
 
   if (!i18next.isInitialized) {
     await i18next

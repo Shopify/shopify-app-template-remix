@@ -1,5 +1,6 @@
-import { RemixBrowser } from "@remix-run/react";
+import React from "react";
 import { startTransition, StrictMode } from "react";
+import { RemixBrowser } from "@remix-run/react";
 import { hydrateRoot } from "react-dom/client";
 import i18nextOptions from "./i18nextOptions";
 import i18next from "i18next";
@@ -7,9 +8,13 @@ import { I18nextProvider, initReactI18next } from "react-i18next";
 import ShopifyFormat from "@shopify/i18next-shopify";
 import LanguageDetector from "i18next-browser-languagedetector";
 import Backend from "i18next-http-backend";
-import React from "react";
+import {
+  loadLocalePolyfills,
+  loadPluralRulesPolyfills,
+} from "./utils/polyfill";
 
 async function hydrate() {
+  await loadLocalePolyfills();
   if (!i18next.isInitialized) {
     await i18next
       .use(initReactI18next)
@@ -30,6 +35,7 @@ async function hydrate() {
         },
       });
   }
+  await loadPluralRulesPolyfills(i18nextOptions.fallbackLng, i18next.language);
 
   startTransition(() => {
     hydrateRoot(
