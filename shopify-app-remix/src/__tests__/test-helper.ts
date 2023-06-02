@@ -17,11 +17,11 @@ export function testConfig(
   overrides: Partial<AppConfigArg> = {}
 ): AppConfigArg & { sessionStorage: SessionStorage } {
   return {
-    apiKey: "testApiKey",
-    apiSecretKey: "testApiSecretKey",
+    apiKey: API_KEY,
+    apiSecretKey: API_SECRET_KEY,
     scopes: ["testScope"],
     apiVersion: LATEST_API_VERSION,
-    appUrl: "https://my-test-app.myshopify.io",
+    appUrl: APP_URL,
     logger: {
       log: jest.fn(),
       level: LogSeverity.Debug,
@@ -32,6 +32,9 @@ export function testConfig(
   };
 }
 
+export const API_SECRET_KEY = "testApiSecretKey";
+export const API_KEY = "testApiKey";
+export const APP_URL = "https://my-test-app.myshopify.io";
 export const SHOPIFY_HOST = "totally-real-host.myshopify.io";
 export const BASE64_HOST = Buffer.from(SHOPIFY_HOST).toString("base64");
 export const TEST_SHOP = "test-shop.myshopify.io";
@@ -43,16 +46,12 @@ interface TestJwt {
   payload: JwtPayload;
 }
 
-export function getJwt(
-  apiKey: string,
-  apiSecretKey: string,
-  overrides: Partial<JwtPayload> = {}
-): TestJwt {
+export function getJwt(overrides: Partial<JwtPayload> = {}): TestJwt {
   const date = new Date();
   const payload = {
     iss: `${TEST_SHOP}/admin`,
     dest: `https://${TEST_SHOP}`,
-    aud: apiKey,
+    aud: API_KEY,
     sub: `${USER_ID}`,
     exp: date.getTime() / 1000 + 3600,
     nbf: date.getTime() / 1000 - 3600,
@@ -62,7 +61,7 @@ export function getJwt(
     ...overrides,
   };
 
-  const token = jwt.sign(payload, apiSecretKey, {
+  const token = jwt.sign(payload, API_SECRET_KEY, {
     algorithm: "HS256",
   });
 
@@ -85,9 +84,9 @@ export async function getThrownResponse(
   throw `${request.method} request to ${request.url} did not throw`;
 }
 
-export function createTestHmac(secretKey: string, body: string): string {
+export function createTestHmac(body: string): string {
   return crypto
-    .createHmac("sha256", secretKey)
+    .createHmac("sha256", API_SECRET_KEY)
     .update(body, "utf8")
     .digest("base64");
 }
@@ -136,14 +135,12 @@ export function signRequestCookie({
   request,
   cookieName,
   cookieValue,
-  apiSecretKey,
 }: {
   request: Request;
   cookieName: string;
   cookieValue: string;
-  apiSecretKey: string;
 }) {
-  const signedCookieValue = createTestHmac(apiSecretKey, cookieValue);
+  const signedCookieValue = createTestHmac(cookieValue);
 
   request.headers.set(
     "Cookie",
@@ -155,7 +152,7 @@ export function signRequestCookie({
 }
 
 export function expectBeginAuthRedirect(
-  config: AppConfigArg,
+  config: ReturnType<typeof testConfig>,
   response: Response
 ) {
   expect(response.status).toEqual(302);

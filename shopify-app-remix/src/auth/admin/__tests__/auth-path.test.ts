@@ -1,5 +1,6 @@
 import { shopifyApp } from "../../..";
 import {
+  APP_URL,
   TEST_SHOP,
   expectBeginAuthRedirect,
   getThrownResponse,
@@ -13,7 +14,7 @@ describe("authorize.admin auth path", () => {
     const shopify = shopifyApp(config);
 
     // WHEN
-    const url = `${shopify.config.appUrl}/auth`;
+    const url = `${APP_URL}/auth`;
     const response = await getThrownResponse(
       shopify.authenticate.admin,
       new Request(url)
@@ -29,7 +30,7 @@ describe("authorize.admin auth path", () => {
     const shopify = shopifyApp(config);
 
     // WHEN
-    const url = `${shopify.config.appUrl}/auth?shop=invalid_shop`;
+    const url = `${APP_URL}/auth?shop=invalid_shop`;
     const response = await getThrownResponse(
       shopify.authenticate.admin,
       new Request(url)
@@ -45,13 +46,13 @@ describe("authorize.admin auth path", () => {
     const shopify = shopifyApp(config);
 
     // WHEN
-    const url = `${shopify.config.appUrl}/auth?shop=${TEST_SHOP}`;
+    const url = `${APP_URL}/auth?shop=${TEST_SHOP}`;
     const response = await getThrownResponse(
       shopify.authenticate.admin,
       new Request(url)
     );
 
     // THEN
-    expectBeginAuthRedirect(shopify.config, response);
+    expectBeginAuthRedirect(config, response);
   });
 });

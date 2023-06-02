@@ -69,7 +69,7 @@ export function shopifyApp<
   // TODO: Make sure to comment on each exported function out of this object
   // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28354989
   return {
-    config,
+    sessionStorage: config.sessionStorage,
     registerWebhooks: registerWebhooksFactory(params),
     authenticate: {
       admin: oauth.authenticateAdmin.bind(oauth),

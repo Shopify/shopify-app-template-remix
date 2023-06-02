@@ -48,9 +48,41 @@ type SessionStorageType<Config extends AppConfigArg> =
  *
  */
 export interface ShopifyApp<Config extends AppConfigArg> {
-  // TODO: We should not export this.  Let's only export sessionStorage
-  // It's the only thing a partner is likely to need.
-  config: AppConfig<SessionStorageType<Config>>;
+  /**
+   * The SessionStorage instance your app is using.
+   *
+   * If you passed in a custom SessionStorage instance, this will be that instance. If not, this will be an instance of `SQLiteSessionStorage`.
+   *
+   * @example
+   * Defaulting to `SQLiteSessionStorage`
+   * ```ts
+   * // app/shopify.server.ts
+   * import { shopifyApp } from "@shopify/shopify-app-remix";
+   *
+   * const shopify = shopifyApp({
+   *   // ...etc
+   * })
+   *
+   * // shopify.sessionStorage is an instance of SQLiteSessionStorage
+   * ```
+   *
+   * @example
+   * Using Prisma
+   * ```ts
+   * // app/shopify.server.ts
+   * import { shopifyApp } from "@shopify/shopify-app-remix";
+   * import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
+   * import prisma from "~/db.server";
+   *
+   * const shopify = shopifyApp({
+   *   sesssionStorage: new PrismaSessionStorage(prisma),
+   *   // ...etc
+   * })
+   *
+   * // shopify.sessionStorage is an instance of PrismaSessionStorage
+   * ```
+   */
+  sessionStorage: SessionStorageType<Config>;
   /**
    * Register webhook topics for a store using the given session. Most likely you want to use this in combination with the afterAuth hook.
    *

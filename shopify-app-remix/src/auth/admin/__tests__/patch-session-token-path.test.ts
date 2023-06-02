@@ -1,5 +1,9 @@
 import { shopifyApp } from "../../..";
-import { getThrownResponse, testConfig } from "../../../__tests__/test-helper";
+import {
+  APP_URL,
+  getThrownResponse,
+  testConfig,
+} from "../../../__tests__/test-helper";
 
 describe("authorize.admin path session token path", () => {
   test("Uses AppBridge to get a session token if the URL is for auth.patchSessionTokenPath", async () => {
@@ -8,7 +12,7 @@ describe("authorize.admin path session token path", () => {
     const shopify = shopifyApp(config);
 
     // WHEN
-    const url = `${shopify.config.appUrl}/auth/session-token`;
+    const url = `${APP_URL}/auth/session-token`;
     const response = await getThrownResponse(
       shopify.authenticate.admin,
       new Request(url)
@@ -31,7 +35,7 @@ describe("authorize.admin path session token path", () => {
     const shopify = shopifyApp(config);
 
     // WHEN
-    const url = `${shopify.config.appUrl}${authPathPrefix}/session-token`;
+    const url = `${APP_URL}${authPathPrefix}/session-token`;
     const response = await getThrownResponse(
       shopify.authenticate.admin,
       new Request(url)

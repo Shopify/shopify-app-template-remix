@@ -1,5 +1,9 @@
 import { shopifyApp } from "../../..";
-import { getThrownResponse, testConfig } from "../../../__tests__/test-helper";
+import {
+  APP_URL,
+  getThrownResponse,
+  testConfig,
+} from "../../../__tests__/test-helper";
 
 describe("authorize.admin exit iframe path", () => {
   test("Uses App Bridge to exit iFrame when the url matches auth.exitIframePath", async () => {
@@ -9,7 +13,7 @@ describe("authorize.admin exit iframe path", () => {
 
     // WHEN
     const exitTo = encodeURIComponent(config.appUrl);
-    const url = `${shopify.config.appUrl}/auth/exit-iframe?exitIframe=${exitTo}`;
+    const url = `${APP_URL}/auth/exit-iframe?exitIframe=${exitTo}`;
     const response = await getThrownResponse(
       shopify.authenticate.admin,
       new Request(url)
@@ -37,7 +41,7 @@ describe("authorize.admin exit iframe path", () => {
 
     // WHEN
     const exitTo = encodeURIComponent(config.appUrl);
-    const url = `${shopify.config.appUrl}${authPathPrefix}/exit-iframe?exitIframe=${exitTo}`;
+    const url = `${APP_URL}${authPathPrefix}/exit-iframe?exitIframe=${exitTo}`;
     const response = await getThrownResponse(
       shopify.authenticate.admin,
       new Request(url)
@@ -63,7 +67,7 @@ describe("authorize.admin exit iframe path", () => {
 
     // WHEN
     const exitTo = encodeURIComponent("/my-path");
-    const url = `${shopify.config.appUrl}${shopify.config.auth.exitIframePath}?exitIframe=${exitTo}`;
+    const url = `${APP_URL}/auth/exit-iframe?exitIframe=${exitTo}`;
     const response = await getThrownResponse(
       shopify.authenticate.admin,
       new Request(url)
