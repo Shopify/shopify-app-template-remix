@@ -7,12 +7,13 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
+import React from "react";
+import { useEffect } from "react";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
 import { json } from "@remix-run/node";
-import remixI18n from "./i18next.server";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import remixI18n from "./i18next.server";
 
 export const meta = () => ({
   charset: "utf-8",
