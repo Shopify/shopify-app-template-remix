@@ -38,7 +38,7 @@ describe("Billing require", () => {
     await setUpValidSession(config.sessionStorage);
     const shopify = shopifyApp({ ...config, billing: BILLING_CONFIG });
 
-    mockExternalRequest({
+    await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
       response: new Response(responses.EMPTY_SUBSCRIPTIONS),
     });
@@ -72,7 +72,7 @@ describe("Billing require", () => {
     await setUpValidSession(config.sessionStorage);
     const shopify = shopifyApp({ ...config, billing: BILLING_CONFIG });
 
-    mockExternalRequest({
+    await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
       response: new Response(responses.EXISTING_SUBSCRIPTION),
     });
@@ -110,7 +110,7 @@ describe("Billing require", () => {
     const session = await setUpValidSession(config.sessionStorage);
     const shopify = shopifyApp(config);
 
-    mockExternalRequest({
+    await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
       response: new Response(undefined, {
         status: 401,
@@ -149,7 +149,7 @@ describe("Billing require", () => {
     await setUpValidSession(config.sessionStorage);
     const shopify = shopifyApp({ ...config, billing: BILLING_CONFIG });
 
-    mockExternalRequest({
+    await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
       response: new Response(undefined, {
         status: 401,
@@ -197,7 +197,7 @@ describe("Billing require", () => {
     await setUpValidSession(config.sessionStorage);
     const shopify = shopifyApp({ ...config, billing: BILLING_CONFIG });
 
-    mockExternalRequest({
+    await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
       response: new Response(undefined, {
         status: 401,
@@ -243,7 +243,7 @@ describe("Billing require", () => {
       billing: BILLING_CONFIG,
     });
 
-    mockExternalRequest({
+    await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
       response: new Response(undefined, {
         status: 500,

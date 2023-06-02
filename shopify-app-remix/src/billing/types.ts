@@ -1,4 +1,5 @@
 import {
+  AppSubscription,
   BillingCheckParams,
   BillingCheckResponseObject,
   BillingRequestParams,
@@ -17,9 +18,16 @@ export interface RequestBillingOptions<Config extends AppConfigArg>
   plan: keyof Config["billing"];
 }
 
+export interface CancelBillingOptions {
+  subscriptionId: string;
+  isTest?: boolean;
+  prorate?: boolean;
+}
+
 export interface BillingContext<Config extends AppConfigArg> {
   require: (
     options: RequireBillingOptions<Config>
   ) => Promise<BillingCheckResponseObject>;
   request: (options: RequestBillingOptions<Config>) => Promise<never>;
+  cancel: (options: CancelBillingOptions) => Promise<AppSubscription>;
 }
