@@ -6,11 +6,13 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "test": "jest",
-    "build": "tsc"
+    "build": "tsc",
+    "build-docs": "sh docs/build-docs.sh"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@shopify/generate-docs": "^0.10.9",
     "@shopify/shopify-app-session-storage-memory": "^1.0.6",
     "@types/jest": "^29.5.1",
     "@types/jsonwebtoken": "^9.0.2",
