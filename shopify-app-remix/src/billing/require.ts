@@ -1,4 +1,8 @@
-import { HttpResponseError, Session } from "@shopify/shopify-api";
+import {
+  BillingCheckResponseObject,
+  HttpResponseError,
+  Session,
+} from "@shopify/shopify-api";
 
 import { BasicParams } from "../types";
 import { RequireBillingOptions } from "./types";
@@ -21,15 +25,13 @@ export function requireBillingFactory<Config extends AppConfigArg>(
 
     logger.debug("Checking billing for the shop", logContext);
 
-    // TODO Return the full info once the feature is deployed into the library package
-    // TODO: Also, we should fail if the plan doesn't exist
-    // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28367815
-    let result: boolean;
+    let data: BillingCheckResponseObject;
     try {
-      result = await api.billing.check({
+      data = await api.billing.check({
         session,
-        ...options,
         plans: options.plans as string[],
+        isTest: options.isTest,
+        returnObject: true,
       });
     } catch (error) {
       if (error instanceof HttpResponseError && error.response.code === 401) {
@@ -40,13 +42,13 @@ export function requireBillingFactory<Config extends AppConfigArg>(
       }
     }
 
-    if (!result) {
+    if (!data.hasActivePayment) {
       logger.debug("Billing check failed", logContext);
       throw await options.onFailure(new Error("Billing check failed"));
     }
 
     logger.debug("Billing check succeeded", logContext);
 
-    return result;
+    return data;
   };
 }

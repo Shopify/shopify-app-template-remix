@@ -86,7 +86,7 @@ describe("Billing require", () => {
     );
 
     // WHEN
-    const success = await billing.require({
+    const result = await billing.require({
       plans: [responses.PLAN_1],
       onFailure: async () => {
         throw new Error("This should not be called");
@@ -94,7 +94,11 @@ describe("Billing require", () => {
     });
 
     // THEN
-    expect(success).toBe(true);
+    expect(result.hasActivePayment).toBe(true);
+    expect(result.oneTimePurchases).toEqual([]);
+    expect(result.appSubscriptions).toEqual([
+      { id: "gid://123", name: responses.PLAN_1, test: true },
+    ]);
   });
 
   it("redirects to authentication when at the top level when Shopify invalidated the session", async () => {
