@@ -22,9 +22,8 @@ import { useSubmit } from "@remix-run/react";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const { admin, session } = await shopify.authenticate.admin(request);
-  const customers = await admin.rest.get({ path: "/customers/count.json" });
 
-  return json({ customers });
+  return json(await admin.rest.Product.count({ session }));
 };
 
 export async function action({ request }: ActionArgs) {
