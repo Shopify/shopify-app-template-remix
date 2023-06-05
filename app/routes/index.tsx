@@ -1,7 +1,7 @@
 import React from "react";
 import { ActionArgs, LoaderArgs, json } from "@remix-run/node";
 import type { HeadersFunction } from "@remix-run/node"; // or cloudflare/deno
-import { useLoaderData, useTransition } from "@remix-run/react";
+import { useLoaderData, useNavigation } from "@remix-run/react";
 
 import { shopify } from "../shopify.server";
 import {
@@ -63,7 +63,7 @@ export async function action({ request }: ActionArgs) {
 
 export default function Index() {
   const data = useLoaderData();
-  const transition = useTransition();
+  const navigation = useNavigation();
   const submit = useSubmit();
 
   function handlePopulateProducts() {
@@ -71,8 +71,8 @@ export default function Index() {
   }
 
   const populatingProducts =
-    transition.state == "submitting" &&
-    transition.submission.formData.get("action") == "create-products";
+    navigation.state == "submitting" &&
+    navigation.formData.get("action") == "create-products";
 
   return (
     <Page narrowWidth>
