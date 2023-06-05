@@ -18,7 +18,6 @@ import { ProductsCard } from "../components/ProductsCard.jsx";
 // TODO figure out why this shows as an error in vscode only
 // @ts-ignore
 import trophyImage from "../assets/home-trophy.png";
-import { useSubmit } from "@remix-run/react";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const { admin, session } = await shopify.authenticate.admin(request);
@@ -27,7 +26,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export async function action({ request }: ActionArgs) {
-  const { admin } = await shopify.authenticate.admin(request);
+  const { admin, session } = await shopify.authenticate.admin(request);
 
   await Promise.all(
     [...Array(5).keys()].map(async (i) => {
@@ -53,26 +52,16 @@ export async function action({ request }: ActionArgs) {
     })
   );
 
-  const result = await admin.rest.get({ path: "/products/count.json" });
-
-  // TODO: Returning the parsed body as a string/object might be confusing for Remix users. We should consider returning
-  // the body as a stream, or renaming it to something that indicates it's a string.
-  // https://github.com/Shopify/shopify-app-template-remix/issues/55
-  return json(result.body);
+  return json(await admin.rest.Product.count({ session }));
 }
 
 export default function Index() {
-  const data = useLoaderData();
-  const navigation = useNavigation();
-  const submit = useSubmit();
+  const { count } = useLoaderData();
+  const { state, formData } = useNavigation();
 
-  function handlePopulateProducts() {
-    submit({ action: "create-products" }, { replace: true, method: "POST" });
-  }
-
-  const populatingProducts =
-    navigation.state == "submitting" &&
-    navigation.formData.get("action") == "create-products";
+  const loading =
+    state == "submitting" ||
+    (state == "loading" && formData?.get("action") == "create-products");
 
   return (
     <Page narrowWidth>
@@ -138,11 +127,7 @@ export default function Index() {
           </AlphaCard>
         </Layout.Section>
         <Layout.Section>
-          <ProductsCard
-            count={data?.count}
-            handlePopulate={handlePopulateProducts}
-            populating={populatingProducts}
-          />
+          <ProductsCard count={count} loading={loading} />
         </Layout.Section>
       </Layout>
     </Page>

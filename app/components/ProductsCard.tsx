@@ -7,18 +7,14 @@ import {
   Button,
   HorizontalStack,
 } from "@shopify/polaris";
+import { Form } from "@remix-run/react";
 
 interface ProductsCardProps {
   count: number;
-  populating: boolean;
-  handlePopulate: () => void;
+  loading: boolean;
 }
 
-export function ProductsCard({
-  count,
-  handlePopulate,
-  populating,
-}: ProductsCardProps) {
+export function ProductsCard({ count, loading }: ProductsCardProps) {
   return (
     <AlphaCard>
       <VerticalStack gap="5">
@@ -38,9 +34,12 @@ export function ProductsCard({
           </Text>
         </VerticalStack>
         <HorizontalStack align="end">
-          <Button primary onClick={handlePopulate} loading={populating}>
-            Populate 5 products
-          </Button>
+          <Form method={"post"}>
+            <input type="hidden" name="action" value="create-products" />
+            <Button primary loading={loading} submit>
+              Populate 5 products
+            </Button>
+          </Form>
         </HorizontalStack>
       </VerticalStack>
     </AlphaCard>
