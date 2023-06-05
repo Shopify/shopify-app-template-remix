@@ -265,8 +265,71 @@ export interface AfterAuthOptions<
 export interface AdminApiContext<
   R extends ShopifyRestResources = ShopifyRestResources
 > {
+  /**
+   * Methods for interacting with the Shopify Admin REST API
+   *
+   * {@link https://shopify.dev/docs/api/admin-rest}
+   *
+   * @example
+   * Getting the number of orders in a store
+   * ```ts
+   * // app/shopify.server.ts
+   * import { shopifyApp } from "@shopify/shopify-app-remix";
+   * import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
+   *
+   * export const shopify = shopifyApp({
+   *   restResources,
+   *   // ...etc
+   * });
+   *
+   * // app/routes/**\/.ts
+   * import { LoaderArgs, json } from "@remix-run/node";
+   * import { shopify } from "../shopify.server";
+   *
+   * export const loader = async ({ request }: LoaderArgs) => {
+   *   const { admin, session } = await shopify.authenticate.admin(request);
+   *   return json(admin.rest.Order.count({ session }));
+   * };
+   * ```
+   */
   rest: InstanceType<Shopify["clients"]["Rest"]> & R;
   // TODO: Improve the public API in @shopify/shopify-api GraphQL client
   // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28352645
+
+  /**
+   * Methods for interacting with the Shopify Admin GraphQL API
+   *
+   * {@link https://shopify.dev/docs/api/admin-graphql}
+   * {@link https://github.com/Shopify/shopify-api-js/blob/main/docs/reference/clients/Graphql.md}
+   *
+   * @example
+   * Creating a new product
+   * ```ts
+   * import { ActionArgs } from "@remix-run/node";
+   * import { shopify } from "../shopify.server";
+   *
+   * export async function action({ request }: ActionArgs) {
+   *   const { admin } = await shopify.authenticate.admin(request);
+   *
+   *   await admin.graphql.query({
+   *     data: {
+   *       query: `#graphql
+   *         mutation populateProduct($input: ProductInput!) {
+   *           productCreate(input: $input) {
+   *             product {
+   *               id
+   *             }
+   *           }
+   *        }
+   *     `,
+   *     variables: {
+   *       input: {
+   *         title: "Product Name",
+   *       },
+   *     },
+   *   });
+   * }
+   * ```
+   */
   graphql: InstanceType<Shopify["clients"]["Graphql"]>;
 }
