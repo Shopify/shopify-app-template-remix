@@ -14,6 +14,8 @@ interface AdminContextInternal<
   /**
    * The session for the user who made the request.
    *
+   * This comes from the session storage which `shopifyApp` uses to store sessions in your database of choice.  If you did not provide a session storage adaptor `shopifyApp` uses `SQLiteSessionStorage`
+   *
    * Use this to get shop or user specific data.
    *
    * @example
@@ -58,7 +60,7 @@ interface AdminContextInternal<
    */
   session: Session;
   /**
-   * Methods for interacting with the Shopify REST Admin API for this store
+   * Methods for interacting with the Shopify GraphQL / REST Admin APIs for the store that made the request
    */
   admin: AdminApiContext<Resources>;
   /**
