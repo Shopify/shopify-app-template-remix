@@ -1,12 +1,11 @@
 import React from "react";
 
 import {
-  Card,
-  Heading,
-  TextContainer,
-  DisplayText,
-  TextStyle,
-  Spinner,
+  AlphaCard,
+  VerticalStack,
+  Text,
+  Button,
+  HorizontalStack,
 } from "@shopify/polaris";
 
 interface ProductsCardProps {
@@ -21,29 +20,29 @@ export function ProductsCard({
   populating,
 }: ProductsCardProps) {
   return (
-    <>
-      <Card
-        title="Product Counter"
-        sectioned
-        primaryFooterAction={{
-          content: "Populate 5 products",
-          onAction: handlePopulate,
-          loading: populating,
-        }}
-      >
-        <TextContainer spacing="loose">
-          <p>
-            Sample products are created with a default title and price. You can
-            remove them at any time.
-          </p>
-          <Heading element="h4">
+    <AlphaCard>
+      <VerticalStack gap="5">
+        <Text variant="headingMd" as="h2">
+          Product Counter
+        </Text>
+        <Text variant="bodyMd" as="p">
+          Sample products are created with a default title and price. You can
+          remove them at any time.
+        </Text>
+        <VerticalStack gap="0">
+          <Text variant="bodyMd" as="span">
             TOTAL PRODUCTS
-            <DisplayText size="medium">
-              <TextStyle variation="strong">{count}</TextStyle>
-            </DisplayText>
-          </Heading>
-        </TextContainer>
-      </Card>
-    </>
+          </Text>
+          <Text variant="headingXl" as="span">
+            {count}
+          </Text>
+        </VerticalStack>
+        <HorizontalStack align="end">
+          <Button primary onClick={handlePopulate} loading={populating}>
+            Populate 5 products
+          </Button>
+        </HorizontalStack>
+      </VerticalStack>
+    </AlphaCard>
   );
 }
