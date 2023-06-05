@@ -64,7 +64,9 @@ interface AdminContextInternal<
    */
   admin: AdminApiContext<Resources>;
   /**
-   * Billing methods for this store
+   * Billing methods for this store, based on the plans defined in the `billing` config option.
+   *
+   * {@link https://shopify.dev/docs/apps/billing}
    */
   billing: BillingContext<Config>;
 }
