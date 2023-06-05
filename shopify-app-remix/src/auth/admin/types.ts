@@ -64,7 +64,35 @@ interface AdminContextInternal<
    */
   admin: AdminApiContext<Resources>;
   /**
-   * Billing methods for this store
+   * Billing methods for this store, based on the plans defined in the `billing` config option.
+   *
+   * {@link https://shopify.dev/docs/apps/billing}
+   *
+   * @example
+   * Billing configuration
+   * ```ts
+   * // shopify.server.ts
+   * import { shopifyApp, BillingInterval } from "@shopify/shopify-app-remix";
+   *
+   * export const MY_PLAN_1 = 'My plan name 1';
+   * export const MY_PLAN_2 = 'My plan name 2';
+   *
+   * export const shopify = shopifyApp({
+   *   // ...etc
+   *   billing: {
+   *     [MY_PLAN_1]: {
+   *       amount: 5,
+   *       currencyCode: 'USD',
+   *       interval: BillingInterval.Every30Days,
+   *     },
+   *     [MY_PLAN_2]: {
+   *       amount: 50,
+   *       currencyCode: 'USD',
+   *       interval: BillingInterval.Annual,
+   *     },
+   *   }
+   * });
+   * ```
    */
   billing: BillingContext<Config>;
 }
