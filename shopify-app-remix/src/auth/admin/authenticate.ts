@@ -16,7 +16,11 @@ import {
 import { BasicParams } from "../../types";
 import { AdminApiContext, AppConfig, AppConfigArg } from "../../config-types";
 import { BillingContext } from "../../billing/types";
-import { requestBillingFactory, requireBillingFactory } from "../../billing";
+import {
+  cancelBillingFactory,
+  requestBillingFactory,
+  requireBillingFactory,
+} from "../../billing";
 
 import { AdminContext } from "./types";
 import {
@@ -571,6 +575,7 @@ export class AuthStrategy<
     return {
       require: requireBillingFactory({ api, logger, config }, request, session),
       request: requestBillingFactory({ api, logger, config }, request, session),
+      cancel: cancelBillingFactory({ api, logger, config }, request, session),
     };
   }
 

@@ -4,6 +4,12 @@ export const ALL_PLANS = [PLAN_1, PLAN_2];
 
 export const CONFIRMATION_URL = "totally-real-url";
 
+export const APP_SUBSCRIPTION = {
+  id: "gid://123",
+  name: PLAN_1,
+  test: true,
+};
+
 export const EMPTY_SUBSCRIPTIONS = JSON.stringify({
   data: {
     currentAppInstallation: {
@@ -32,11 +38,7 @@ export const EXISTING_SUBSCRIPTION = JSON.stringify({
 export const PURCHASE_SUBSCRIPTION_RESPONSE = JSON.stringify({
   data: {
     appSubscriptionCreate: {
-      appSubscription: {
-        id: "gid://123",
-        name: PLAN_1,
-        test: true,
-      },
+      appSubscription: APP_SUBSCRIPTION,
       confirmationUrl: CONFIRMATION_URL,
       userErrors: [],
     },
@@ -46,13 +48,18 @@ export const PURCHASE_SUBSCRIPTION_RESPONSE = JSON.stringify({
 export const PURCHASE_SUBSCRIPTION_RESPONSE_WITH_USER_ERRORS = JSON.stringify({
   data: {
     appSubscriptionCreate: {
-      appSubscription: {
-        id: "gid://123",
-        name: PLAN_1,
-        test: true,
-      },
+      appSubscription: APP_SUBSCRIPTION,
       confirmationUrl: CONFIRMATION_URL,
       userErrors: ["Oops, something went wrong"],
+    },
+  },
+});
+
+export const CANCEL_RESPONSE = JSON.stringify({
+  data: {
+    appSubscriptionCancel: {
+      appSubscription: APP_SUBSCRIPTION,
+      userErrors: [],
     },
   },
 });

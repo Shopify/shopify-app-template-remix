@@ -136,7 +136,7 @@ describe("authorize.admin auth callback path", () => {
       });
 
       // WHEN
-      mockCodeExchangeRequest("offline");
+      await mockCodeExchangeRequest("offline");
       const response = await getThrownResponse(
         shopify.authenticate.admin,
         await getValidCallbackRequest(config)
@@ -154,7 +154,7 @@ describe("authorize.admin auth callback path", () => {
       const shopify = shopifyApp(config);
 
       // WHEN
-      mockCodeExchangeRequest("offline");
+      await mockCodeExchangeRequest("offline");
       await getThrownResponse(
         shopify.authenticate.admin,
         await getValidCallbackRequest(config)
@@ -181,7 +181,7 @@ describe("authorize.admin auth callback path", () => {
       const shopify = shopifyApp(config);
 
       // WHEN
-      mockCodeExchangeRequest("offline");
+      await mockCodeExchangeRequest("offline");
       const response = await getThrownResponse(
         shopify.authenticate.admin,
         await getValidCallbackRequest(config)
@@ -206,7 +206,7 @@ describe("authorize.admin auth callback path", () => {
       const shopify = shopifyApp(config);
 
       // WHEN
-      mockCodeExchangeRequest("online");
+      await mockCodeExchangeRequest("online");
       const response = await getThrownResponse(
         shopify.authenticate.admin,
         await getValidCallbackRequest(config)
@@ -228,7 +228,7 @@ describe("authorize.admin auth callback path", () => {
       const shopify = shopifyApp(config);
 
       // WHEN
-      mockCodeExchangeRequest();
+      await mockCodeExchangeRequest();
       await getThrownResponse(
         shopify.authenticate.admin,
         await getValidCallbackRequest(config)
@@ -244,7 +244,7 @@ describe("authorize.admin auth callback path", () => {
       const shopify = shopifyApp(config);
 
       // WHEN
-      mockCodeExchangeRequest("offline");
+      await mockCodeExchangeRequest("offline");
       const response = await getThrownResponse(
         shopify.authenticate.admin,
         await getValidCallbackRequest(config)
@@ -265,7 +265,7 @@ describe("authorize.admin auth callback path", () => {
       const shopify = shopifyApp(config);
 
       // WHEN
-      mockCodeExchangeRequest("offline");
+      await mockCodeExchangeRequest("offline");
       const request = await getValidCallbackRequest(config);
       const response = await getThrownResponse(
         shopify.authenticate.admin,
@@ -319,13 +319,15 @@ async function getValidCallbackRequest(config: ReturnType<typeof testConfig>) {
   return request;
 }
 
-function mockCodeExchangeRequest(tokenType: "online" | "offline" = "offline") {
+async function mockCodeExchangeRequest(
+  tokenType: "online" | "offline" = "offline"
+) {
   const responseBody = {
     access_token: "123abc",
     scope: "read_products",
   };
 
-  mockExternalRequest({
+  await mockExternalRequest({
     request: new Request(`https://${TEST_SHOP}/admin/oauth/access_token`, {
       method: "POST",
     }),

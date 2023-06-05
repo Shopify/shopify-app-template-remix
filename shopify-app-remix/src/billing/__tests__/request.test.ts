@@ -46,7 +46,7 @@ describe("Billing request", () => {
     });
     const session = await setUpValidSession(shopify.sessionStorage);
 
-    mockExternalRequests({
+    await mockExternalRequests({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
       response: new Response(responses.PURCHASE_SUBSCRIPTION_RESPONSE),
     });
@@ -78,7 +78,7 @@ describe("Billing request", () => {
     const shopify = shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
     await setUpValidSession(shopify.sessionStorage);
 
-    mockExternalRequest({
+    await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
       response: new Response(responses.PURCHASE_SUBSCRIPTION_RESPONSE),
     });
@@ -116,7 +116,7 @@ describe("Billing request", () => {
     const shopify = shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
     await setUpValidSession(shopify.sessionStorage);
 
-    mockExternalRequest({
+    await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
       response: new Response(responses.PURCHASE_SUBSCRIPTION_RESPONSE),
     });
@@ -152,7 +152,7 @@ describe("Billing request", () => {
     });
     const session = await setUpValidSession(shopify.sessionStorage);
 
-    mockExternalRequests({
+    await mockExternalRequests({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
       response: new Response(undefined, {
         status: 401,
@@ -184,7 +184,7 @@ describe("Billing request", () => {
     const shopify = shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
     await setUpValidSession(shopify.sessionStorage);
 
-    mockExternalRequest({
+    await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
       response: new Response(undefined, {
         status: 401,
@@ -225,7 +225,7 @@ describe("Billing request", () => {
     const shopify = shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
     await setUpValidSession(shopify.sessionStorage);
 
-    mockExternalRequest({
+    await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
       response: new Response(undefined, {
         status: 401,
@@ -264,7 +264,7 @@ describe("Billing request", () => {
     });
     const session = await setUpValidSession(shopify.sessionStorage);
 
-    mockExternalRequests({
+    await mockExternalRequests({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
       response: new Response(undefined, {
         status: 500,
@@ -292,7 +292,7 @@ describe("Billing request", () => {
     const shopify = shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
     await setUpValidSession(shopify.sessionStorage);
 
-    mockExternalRequest({
+    await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
       response: new Response(
         responses.PURCHASE_SUBSCRIPTION_RESPONSE_WITH_USER_ERRORS
