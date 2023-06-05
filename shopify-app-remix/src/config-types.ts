@@ -268,10 +268,12 @@ export interface AdminApiContext<
   /**
    * Methods for interacting with the Shopify Admin REST API
    *
+   * There are methods for interacting with individual REST resources. You can also make plain `GET`, `POST`, `PUT` and `DELETE` requests should the REST resources not meet your needs.
+   *
    * {@link https://shopify.dev/docs/api/admin-rest}
    *
    * @example
-   * Getting the number of orders in a store
+   * Getting the number of orders in a store using rest resources
    * ```ts
    * // app/shopify.server.ts
    * import { shopifyApp } from "@shopify/shopify-app-remix";
@@ -289,6 +291,28 @@ export interface AdminApiContext<
    * export const loader = async ({ request }: LoaderArgs) => {
    *   const { admin, session } = await shopify.authenticate.admin(request);
    *   return json(admin.rest.Order.count({ session }));
+   * };
+   * ```
+   *
+   * @example
+   * Making a GET request to the REST API
+   * ```ts
+   * // app/shopify.server.ts
+   * import { shopifyApp } from "@shopify/shopify-app-remix";
+   * import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
+   *
+   * export const shopify = shopifyApp({
+   *   restResources,
+   *   // ...etc
+   * });
+   *
+   * // app/routes/**\/.ts
+   * import { LoaderArgs, json } from "@remix-run/node";
+   * import { shopify } from "../shopify.server";
+   *
+   * export const loader = async ({ request }: LoaderArgs) => {
+   *   const customers = await admin.rest.get({ path: "/customers/count.json" });
+   *   return json({ customers });
    * };
    * ```
    */
