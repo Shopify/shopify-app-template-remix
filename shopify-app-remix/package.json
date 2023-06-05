@@ -21,7 +21,7 @@
     "ts-jest": "^29.1.0"
   },
   "dependencies": {
-    "@shopify/shopify-api": "^7.2.0",
+    "@shopify/shopify-api": "^7.3.0",
     "@shopify/shopify-app-session-storage": "^1.1.2",
     "@shopify/shopify-app-session-storage-sqlite": "^1.2.2",
     "semver": "^7.5.0",
