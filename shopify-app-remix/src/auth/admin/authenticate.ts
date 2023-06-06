@@ -428,7 +428,6 @@ export class AuthStrategy<
   private async redirectToShopifyOrAppRoot(
     request: Request,
     responseHeaders?: Headers
-    // TODO: We should return `never` when we're throwing responses
   ): Promise<never> {
     const { api } = this;
     const url = new URL(request.url);
@@ -440,16 +439,7 @@ export class AuthStrategy<
       ? await api.auth.getEmbeddedAppUrl({ rawRequest: request })
       : `/?shop=${shop}&host=${encodeURIComponent(host)}`;
 
-    const headers = responseHeaders
-      ? Object.fromEntries(responseHeaders.entries())
-      : {};
-
-    throw redirect(redirectUrl, {
-      headers: {
-        ...headers,
-        location: redirectUrl,
-      },
-    });
+    throw redirect(redirectUrl, { headers: responseHeaders });
   }
 
   private redirectToBouncePage(url: URL): void {
