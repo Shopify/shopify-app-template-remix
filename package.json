@@ -22,6 +22,7 @@
     "@shopify/shopify-app-remix": "file:shopify-app-remix/shopify-shopify-app-remix-1.0.0.tgz",
     "@shopify/shopify-app-session-storage-prisma": "^1.0.0-rc.1",
     "cross-env": "^7.0.3",
+    "isbot": "latest",
     "prisma": "^4.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
