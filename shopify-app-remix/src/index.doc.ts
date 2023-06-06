@@ -11,12 +11,12 @@ const data: ReferenceEntityTemplateSchema = {
   isVisualComponent: false,
   definitions: [
     {
-      title: "shopifyApp",
+      title: "Parameters",
       description: "Accepted configuration",
       type: "AppConfigArg",
     },
     {
-      title: "Return",
+      title: "Returns",
       description: "Object returned by the `shopifyApp` function",
       type: "ShopifyApp",
     },
@@ -44,7 +44,7 @@ const data: ReferenceEntityTemplateSchema = {
       title: "shopifyApp",
       tabs: [
         {
-          code: "./shopifyApp.example.min.ts",
+          code: "./index.example.min.ts",
           language: "typescript",
           title: "TypeScript",
         },
@@ -59,7 +59,7 @@ const data: ReferenceEntityTemplateSchema = {
           title: "shopifyApp - full configuration",
           tabs: [
             {
-              code: "./shopifyApp.example.full.ts",
+              code: "./index.example.full.ts",
               language: "typescript",
               title: "TypeScript",
             },

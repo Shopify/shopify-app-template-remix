@@ -581,7 +581,7 @@
     "isVisualComponent": false,
     "definitions": [
       {
-        "title": "shopifyApp",
+        "title": "Parameters",
         "description": "Accepted configuration",
         "type": "AppConfigArg",
         "typeDefinitions": {
@@ -831,7 +831,7 @@
         }
       },
       {
-        "title": "Return",
+        "title": "Returns",
         "description": "Object returned by the `shopifyApp` function",
         "type": "ShopifyApp",
         "typeDefinitions": {
