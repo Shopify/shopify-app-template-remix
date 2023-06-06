@@ -31,10 +31,12 @@ export default function App() {
   return (
     <html lang="en">
       <head>
-        <meta name="shopify-api-key" content={apiKey} />
-        <script src="https://cdn.shopify.com/shopifycloud/app-bridge-next/app-bridge.js" />
         <Meta />
         <Links />
+        <script
+          src="https://cdn.shopify.com/shopifycloud/app-bridge-next/app-bridge.js"
+          data-api-key={apiKey}
+        />
       </head>
       <body>
         <PolarisAppProvider i18n={translations}>
