@@ -82,15 +82,18 @@ export default function Index() {
                         i18nKey="Index.yourAppIsReadyToExplore"
                         components={{
                           PolarisLink: (
+                            // eslint-disable-next-line jsx-a11y/anchor-has-content
                             <Link url="https://polaris.shopify.com/" external />
                           ),
                           AdminApiLink: (
+                            // eslint-disable-next-line jsx-a11y/anchor-has-content
                             <Link
                               url="https://shopify.dev/api/admin-graphql"
                               external
                             />
                           ),
                           AppBridgeLink: (
+                            // eslint-disable-next-line jsx-a11y/anchor-has-content
                             <Link
                               url="https://shopify.dev/apps/tools/app-bridge"
                               external
