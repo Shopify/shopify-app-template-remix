@@ -9,3 +9,5 @@ public
 shopify-app-remix
 .github
 tmp
+*.yml
+.shopify
