@@ -1,4 +1,4 @@
-import { ActionArgs } from "@remix-run/node";
+import type { ActionArgs } from "@remix-run/node";
 
 import { shopify } from "../shopify.server";
 import db from "../db.server";

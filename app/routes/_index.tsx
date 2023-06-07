@@ -1,9 +1,7 @@
 import React from "react";
-import { ActionArgs, LoaderArgs, json } from "@remix-run/node";
-import type { HeadersFunction } from "@remix-run/node"; // or cloudflare/deno
+import { json } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs, HeadersFunction } from "@remix-run/node";
 import { useLoaderData, useNavigation } from "@remix-run/react";
-
-import { shopify } from "../shopify.server";
 import {
   Page,
   Layout,
@@ -14,8 +12,12 @@ import {
   AlphaCard,
   Grid,
 } from "@shopify/polaris";
+
+import { shopify } from "../shopify.server";
 import { ProductsCard } from "../components/ProductsCard.jsx";
+// eslint-disable-next-line no-warning-comments
 // TODO figure out why this shows as an error in vscode only
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import trophyImage from "../assets/home-trophy.png";
 
@@ -59,9 +61,8 @@ export default function Index() {
   const { count } = useLoaderData();
   const { state, formData } = useNavigation();
 
-  const loading =
-    state == "submitting" ||
-    (state == "loading" && formData?.get("action") == "create-products");
+  const isLoading =
+    state === "loading" || formData?.get("action") === "create-products";
 
   return (
     <Page narrowWidth>
@@ -127,7 +128,7 @@ export default function Index() {
           </AlphaCard>
         </Layout.Section>
         <Layout.Section>
-          <ProductsCard count={count} loading={loading} />
+          <ProductsCard count={count} loading={isLoading} />
         </Layout.Section>
       </Layout>
     </Page>

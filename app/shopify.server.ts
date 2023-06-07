@@ -7,9 +7,7 @@ import {
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
 
-// TODO figure out why this shows as an error in vscode only
-// @ts-ignore
-import prisma from "~/db.server";
+import prisma from "./db.server";
 
 export const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY!,

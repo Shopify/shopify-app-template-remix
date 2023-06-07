@@ -20,7 +20,7 @@ export const meta = () => ({
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
-export async function loader() {
+export function loader() {
   const apiKey = process.env.SHOPIFY_API_KEY;
   return json({ apiKey });
 }
