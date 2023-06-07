@@ -8,7 +8,6 @@ import { I18nextProvider, initReactI18next } from "react-i18next";
 import ShopifyFormat from "@shopify/i18next-shopify";
 import isbot from "isbot";
 import Backend from "i18next-fs-backend";
-import { resolve } from "path";
 import i18next from "i18next";
 import i18nextOptions from "./utils/i18nextOptions";
 import i18nextServer from "./i18next.server";
@@ -30,22 +29,14 @@ export default async function handleRequest(
 
   const lng = await i18nextServer.getLocale(request);
   await loadPluralRulesPolyfills(i18nextOptions.fallbackLng, lng);
-
-  if (!i18next.isInitialized) {
-    await i18next
-      .use(initReactI18next)
-      .use(ShopifyFormat)
-      .use(Backend)
-      .init({
-        ...i18nextOptions,
-        lng,
-        backend: {
-          loadPath: resolve("./public/locales/{{lng}}.json"),
-        },
-      });
-  } else if (lng !== i18next.language) {
-    await i18next.changeLanguage(lng);
-  }
+  await i18next
+    .use(initReactI18next)
+    .use(ShopifyFormat)
+    .use(Backend)
+    .init({
+      ...i18nextOptions,
+      lng,
+    });
 
   const callbackName = isbot(request.headers.get("user-agent"))
     ? "onAllReady"

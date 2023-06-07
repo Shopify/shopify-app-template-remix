@@ -7,7 +7,7 @@ import i18next from "i18next";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import ShopifyFormat from "@shopify/i18next-shopify";
 import LanguageDetector from "i18next-browser-languagedetector";
-import Backend from "i18next-http-backend";
+import resourcesToBackend from "i18next-resources-to-backend";
 import {
   loadLocalePolyfills,
   loadPluralRulesPolyfills,
@@ -28,21 +28,29 @@ function hydrate() {
 
 async function initI18n() {
   await loadLocalePolyfills();
-  if (!i18next.isInitialized) {
-    await i18next
-      .use(initReactI18next)
-      .use(ShopifyFormat)
-      .use(LanguageDetector)
-      .use(Backend)
-      .init({
-        ...i18nextOptions,
-        backend: { loadPath: "locales/{{lng}}.json" },
-        detection: {
-          order: ["htmlTag"],
-          caches: [],
-        },
-      });
-  }
+  await i18next
+    .use(initReactI18next)
+    .use(ShopifyFormat)
+    .use(LanguageDetector)
+    .use(
+      resourcesToBackend(async (locale: string, _namespace: string) => {
+        switch (locale) {
+          case "en":
+            return (await import("./locales/en.json")).default;
+          case "de":
+            return (await import("./locales/de.json")).default;
+          case "fr":
+            return (await import("./locales/fr.json")).default;
+        }
+      })
+    )
+    .init({
+      ...i18nextOptions,
+      detection: {
+        order: ["htmlTag"],
+        caches: [],
+      },
+    });
   await loadPluralRulesPolyfills(i18nextOptions.fallbackLng, i18next.language);
 }
 

@@ -1,9 +1,15 @@
+import { resolve } from "path";
+
 export default {
+  backend: {
+    loadPath: resolve("./app/locales/{{lng}}.json"),
+  },
   debug: process.env.NODE_ENV !== "production",
   /**
    * The default locale for the app.
    */
   fallbackLng: "en",
+  react: { useSuspense: false },
   /**
    * The supported locales for the app.
    *
@@ -13,5 +19,4 @@ export default {
    * https://help.shopify.com/en/manual/your-account/languages#available-languages
    */
   supportedLngs: ["de", "en", "fr"],
-  react: { useSuspense: false },
 };
