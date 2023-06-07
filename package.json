@@ -11,7 +11,8 @@
     "db:up": "npx prisma db push",
     "db:generate": "prisma generate",
     "start": "remix-serve build",
-    "shopify": "shopify"
+    "shopify": "shopify",
+    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint ."
   },
   "dependencies": {
     "@prisma/client": "^4.12.0",
@@ -30,7 +31,11 @@
   "devDependencies": {
     "@remix-run/dev": "^1.15.0",
     "@shopify/app": "^3",
-    "@shopify/cli": "^3"
+    "@shopify/cli": "^3",
+    "@remix-run/eslint-config": "^1.17.0",
+    "@types/eslint": "^8.40.0",
+    "eslint": "^8.42.0",
+    "eslint-config-prettier": "^8.8.0"
   },
   "workspaces": {
     "packages": [
