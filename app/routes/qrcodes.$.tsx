@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { shopify } from "../shopify.server";
 import {
   AlphaCard,
@@ -21,9 +23,26 @@ import {
 import { ImageMajor } from "@shopify/polaris-icons";
 
 export async function loader({ request }: LoaderArgs) {
-  await shopify.authenticate.admin(request);
+  const { admin, sessionToken } = await shopify.authenticate.admin(request);
+  const { body } = await admin.graphql.query<any>({
+    data: {
+      query: DISCOUNT_QUERY,
+      variables: {
+        first: 10,
+      },
+    },
+  });
 
-  return null;
+  const discounts: { label: string; value: string }[] =
+    body.data.codeDiscountNodes.edges.map((edge) => ({
+      label: edge.node.codeDiscount.codes.edges[0].node.code,
+      value: edge.node.id,
+    }));
+
+  return json({
+    discounts,
+    createDiscountUrl: `${sessionToken.iss}/discounts/new`,
+  });
 }
 
 export async function action({ request }: ActionArgs) {
@@ -31,6 +50,11 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function Index() {
+  const { discounts, createDiscountUrl } = useLoaderData<typeof loader>();
+  const [title, setTitle] = useState("");
+  const [destination, setDestination] = useState(["product"]);
+  const [discount, setDiscount] = useState("none");
+
   return (
     <Page>
       <Layout>
@@ -47,6 +71,8 @@ export default function Index() {
                   label="title"
                   labelHidden
                   autoComplete="off"
+                  value={title}
+                  onChange={setTitle}
                 />
               </VerticalStack>
             </AlphaCard>
@@ -71,8 +97,8 @@ export default function Index() {
                       value: "cart",
                     },
                   ]}
-                  selected={["product"]}
-                  onChange={() => {}}
+                  selected={destination}
+                  onChange={setDestination}
                 />
               </VerticalStack>
             </AlphaCard>
@@ -82,15 +108,26 @@ export default function Index() {
                   <Text as={"h2"} variant="headingLg">
                     Discount
                   </Text>
-                  <Link>Create discount</Link>
+                  <Link
+                    onClick={() =>
+                      ((window as any).shopify as any).redirectTo(
+                        createDiscountUrl
+                      )
+                    }
+                  >
+                    Create discount
+                  </Link>
                 </HorizontalStack>
                 <Select
                   id="discount"
                   label="Discount"
                   labelHidden
-                  options={[{ label: "No discount", value: "none" }]}
-                  onChange={() => {}}
-                  value={"none"}
+                  options={[
+                    { label: "No discount", value: "none" },
+                    ...discounts,
+                  ]}
+                  onChange={setDiscount}
+                  value={discount}
                 />
               </VerticalStack>
             </AlphaCard>
@@ -114,3 +151,44 @@ export default function Index() {
     </Page>
   );
 }
+
+const DISCOUNT_QUERY = `
+  query shopData($first: Int!) {
+    codeDiscountNodes(first: $first) {
+      edges {
+        node {
+          id
+          codeDiscount {
+            ... on DiscountCodeBasic {
+              codes(first: 1) {
+                edges {
+                  node {
+                    code
+                  }
+                }
+              }
+            }
+            ... on DiscountCodeBxgy {
+              codes(first: 1) {
+                edges {
+                  node {
+                    code
+                  }
+                }
+              }
+            }
+            ... on DiscountCodeFreeShipping {
+              codes(first: 1) {
+                edges {
+                  node {
+                    code
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
