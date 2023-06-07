@@ -20,3 +20,29 @@ model Session {
   accessToken String
   userId      BigInt?
 }
+
+model QRCode {
+  id          Int       @id @default(autoincrement())
+  title       String
+  shop        String
+  product     Product   @relation(fields: [productId], references: [id])
+  productId   String
+  discount    Discount? @relation(fields: [discountId], references: [id])
+  discountId  String?
+  destination String
+  scans       Int       @default(0)
+  createdAt   DateTime  @default(now())
+}
+
+model Product {
+  id      String   @id
+  handle  String
+  QRCode  QRCode[]
+  variant String
+}
+
+model Discount {
+  id     String   @id
+  code   String
+  QRCode QRCode[]
+}
