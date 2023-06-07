@@ -3,16 +3,16 @@ import {
   DeliveryMethod,
   LogSeverity,
   shopifyApp,
-} from '@shopify/shopify-app-remix';
-import {PrismaSessionStorage} from '@shopify/shopify-app-session-storage-prisma';
-import {restResources} from '@shopify/shopify-api/rest/admin/2023-04';
+} from "@shopify/shopify-app-remix";
+import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
+import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
 
-import prisma from './db.server';
+import prisma from "./db.server";
 
 export const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY!,
   apiSecretKey: process.env.SHOPIFY_API_SECRET!,
-  scopes: process.env.SCOPES?.split(',')!,
+  scopes: process.env.SCOPES?.split(",")!,
   appUrl: process.env.SHOPIFY_APP_URL!,
   authPathPrefix: process.env.SHOPIFY_APP_AUTH_AUTHORIZATION_PATH,
   sessionStorage: new PrismaSessionStorage(prisma),
@@ -23,18 +23,18 @@ export const shopify = shopifyApp({
   webhooks: {
     APP_UNINSTALLED: {
       deliveryMethod: DeliveryMethod.Http,
-      callbackUrl: '/webhooks',
+      callbackUrl: "/webhooks",
     },
   },
   hooks: {
-    afterAuth: async ({session}) => {
-      shopify.registerWebhooks({session});
+    afterAuth: async ({ session }) => {
+      shopify.registerWebhooks({ session });
     },
   },
   billing: {
     monthly: {
       amount: 5,
-      currencyCode: 'EUR',
+      currencyCode: "EUR",
       interval: BillingInterval.Every30Days,
     },
   },

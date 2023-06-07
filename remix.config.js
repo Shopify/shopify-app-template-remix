@@ -14,8 +14,8 @@ if (
 
 /** @type {import('@remix-run/dev').AppConfig} */
 module.exports = {
-  ignoredRouteFiles: ['**/.*'],
-  appDirectory: 'app',
+  ignoredRouteFiles: ["**/.*"],
+  appDirectory: "app",
   future: {
     v2_routeConvention: true,
   },
