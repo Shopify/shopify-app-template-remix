@@ -1,5 +1,6 @@
 {
   "Index": {
+    "title": "Neue Remix-App",
     "heading": "Gute Arbeit beim Erstellen einer Shopify-App 🎉",
     "learnMore": "Erhalte mehr Informationen zum Ausbau deiner App in <ShopifyTutorialLink>diesem Shopify-Tutorial</ShopifyTutorialLink> 📚",
     "startPopulatingYourApp": "Bist du bereit? Stelle in deiner App einige Beispielprodukte bereit, um sie in deinem Shop anzuzeigen und zu testen.",
@@ -8,7 +9,6 @@
   },
   "ProductsCard": {
     "description": "Beispielprodukte werden mit einem Standardtitel und -preis erstellt. Du kannst sie jederzeit entfernen.",
-    "errorCreatingProductsToast": "Beim Erstellen von Produkten ist ein Fehler aufgetreten",
     "populateProductsButton": {
       "one": "{{count}} Produkt bereitstellen",
       "other": "{{count}} Produkte bereitstellen"
