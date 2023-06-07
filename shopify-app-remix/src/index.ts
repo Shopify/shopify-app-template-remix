@@ -64,8 +64,6 @@ export function shopifyApp<
   const params: BasicParams = { api, config, logger };
   const oauth = new AuthStrategy<Config, Resources>(params);
 
-  // TODO: Make sure to comment on each exported function out of this object
-  // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28354989
   return {
     sessionStorage: config.sessionStorage,
     registerWebhooks: registerWebhooksFactory(params),

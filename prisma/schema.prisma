@@ -18,6 +18,5 @@ model Session {
   scope       String?
   expires     DateTime?
   accessToken String
-  // TODO update the package documentation to reflect that this is a BigInt
   userId      BigInt?
 }
