@@ -1,5 +1,6 @@
 import React from "react";
-import { ActionArgs, LoaderArgs, json } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import type { HeadersFunction } from "@remix-run/node"; // or cloudflare/deno
 import { useLoaderData, useNavigation } from "@remix-run/react";
 
