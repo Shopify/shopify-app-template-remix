@@ -10,12 +10,12 @@ import isbot from "isbot";
 import Backend from "i18next-fs-backend";
 import { resolve } from "path";
 import i18next from "i18next";
-import i18nextOptions from "./i18nextOptions";
+import i18nextOptions from "./utils/i18nextOptions";
 import i18nextServer from "./i18next.server";
 import {
   loadLocalePolyfills,
   loadPluralRulesPolyfills,
-} from "./utils/polyfill";
+} from "./utils/intlPolyfills";
 
 const ABORT_DELAY = 5_000;
 
@@ -24,11 +24,10 @@ export default async function handleRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   remixContext: EntryContext,
-  loadContext: AppLoadContext
+  _loadContext: AppLoadContext
 ) {
   await loadLocalePolyfills();
 
-  // Detect locale from the request
   const lng = await i18nextServer.getLocale(request);
   await loadPluralRulesPolyfills(i18nextOptions.fallbackLng, lng);
 
@@ -39,14 +38,12 @@ export default async function handleRequest(
       .use(Backend)
       .init({
         ...i18nextOptions,
-        lng, // Initialize with the detected locale
+        lng,
         backend: {
           loadPath: resolve("./public/locales/{{lng}}.json"),
         },
       });
-  }
-  if (lng !== i18next.language) {
-    // Change to the detected locale
+  } else if (lng !== i18next.language) {
     await i18next.changeLanguage(lng);
   }
 
