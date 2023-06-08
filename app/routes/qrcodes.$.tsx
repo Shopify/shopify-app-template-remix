@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useNavigation, useSubmit } from "@remix-run/react";
 import { shopify } from "../shopify.server";
 import {
   AlphaCard,
@@ -20,7 +20,7 @@ import {
   Thumbnail,
   VerticalStack,
 } from "@shopify/polaris";
-import { ResourcePicker } from "@shopify/app-bridge-react";
+import { ResourcePicker, ContextualSaveBar } from "@shopify/app-bridge-react";
 import { ImageMajor } from "@shopify/polaris-icons";
 
 export async function loader({ request }: LoaderArgs) {
@@ -47,6 +47,8 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export async function action({ request }: ActionArgs) {
+  console.log("ACTION");
+
   return null;
 }
 
@@ -55,8 +57,7 @@ export default function Index() {
   const [title, setTitle] = useState("");
   const [destination, setDestination] = useState(["product"]);
   const [discount, setDiscount] = useState("none");
-  const [showResourcePicker, setShowResourcePicker] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState({
+  const [product, setProduct] = useState({
     title: "",
     image: {
       alt: "",
@@ -67,10 +68,12 @@ export default function Index() {
     variantId: "",
   });
 
+  const [showResourcePicker, setShowResourcePicker] = useState(false);
+
   const handleProductChange = useCallback(({ selection }) => {
     const { title, images, handle, id, variants } = selection[0];
 
-    setSelectedProduct({
+    setProduct({
       title,
       image: {
         alt: images[0]?.altText,
@@ -83,6 +86,51 @@ export default function Index() {
 
     setShowResourcePicker(false);
   }, []);
+
+  const { current: initialState } = useRef({
+    title,
+    destination,
+    discount,
+    product,
+  });
+
+  const isDirty = useMemo(() => {
+    return (
+      JSON.stringify(initialState) !==
+      JSON.stringify({
+        title,
+        destination,
+        discount,
+        product,
+      })
+    );
+  }, [initialState, title, destination, discount, product]);
+
+  const resetForm = useCallback(() => {
+    setTitle(initialState.title);
+    setDestination(initialState.destination);
+    setDiscount(initialState.discount);
+    setProduct(initialState.product);
+  }, [initialState]);
+
+  const submit = useSubmit();
+  const handleSubmit = () => {
+    submit(
+      {
+        title,
+        destination: destination[0],
+        productId: product.id,
+        productHandle: product.handle,
+        productVariantId: product.variantId,
+        discountId: discount,
+        discountCode: discounts.find((d) => d.value === discount)?.label || "",
+      },
+      { method: "post" }
+    );
+  };
+
+  const { state } = useNavigation();
+  const isSubmitting = state === "submitting" || state === "loading";
 
   return (
     <Page>
@@ -128,14 +176,14 @@ export default function Index() {
                     open={showResourcePicker}
                   />
                 </HorizontalStack>
-                {selectedProduct.title ? (
+                {product.title ? (
                   <HorizontalStack blockAlign="center" gap={"5"}>
                     <Thumbnail
-                      source={selectedProduct.image.src || ImageMajor}
-                      alt={selectedProduct.image.alt}
+                      source={product.image.src || ImageMajor}
+                      alt={product.image.alt}
                     />
                     <Text as="span" variant="headingMd" fontWeight="semibold">
-                      {selectedProduct.title}
+                      {product.title}
                     </Text>
                   </HorizontalStack>
                 ) : (
@@ -204,6 +252,22 @@ export default function Index() {
           </AlphaCard>
         </Layout.Section>
       </Layout>
+      <ContextualSaveBar
+        saveAction={{
+          label: "Save",
+          onAction: handleSubmit,
+          loading: isSubmitting,
+          disabled: isSubmitting,
+        }}
+        discardAction={{
+          label: "Discard",
+          onAction: resetForm,
+          loading: isSubmitting,
+          disabled: !isDirty || isSubmitting,
+        }}
+        visible={isDirty}
+        fullWidth
+      />
     </Page>
   );
 }
