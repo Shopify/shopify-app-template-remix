@@ -26,16 +26,19 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }) {
-  const apiKey = process.env.SHOPIFY_API_KEY;
   const t = await remixI18n.getFixedT(request);
-  const title = t("Index.title");
   const locale = await remixI18n.getLocale(request);
-  const polarisTranslations = require(`@shopify/polaris/locales/${locale}.json`);
-  return json({ apiKey, title, locale, polarisTranslations });
+  return json({
+    apiKey: process.env.SHOPIFY_API_KEY,
+    title: t("Index.title"),
+    locale,
+    polarisTranslations: require(`@shopify/polaris/locales/${locale}.json`),
+  });
 }
 
 export default function App() {
-  const { apiKey, locale, polarisTranslations } = useLoaderData();
+  const { apiKey, locale, polarisTranslations } =
+    useLoaderData<typeof loader>();
   const { i18n } = useTranslation();
 
   return (

@@ -4,7 +4,10 @@ export default {
   backend: {
     loadPath: resolve("./app/locales/{{lng}}.json"),
   },
-  debug: process.env.NODE_ENV !== "production",
+  /**
+   * Set to `process.env.NODE_ENV !== "production"` to see debug output
+   */
+  debug: false,
   /**
    * The default locale for the app.
    */

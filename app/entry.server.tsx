@@ -28,15 +28,17 @@ export default async function handleRequest(
   await loadLocalePolyfills();
 
   const lng = await i18nextServer.getLocale(request);
-  await loadPluralRulesPolyfills(i18nextOptions.fallbackLng, lng);
-  await i18next
-    .use(initReactI18next)
-    .use(ShopifyFormat)
-    .use(Backend)
-    .init({
-      ...i18nextOptions,
-      lng,
-    });
+  await Promise.all([
+    loadPluralRulesPolyfills(i18nextOptions.fallbackLng, lng),
+    i18next
+      .use(initReactI18next)
+      .use(ShopifyFormat)
+      .use(Backend)
+      .init({
+        ...i18nextOptions,
+        lng,
+      }),
+  ]);
 
   const callbackName = isbot(request.headers.get("user-agent"))
     ? "onAllReady"
