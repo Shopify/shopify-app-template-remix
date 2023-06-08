@@ -35,10 +35,10 @@ model QRCode {
 }
 
 model Product {
-  id      String   @id
-  handle  String
-  QRCode  QRCode[]
-  variant String
+  id        String   @id
+  handle    String
+  QRCode    QRCode[]
+  variantId String
 }
 
 model Discount {
