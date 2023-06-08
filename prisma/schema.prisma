@@ -28,6 +28,8 @@ model QRCode {
   productId        String
   productHandle    String
   productVariantId String
+  productImage     String?
+  productAlt       String?
   discountId       String?
   discountCode     String?
   destination      String
