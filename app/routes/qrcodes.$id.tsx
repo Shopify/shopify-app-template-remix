@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { useLoaderData, useNavigation, useSubmit } from "@remix-run/react";
 import { shopify } from "../shopify.server";
 import {
@@ -24,7 +24,7 @@ import { ResourcePicker, ContextualSaveBar } from "@shopify/app-bridge-react";
 import { ImageMajor } from "@shopify/polaris-icons";
 import db from "../db.server";
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request, params }: LoaderArgs) {
   const { admin, sessionToken } = await shopify.authenticate.admin(request);
   const { body } = await admin.graphql.query<any>({
     data: {
@@ -41,9 +41,17 @@ export async function loader({ request }: LoaderArgs) {
       value: edge.node.id,
     }));
 
+  const qrCode =
+    params.id === "new" || !params.id
+      ? null
+      : await db.qRCode.findFirst({
+          where: { id: Number(params.id) },
+        });
+
   return json({
     discounts,
     createDiscountUrl: `${sessionToken.iss}/discounts/new`,
+    qrCode,
   });
 }
 
@@ -58,40 +66,42 @@ export async function action({ request }: ActionArgs) {
       productId: formData.get("productId") as string,
       productHandle: formData.get("productHandle") as string,
       productVariantId: formData.get("productVariantId") as string,
+      productAlt: formData.get("productAlt") as string | null,
+      productImage: formData.get("productImage") as string | null,
       discountId: formData.get("discountId") as string | null,
       discountCode: formData.get("discountCode") as string | null,
       destination: formData.get("destination") as string,
     },
   });
 
-  console.log({ qrCode });
-
-  return null;
+  return redirect(`/qrcodes/${qrCode.id}`);
 }
 
 export default function Index() {
-  const { discounts, createDiscountUrl } = useLoaderData<typeof loader>();
-  const [title, setTitle] = useState("");
-  const [destination, setDestination] = useState(["product"]);
-  const [discount, setDiscount] = useState("none");
+  const { discounts, createDiscountUrl, qrCode } =
+    useLoaderData<typeof loader>();
+
+  const [title, setTitle] = useState(qrCode?.title || "");
+  const [destination, setDestination] = useState([
+    qrCode?.destination || "product",
+  ]);
+  const [discount, setDiscount] = useState(qrCode?.discountId || "none");
   const [product, setProduct] = useState({
-    title: "",
     image: {
-      alt: "",
-      src: "",
+      alt: qrCode?.productAlt || "",
+      src: qrCode?.productImage || "",
     },
-    handle: "",
-    id: "",
-    variantId: "",
+    handle: qrCode?.productHandle || "",
+    id: qrCode?.productId || "",
+    variantId: qrCode?.productVariantId || "",
   });
 
   const [showResourcePicker, setShowResourcePicker] = useState(false);
 
   const handleProductChange = useCallback(({ selection }) => {
-    const { title, images, handle, id, variants } = selection[0];
+    const { images, handle, id, variants } = selection[0];
 
     setProduct({
-      title,
       image: {
         alt: images[0]?.altText,
         src: images[0]?.imageSrc || images[0]?.originalSrc,
@@ -104,7 +114,7 @@ export default function Index() {
     setShowResourcePicker(false);
   }, []);
 
-  const { current: initialState } = useRef({
+  const [cleanState, setCleanState] = useState({
     title,
     destination,
     discount,
@@ -113,7 +123,7 @@ export default function Index() {
 
   const isDirty = useMemo(() => {
     return (
-      JSON.stringify(initialState) !==
+      JSON.stringify(cleanState) !==
       JSON.stringify({
         title,
         destination,
@@ -121,14 +131,14 @@ export default function Index() {
         product,
       })
     );
-  }, [initialState, title, destination, discount, product]);
+  }, [cleanState, title, destination, discount, product]);
 
   const resetForm = useCallback(() => {
-    setTitle(initialState.title);
-    setDestination(initialState.destination);
-    setDiscount(initialState.discount);
-    setProduct(initialState.product);
-  }, [initialState]);
+    setTitle(cleanState.title);
+    setDestination(cleanState.destination);
+    setDiscount(cleanState.discount);
+    setProduct(cleanState.product);
+  }, [cleanState]);
 
   const submit = useSubmit();
   const handleSubmit = () => {
@@ -146,11 +156,25 @@ export default function Index() {
         discounts.find((d) => d.value === discount)?.label || "";
     }
 
+    if (product.image.src) {
+      data.productImage = product.image.src;
+    }
+
+    if (product.image.alt) {
+      data.productAlt = product.image.alt;
+    }
+
     submit(data, { method: "post" });
+    setCleanState({
+      title,
+      destination,
+      discount,
+      product,
+    });
   };
 
   const { state } = useNavigation();
-  const isSubmitting = state === "submitting" || state === "loading";
+  const isSubmitting = state === "submitting";
 
   return (
     <Page>
@@ -196,14 +220,14 @@ export default function Index() {
                     open={showResourcePicker}
                   />
                 </HorizontalStack>
-                {product.title ? (
+                {product.handle ? (
                   <HorizontalStack blockAlign="center" gap={"5"}>
                     <Thumbnail
                       source={product.image.src || ImageMajor}
                       alt={product.image.alt}
                     />
                     <Text as="span" variant="headingMd" fontWeight="semibold">
-                      {product.title}
+                      {product.handle}
                     </Text>
                   </HorizontalStack>
                 ) : (
@@ -285,7 +309,7 @@ export default function Index() {
           loading: isSubmitting,
           disabled: !isDirty || isSubmitting,
         }}
-        visible={isDirty}
+        visible={isDirty || isSubmitting}
         fullWidth
       />
     </Page>
