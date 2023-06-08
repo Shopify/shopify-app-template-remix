@@ -22,6 +22,7 @@ import {
 } from "@shopify/polaris";
 import { ResourcePicker, ContextualSaveBar } from "@shopify/app-bridge-react";
 import { ImageMajor } from "@shopify/polaris-icons";
+import db from "../db.server";
 
 export async function loader({ request }: LoaderArgs) {
   const { admin, sessionToken } = await shopify.authenticate.admin(request);
@@ -47,7 +48,23 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export async function action({ request }: ActionArgs) {
-  console.log("ACTION");
+  const { session } = await shopify.authenticate.admin(request);
+  const formData = await request.formData();
+
+  const qrCode = await db.qRCode.create({
+    data: {
+      title: formData.get("title") as string,
+      shop: session.shop,
+      productId: formData.get("productId") as string,
+      productHandle: formData.get("productHandle") as string,
+      productVariantId: formData.get("productVariantId") as string,
+      discountId: formData.get("discountId") as string | null,
+      discountCode: formData.get("discountCode") as string | null,
+      destination: formData.get("destination") as string,
+    },
+  });
+
+  console.log({ qrCode });
 
   return null;
 }
@@ -81,7 +98,7 @@ export default function Index() {
       },
       handle,
       id,
-      variantId: variants.id,
+      variantId: variants[0].id,
     });
 
     setShowResourcePicker(false);
@@ -115,18 +132,21 @@ export default function Index() {
 
   const submit = useSubmit();
   const handleSubmit = () => {
-    submit(
-      {
-        title,
-        destination: destination[0],
-        productId: product.id,
-        productHandle: product.handle,
-        productVariantId: product.variantId,
-        discountId: discount,
-        discountCode: discounts.find((d) => d.value === discount)?.label || "",
-      },
-      { method: "post" }
-    );
+    const data: Record<string, any> = {
+      title,
+      destination: destination[0],
+      productId: product.id,
+      productHandle: product.handle,
+      productVariantId: product.variantId,
+    };
+
+    if (discount !== "none") {
+      data.discountId = discount;
+      data.discountCode =
+        discounts.find((d) => d.value === discount)?.label || "";
+    }
+
+    submit(data, { method: "post" });
   };
 
   const { state } = useNavigation();
