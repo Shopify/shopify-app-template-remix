@@ -30,25 +30,23 @@ export async function action({ request }: ActionArgs) {
 
   await Promise.all(
     [...Array(5).keys()].map(async (i) => {
-      await admin.graphql.query({
-        data: {
-          query: `#graphql
-            mutation populateProduct($input: ProductInput!) {
-              productCreate(input: $input) {
-                product {
-                  id
-                }
-              }
+      await admin.graphql(
+        `#graphql mutation populateProduct($input: ProductInput!) {
+          productCreate(input: $input) {
+            product {
+              id
             }
-          `,
+          }
+        }`,
+        {
           variables: {
             input: {
               title: `${randomTitle()}`,
               variants: [{ price: randomPrice() }],
             },
           },
-        },
-      });
+        }
+      );
     })
   );
 
