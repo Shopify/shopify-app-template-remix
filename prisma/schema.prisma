@@ -29,7 +29,7 @@ model QRCode {
   productHandle    String
   productVariantId String
   discountId       String?
-  discountCount    String?
+  discountCode     String?
   destination      String
   scans            Int     @default(0)
 }
