@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
@@ -20,6 +20,7 @@ import {
   Thumbnail,
   VerticalStack,
 } from "@shopify/polaris";
+import { ResourcePicker } from "@shopify/app-bridge-react";
 import { ImageMajor } from "@shopify/polaris-icons";
 
 export async function loader({ request }: LoaderArgs) {
@@ -54,6 +55,34 @@ export default function Index() {
   const [title, setTitle] = useState("");
   const [destination, setDestination] = useState(["product"]);
   const [discount, setDiscount] = useState("none");
+  const [showResourcePicker, setShowResourcePicker] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState({
+    title: "",
+    image: {
+      alt: "",
+      src: "",
+    },
+    handle: "",
+    id: "",
+    variantId: "",
+  });
+
+  const handleProductChange = useCallback(({ selection }) => {
+    const { title, images, handle, id, variants } = selection[0];
+
+    setSelectedProduct({
+      title,
+      image: {
+        alt: images[0]?.altText,
+        src: images[0]?.imageSrc || images[0]?.originalSrc,
+      },
+      handle,
+      id,
+      variantId: variants.id,
+    });
+
+    setShowResourcePicker(false);
+  }, []);
 
   return (
     <Page>
@@ -82,9 +111,36 @@ export default function Index() {
                   <Text as={"h2"} variant="headingLg">
                     Product
                   </Text>
-                  <Button plain>Change product</Button>
+                  <Button
+                    plain
+                    onClick={() => setShowResourcePicker(!showResourcePicker)}
+                  >
+                    Change product
+                  </Button>
+                  <ResourcePicker
+                    resourceType="Product"
+                    showVariants={false}
+                    selectMultiple={false}
+                    onCancel={() => {
+                      setShowResourcePicker(false);
+                    }}
+                    onSelection={handleProductChange}
+                    open={showResourcePicker}
+                  />
                 </HorizontalStack>
-                <Thumbnail source={ImageMajor} alt="Thumbnail" />
+                {selectedProduct.title ? (
+                  <HorizontalStack blockAlign="center" gap={"5"}>
+                    <Thumbnail
+                      source={selectedProduct.image.src || ImageMajor}
+                      alt={selectedProduct.image.alt}
+                    />
+                    <Text as="span" variant="headingMd" fontWeight="semibold">
+                      {selectedProduct.title}
+                    </Text>
+                  </HorizontalStack>
+                ) : (
+                  <Thumbnail source={ImageMajor} alt="Thumbnail" />
+                )}
                 <Bleed marginInline="20">
                   <Divider />
                 </Bleed>
