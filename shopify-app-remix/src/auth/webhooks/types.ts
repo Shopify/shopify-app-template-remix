@@ -12,6 +12,7 @@ export interface WebhookContext<
   shop: string;
   topic: Topics;
   webhookId: string;
+  payload: any;
   session: Session;
   admin: {
     rest: InstanceType<Shopify["clients"]["Rest"]> & Resources;

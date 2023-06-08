@@ -11,10 +11,12 @@ export function authenticateWebhookFactory<
   return async function authenticate(
     request: Request
   ): Promise<WebhookContext<Topics, Resources>> {
+    const rawBody = await request.text();
+
     // TODO: Webhooks can only be POST requests, we should fail early in any other scenario
     // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28378576
     const check = await api.webhooks.validate({
-      rawBody: await request.text(),
+      rawBody,
       rawRequest: request,
     });
 
@@ -48,6 +50,7 @@ export function authenticateWebhookFactory<
       shop: check.domain,
       topic: check.topic as Topics,
       webhookId: check.webhookId,
+      payload: JSON.parse(rawBody),
       session,
       admin: {
         rest: restClient as typeof restClient & Resources,
