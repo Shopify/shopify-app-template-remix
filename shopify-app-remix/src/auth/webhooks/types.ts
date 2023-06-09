@@ -1,4 +1,5 @@
 import { Session, Shopify, ShopifyRestResources } from "@shopify/shopify-api";
+import { JSONValue } from "src/types";
 
 export interface RegisterWebhooksOptions {
   session: Session;
@@ -12,6 +13,7 @@ export interface WebhookContext<
   shop: string;
   topic: Topics;
   webhookId: string;
+  payload: JSONValue;
   session: Session;
   admin: {
     rest: InstanceType<Shopify["clients"]["Rest"]> & Resources;

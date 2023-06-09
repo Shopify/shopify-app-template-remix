@@ -17,6 +17,20 @@ export interface BasicParams {
   logger: Shopify["logger"];
 }
 
+export type JSONValue =
+    | string
+    | number
+    | boolean
+    | null
+    | JSONObject
+    | JSONArray;
+
+interface JSONObject {
+    [x: string]: JSONValue;
+}
+
+interface JSONArray extends Array<JSONValue> { }
+
 type RegisterWebhooks = (
   options: RegisterWebhooksOptions
 ) => Promise<RegisterReturn>;
@@ -212,7 +226,7 @@ export interface ShopifyApp<Config extends AppConfigArg> {
      * import db from "../db.server";
      *
      * export const action = async ({ request }: ActionArgs) => {
-     *   const { topic, shop, admin } = await shopify.authenticate.webhook(request);
+     *   const { topic, shop, admin, payload } = await shopify.authenticate.webhook(request);
      *
      *   switch (topic) {
      *     case "APP_UNINSTALLED":

@@ -26,6 +26,7 @@ describe("Webhook validation", () => {
     const sessionStorage = new MemorySessionStorage();
     const config = testConfig({ sessionStorage, restResources });
     const shopify = shopifyApp(config);
+    const body = {some: "data"};
 
     const session = new Session({
       id: `offline_${TEST_SHOP}`,
@@ -44,11 +45,12 @@ describe("Webhook validation", () => {
       shop,
       topic,
       webhookId,
+      payload
     } = await shopify.authenticate.webhook(
       new Request(`${APP_URL}/webhooks`, {
         method: "POST",
-        body: JSON.stringify({}),
-        headers: webhookHeaders(JSON.stringify({})),
+        body: JSON.stringify(body),
+        headers: webhookHeaders(JSON.stringify(body)),
       })
     );
 
@@ -58,6 +60,7 @@ describe("Webhook validation", () => {
     expect(topic).toBe("APP_UNINSTALLED");
     expect(webhookId).toBe("1234567890");
     expect(actualSession).toBe(session);
+    expect(payload).toEqual(body);
 
     expect(admin.rest.apiVersion).toBe("2023-01");
     expect(admin.rest.session).toBe(session);
