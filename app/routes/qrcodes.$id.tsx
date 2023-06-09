@@ -1,7 +1,12 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useLoaderData, useNavigation, useSubmit } from "@remix-run/react";
+import {
+  useActionData,
+  useLoaderData,
+  useNavigation,
+  useSubmit,
+} from "@remix-run/react";
 import { shopify } from "../shopify.server";
 import {
   AlphaCard,
@@ -11,6 +16,7 @@ import {
   Divider,
   EmptyState,
   HorizontalStack,
+  InlineError,
   Layout,
   Link,
   Page,
@@ -58,20 +64,42 @@ export async function loader({ request, params }: LoaderArgs) {
 export async function action({ request }: ActionArgs) {
   const { session } = await shopify.authenticate.admin(request);
   const formData = await request.formData();
+  const data = {
+    title: formData.get("title") as string,
+    shop: session.shop,
+    productId: formData.get("productId") as string,
+    productHandle: formData.get("productHandle") as string,
+    productVariantId: formData.get("productVariantId") as string,
+    productAlt: formData.get("productAlt") as string | null,
+    productImage: formData.get("productImage") as string | null,
+    discountId: formData.get("discountId") as string | null,
+    discountCode: formData.get("discountCode") as string | null,
+    destination: formData.get("destination") as string,
+  };
+
+  const requiredFieldMessages = {
+    title: "Title is required",
+    productId: "Product is required",
+    destination: "Destination is required",
+  };
+
+  const errors = Object.entries(requiredFieldMessages).reduce(
+    (errors, [field, message]) => {
+      if (!data[field]) {
+        errors[field] = message;
+      }
+
+      return errors;
+    },
+    {} as Partial<typeof requiredFieldMessages>
+  );
+
+  if (Object.keys(errors).length) {
+    return json({ errors }, { status: 422 });
+  }
 
   const qrCode = await db.qRCode.create({
-    data: {
-      title: formData.get("title") as string,
-      shop: session.shop,
-      productId: formData.get("productId") as string,
-      productHandle: formData.get("productHandle") as string,
-      productVariantId: formData.get("productVariantId") as string,
-      productAlt: formData.get("productAlt") as string | null,
-      productImage: formData.get("productImage") as string | null,
-      discountId: formData.get("discountId") as string | null,
-      discountCode: formData.get("discountCode") as string | null,
-      destination: formData.get("destination") as string,
-    },
+    data,
   });
 
   return redirect(`/qrcodes/${qrCode.id}`);
@@ -80,6 +108,7 @@ export async function action({ request }: ActionArgs) {
 export default function Index() {
   const { discounts, createDiscountUrl, qrCode } =
     useLoaderData<typeof loader>();
+  const errors = useActionData<typeof action>()?.errors || {};
 
   const [title, setTitle] = useState(qrCode?.title || "");
   const [destination, setDestination] = useState([
@@ -194,6 +223,7 @@ export default function Index() {
                   autoComplete="off"
                   value={title}
                   onChange={setTitle}
+                  error={errors.title}
                 />
               </VerticalStack>
             </AlphaCard>
@@ -203,12 +233,14 @@ export default function Index() {
                   <Text as={"h2"} variant="headingLg">
                     Product
                   </Text>
-                  <Button
-                    plain
-                    onClick={() => setShowResourcePicker(!showResourcePicker)}
-                  >
-                    Change product
-                  </Button>
+                  {product.id ? (
+                    <Button
+                      plain
+                      onClick={() => setShowResourcePicker(!showResourcePicker)}
+                    >
+                      {product.id ? "Change product" : "Select product"}
+                    </Button>
+                  ) : null}
                   <ResourcePicker
                     resourceType="Product"
                     showVariants={false}
@@ -231,7 +263,20 @@ export default function Index() {
                     </Text>
                   </HorizontalStack>
                 ) : (
-                  <Thumbnail source={ImageMajor} alt="Thumbnail" />
+                  <VerticalStack gap="2">
+                    <Button
+                      onClick={() => setShowResourcePicker(true)}
+                      id="select-product"
+                    >
+                      Select product
+                    </Button>
+                    {errors.productId ? (
+                      <InlineError
+                        message={errors.productId}
+                        fieldID="myFieldID"
+                      />
+                    ) : null}
+                  </VerticalStack>
                 )}
                 <Bleed marginInline="20">
                   <Divider />
@@ -247,6 +292,7 @@ export default function Index() {
                   ]}
                   selected={destination}
                   onChange={setDestination}
+                  error={errors.destination}
                 />
               </VerticalStack>
             </AlphaCard>
