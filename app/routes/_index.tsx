@@ -31,7 +31,8 @@ export async function action({ request }: ActionArgs) {
   await Promise.all(
     [...Array(5).keys()].map(async (i) => {
       await admin.graphql(
-        `#graphql mutation populateProduct($input: ProductInput!) {
+        `#graphql
+        mutation populateProduct($input: ProductInput!) {
           productCreate(input: $input) {
             product {
               id

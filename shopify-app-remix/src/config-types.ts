@@ -328,7 +328,8 @@ export interface AdminApiContext<
    *   const { admin } = await shopify.authenticate.admin(request);
    *
    *   await admin.graphql(
-   *     `#graphql mutation populateProduct($input: ProductInput!) {
+   *     `#graphql
+   *     mutation populateProduct($input: ProductInput!) {
    *       productCreate(input: $input) {
    *         product {
    *           id
