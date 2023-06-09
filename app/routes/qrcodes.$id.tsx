@@ -58,7 +58,7 @@ export async function loader({ request, params }: LoaderArgs) {
   });
 }
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request, params }: ActionArgs) {
   const { session } = await shopify.authenticate.admin(request);
   const formData = await request.formData();
   const data = {
@@ -95,9 +95,11 @@ export async function action({ request }: ActionArgs) {
     return json({ errors }, { status: 422 });
   }
 
-  const qrCode = await db.qRCode.create({
-    data,
-  });
+  const id = params.id === "new" || !params.id ? undefined : Number(params.id);
+
+  const qrCode = id
+    ? await db.qRCode.update({ where: { id }, data })
+    : await db.qRCode.create({ data });
 
   return redirect(`/qrcodes/${qrCode.id}`);
 }
