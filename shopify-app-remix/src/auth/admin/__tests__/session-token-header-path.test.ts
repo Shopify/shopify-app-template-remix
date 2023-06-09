@@ -110,7 +110,6 @@ describe("authorize.session token header path", () => {
         expect(sessionToken).toEqual(payload);
         expect(session).toBe(testSession);
         expect(admin.rest.session).toBe(testSession);
-        expect(admin.graphql.session).toBe(testSession);
       });
 
       it("returns context when session exists for non-embedded apps", async () => {
@@ -141,7 +140,6 @@ describe("authorize.session token header path", () => {
         // THEN
         expect(session).toBe(testSession);
         expect(admin.rest.session).toBe(testSession);
-        expect(admin.graphql.session).toBe(testSession);
       });
     }
   );

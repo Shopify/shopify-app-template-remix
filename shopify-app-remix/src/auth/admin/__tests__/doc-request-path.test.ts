@@ -388,7 +388,6 @@ describe("authorize.admin doc request path", () => {
         // THEN
         expect(session).toBe(testSession);
         expect(admin.rest.session).toBe(testSession);
-        expect(admin.graphql.session).toBe(testSession);
       });
 
       it("returns the context if the session is valid and the app is not embedded", async () => {
@@ -419,7 +418,6 @@ describe("authorize.admin doc request path", () => {
         // THEN
         expect(session).toBe(testSession);
         expect(admin.rest.session).toBe(testSession);
-        expect(admin.graphql.session).toBe(testSession);
       });
     }
   );

@@ -2,14 +2,13 @@ import {
   ConfigParams as ApiConfigArg,
   ConfigInterface as ApiConfig,
   ShopifyRestResources,
-  HttpWebhookHandler,
-  PubSubWebhookHandler,
-  EventBridgeWebhookHandler,
   Shopify,
   Session,
   ApiVersion,
+  WebhookHandler,
 } from "@shopify/shopify-api";
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
+import { GraphqlQueryFunction } from "./auth/admin/graphql-client";
 
 export interface AppConfigArg<
   Resources extends ShopifyRestResources = ShopifyRestResources,
@@ -210,15 +209,8 @@ interface AuthConfig {
   patchSessionTokenPath: string;
 }
 
-// TODO: The callbackUrl field should be optional (and eventually removed) in the library
-// https://github.com/Shopify/shopify-app-template-remix/issues/31
-type TempWebhookHandler =
-  | Omit<HttpWebhookHandler, "callback">
-  | PubSubWebhookHandler
-  | EventBridgeWebhookHandler;
-
 export interface WebhookConfig {
-  [key: string]: TempWebhookHandler | TempWebhookHandler[];
+  [key: string]: WebhookHandler | WebhookHandler[];
 }
 
 interface HooksConfig {
@@ -335,25 +327,19 @@ export interface AdminApiContext<
    * export async function action({ request }: ActionArgs) {
    *   const { admin } = await shopify.authenticate.admin(request);
    *
-   *   await admin.graphql.query({
-   *     data: {
-   *       query: `#graphql
-   *         mutation populateProduct($input: ProductInput!) {
-   *           productCreate(input: $input) {
-   *             product {
-   *               id
-   *             }
-   *           }
-   *        }
-   *     `,
-   *     variables: {
-   *       input: {
-   *         title: "Product Name",
-   *       },
-   *     },
-   *   });
+   *   await admin.graphql(
+   *     `#graphql
+   *     mutation populateProduct($input: ProductInput!) {
+   *       productCreate(input: $input) {
+   *         product {
+   *           id
+   *         }
+   *       }
+   *     }`,
+   *     { variables: { input: { title: "Product Name" } } }
+   *   );
    * }
    * ```
    */
-  graphql: InstanceType<Shopify["clients"]["Graphql"]>;
+  graphql: GraphqlQueryFunction;
 }

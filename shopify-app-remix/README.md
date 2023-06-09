@@ -123,25 +123,24 @@ import { ActionArgs, json } from "@remix-run/node";
 export async function action({ request }: ActionArgs) {
   const { admin } = await shopify.authenticate.admin(request);
 
-  await admin.graphql.query({
-    data: {
-      query: `#graphql
-          mutation populateProduct($input: ProductInput!) {
-            productCreate(input: $input) {
-              product {
-                id
-              }
-            }
-          }
-        `,
+  await admin.graphql(
+    `#graphql
+    mutation populateProduct($input: ProductInput!) {
+      productCreate(input: $input) {
+        product {
+          id
+        }
+      }
+    }`,
+    {
       variables: {
         input: {
           title: "New product",
           variants: [{ price: 100 }],
         },
       },
-    },
-  });
+    }
+  );
 
   return null;
 }

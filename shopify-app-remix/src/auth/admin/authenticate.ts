@@ -1,7 +1,6 @@
 import { redirect } from "@remix-run/server-runtime";
 import {
   CookieNotFound,
-  GraphqlParams,
   GraphqlQueryError,
   HttpResponseError,
   InvalidHmacError,
@@ -31,6 +30,7 @@ import {
   validateSessionToken,
   rejectBotRequest,
 } from "../helpers";
+import { graphqlClientFactory } from "./graphql-client";
 
 interface SessionContext {
   session: Session;
@@ -525,37 +525,6 @@ export class AuthStrategy<
     return client as typeof client & Resources;
   }
 
-  private overriddenGraphqlClient(request: Request, session: Session) {
-    const { api, config, logger } = this;
-
-    const GraphqlClient = api.clients.Graphql;
-    const originalClient = new GraphqlClient({ session });
-    const originalQuery = Reflect.get(originalClient, "query");
-
-    class RemixGraphqlClient extends GraphqlClient {
-      public async query(params: GraphqlParams) {
-        try {
-          return await originalQuery.call(this, params);
-        } catch (error) {
-          if (
-            error instanceof HttpResponseError &&
-            error.response.code === 401
-          ) {
-            await redirectToAuthPage(
-              { api, config, logger },
-              request,
-              session.shop
-            );
-          } else {
-            throw error;
-          }
-        }
-      }
-    }
-
-    return new RemixGraphqlClient({ session });
-  }
-
   private createBillingContext(
     request: Request,
     session: Session
@@ -573,9 +542,15 @@ export class AuthStrategy<
     request: Request,
     session: Session
   ): AdminApiContext<Resources> {
+    const { api, config, logger } = this;
+
     return {
       rest: this.overriddenRestClient(request, session),
-      graphql: this.overriddenGraphqlClient(request, session),
+      graphql: graphqlClientFactory({
+        params: { api, config, logger },
+        request,
+        session,
+      }),
     };
   }
 }

@@ -1,4 +1,5 @@
 import {
+  ApiVersion,
   HttpResponseError,
   LATEST_API_VERSION,
   SESSION_COOKIE_NAME,
@@ -37,9 +38,23 @@ describe("admin.authenticate context", () => {
     },
     {
       testGroup: "GraphQL client",
-      mockRequest: mockGraphqlRequest,
+      mockRequest: mockGraphqlRequest(),
       action: async (admin: AdminApiContext, _session: Session) =>
-        await admin.graphql.query({ data: "{ shop { name } }" }),
+        await admin.graphql("{ shop { name } }"),
+    },
+    {
+      testGroup: "GraphQL client with options",
+      mockRequest: mockGraphqlRequest("2021-01" as ApiVersion),
+      action: async (admin: AdminApiContext, _session: Session) =>
+        await admin.graphql(
+          "mutation myMutation($ID: String!) { shop(ID: $ID) { name } }",
+          {
+            variables: { ID: "123" },
+            apiVersion: "2021-01" as ApiVersion,
+            headers: { custom: "header" },
+            tries: 2,
+          }
+        ),
     },
   ];
 
@@ -91,7 +106,7 @@ describe("admin.authenticate context", () => {
       it("throws when request receives a non-401 response and not embedded", async () => {
         // GIVEN
         const { admin, session } = await setUpNonEmbeddedFlow();
-        await mockRequest(500);
+        await mockRequest(403);
 
         // THEN
         await expect(() => action(admin, session)).rejects.toThrowError(
@@ -214,16 +229,18 @@ describe("admin.authenticate context", () => {
     return requestMock;
   }
 
-  async function mockGraphqlRequest(status = 401) {
-    const requestMock = new Request(
-      `https://${TEST_SHOP}/admin/api/${LATEST_API_VERSION}/graphql.json`,
-      { method: "POST" }
-    );
-    await mockExternalRequest({
-      request: requestMock,
-      response: new Response(undefined, { status }),
-    });
+  function mockGraphqlRequest(apiVersion = LATEST_API_VERSION) {
+    return async function (status = 401) {
+      const requestMock = new Request(
+        `https://${TEST_SHOP}/admin/api/${apiVersion}/graphql.json`,
+        { method: "POST" }
+      );
+      await mockExternalRequest({
+        request: requestMock,
+        response: new Response(undefined, { status }),
+      });
 
-    return requestMock;
+      return requestMock;
+    };
   }
 });
