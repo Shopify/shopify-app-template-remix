@@ -30,6 +30,7 @@
     "cross-env": "^7.0.3",
     "isbot": "latest",
     "prisma": "^4.13.0",
+    "qrcode": "^1.5.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -37,6 +38,7 @@
     "@remix-run/dev": "^1.19.0-pre.0",
     "@remix-run/eslint-config": "^1.19.0-pre.0",
     "@types/eslint": "^8.40.0",
+    "@types/qrcode": "^1.5.0",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
     "prettier": "^2.8.8"

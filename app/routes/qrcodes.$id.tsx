@@ -28,7 +28,9 @@ import {
 } from "@shopify/polaris";
 import { ResourcePicker, ContextualSaveBar } from "@shopify/app-bridge-react";
 import { ImageMajor } from "@shopify/polaris-icons";
+
 import db from "../db.server";
+import { getQRCode } from "../models/QRCode";
 
 export async function loader({ request, params }: LoaderArgs) {
   const { admin, sessionToken } = await shopify.authenticate.admin(request);
@@ -47,17 +49,12 @@ export async function loader({ request, params }: LoaderArgs) {
       value: edge.node.id,
     }));
 
-  const qrCode =
-    params.id === "new" || !params.id
-      ? null
-      : await db.qRCode.findFirst({
-          where: { id: Number(params.id) },
-        });
+  const qrCodeId = params.id === "new" || !params.id ? null : Number(params.id);
 
   return json({
     discounts,
     createDiscountUrl: `${sessionToken.iss}/discounts/new`,
-    qrCode,
+    qrCode: qrCodeId ? await getQRCode(qrCodeId) : null,
   });
 }
 
@@ -329,15 +326,23 @@ export default function Index() {
         </Layout.Section>
         <Layout.Section secondary>
           <AlphaCard>
-            <VerticalStack gap="5">
-              <Text as={"h2"} variant="headingLg">
-                Qr code
-              </Text>
+            <Text as={"h2"} variant="headingLg">
+              Qr code
+            </Text>
+            {qrCode ? (
+              <EmptyState image={qrCode.image} imageContained={true} />
+            ) : (
               <EmptyState image="">
                 Your QR code will appear here after you save
               </EmptyState>
-              <Button disabled>Download</Button>
-              <Button>Go to destination</Button>
+            )}
+            <VerticalStack gap="5">
+              <Button disabled={!qrCode} url={qrCode?.image} download primary>
+                Download
+              </Button>
+              <Button url={qrCode?.destinationUrl} external>
+                Go to destination
+              </Button>
             </VerticalStack>
           </AlphaCard>
         </Layout.Section>
