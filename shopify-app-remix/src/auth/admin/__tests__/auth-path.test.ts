@@ -11,12 +11,12 @@ describe("authorize.admin auth path", () => {
   test("throws an 400 Response if the shop param is missing", async () => {
     // GIVEN
     const config = testConfig();
-    const shopify = shopifyApp(config);
+    const shopifyServer =  shopifyApp(config);
 
     // WHEN
     const url = `${APP_URL}/auth`;
     const response = await getThrownResponse(
-      shopify.authenticate.admin,
+      shopifyServer.authenticate.admin,
       new Request(url)
     );
 
@@ -27,12 +27,12 @@ describe("authorize.admin auth path", () => {
   test("throws an 400 Response if the shop param is invalid", async () => {
     // GIVEN
     const config = testConfig();
-    const shopify = shopifyApp(config);
+    const shopifyServer =  shopifyApp(config);
 
     // WHEN
     const url = `${APP_URL}/auth?shop=invalid_shop`;
     const response = await getThrownResponse(
-      shopify.authenticate.admin,
+      shopifyServer.authenticate.admin,
       new Request(url)
     );
 
@@ -43,12 +43,12 @@ describe("authorize.admin auth path", () => {
   test("throws an 302 Response to begin auth", async () => {
     // GIVEN
     const config = testConfig();
-    const shopify = shopifyApp(config);
+    const shopifyServer =  shopifyApp(config);
 
     // WHEN
     const url = `${APP_URL}/auth?shop=${TEST_SHOP}`;
     const response = await getThrownResponse(
-      shopify.authenticate.admin,
+      shopifyServer.authenticate.admin,
       new Request(url)
     );
 

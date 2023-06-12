@@ -40,7 +40,7 @@ interface AdminContextInternal<
    * // shopify.server.ts
    * import { shopifyApp } from "@shopify/shopify-app-remix";
    *
-   * export const shopify = shopifyApp({
+   * export const shopifyServer =  shopifyApp({
    *   // ...etc
    *   useOnlineTokens: true,
    * });
@@ -86,7 +86,7 @@ export interface EmbeddedAdminContext<
    * // shopify.server.ts
    * import { shopifyApp } from "@shopify/shopify-app-remix";
    *
-   * export const shopify = shopifyApp({
+   * export const shopifyServer =  shopifyApp({
    *   // ...etc
    *   useOnlineTokens: true,
    * });

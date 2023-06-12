@@ -37,7 +37,7 @@ Create `app/shopify.server.js`. We will use this file to configure our Shopify a
 // app/shopify.server.js
 import { LATEST_API_VERSION, shopifyApp } from "@shopify/shopify-app-remix";
 
-export const shopify = shopifyApp({
+export const shopifyServer =  shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY!,
   apiSecretKey: process.env.SHOPIFY_API_SECRET!,
   appUrl: process.env.SHOPIFY_APP_URL!,
@@ -71,7 +71,7 @@ SHOPIFY_APP_URL="[The tunnel URL you are using to run your app]"
 // app/shopify.server.js
 import { shopifyApp } from "@shopify/shopify-app-remix";
 
-export const shopify = shopifyApp({
+export const shopifyServer =  shopifyApp({
   // ...
   authPathPrefix: "/auth",
 });
@@ -154,7 +154,7 @@ export async function action({ request }: ActionArgs) {
 // app/routes/**/*.tsx
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
 
-export const shopify = shopifyApp({
+export const shopifyServer =  shopifyApp({
   restResources,
   // ...etc
 });
@@ -185,7 +185,7 @@ To setup webhooks first we need to configure `shopifyApp` with 2 pieces:
 // shopify.server.js
 import { shopifyApp, DeliveryMethod } from "@shopify/shopify-app-remix";
 
-export const shopify = shopifyApp({
+export const shopifyServer =  shopifyApp({
   apiKey: "1707326264fde5037c658n120626ce3f",
   // ...etc
   webhooks: {
@@ -268,7 +268,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 const storage = new PrismaSessionStorage(prisma);
 
-const shopify = shopifyApp({
+const shopifyServer =  shopifyApp({
   sessionStorage: storage,
   // ...
 });

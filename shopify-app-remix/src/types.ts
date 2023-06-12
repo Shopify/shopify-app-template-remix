@@ -73,7 +73,7 @@ export interface ShopifyApp<Config extends AppConfigArg> {
    * // app/shopify.server.ts
    * import { shopifyApp } from "@shopify/shopify-app-remix";
    *
-   * const shopify = shopifyApp({
+   * const shopifyServer =  shopifyApp({
    *   // ...etc
    * })
    *
@@ -88,7 +88,7 @@ export interface ShopifyApp<Config extends AppConfigArg> {
    * import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
    * import prisma from "~/db.server";
    *
-   * const shopify = shopifyApp({
+   * const shopifyServer =  shopifyApp({
    *   sesssionStorage: new PrismaSessionStorage(prisma),
    *   // ...etc
    * })
@@ -105,7 +105,7 @@ export interface ShopifyApp<Config extends AppConfigArg> {
    * ```ts
    * import { DeliveryMethod, shopifyApp } from "@shopify/shopify-app-remix";
    *
-   * export const shopify = shopifyApp({
+   * export const shopifyServer =  shopifyApp({
    *   hooks: {
    *     afterAuth: async ({ session }) => {
    *       shopify.registerWebhooks({ session });
@@ -145,7 +145,7 @@ export interface ShopifyApp<Config extends AppConfigArg> {
      * import { LATEST_API_VERSION, shopifyApp } from "@shopify/shopify-app-remix";
      * import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
      *
-     * export const shopify = shopifyApp({
+     * export const shopifyServer =  shopifyApp({
      *   restResources,
      *   // ...etc
      * });
@@ -205,7 +205,7 @@ export interface ShopifyApp<Config extends AppConfigArg> {
      *   shopifyApp,
      * } from "@shopify/shopify-app-remix";
      *
-     * export const shopify = shopifyApp({
+     * export const shopifyServer =  shopifyApp({
      *   webhooks: {
      *    APP_UNINSTALLED: {
      *       deliveryMethod: DeliveryMethod.Http,

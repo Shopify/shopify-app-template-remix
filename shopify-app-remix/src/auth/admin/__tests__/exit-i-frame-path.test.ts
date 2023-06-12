@@ -9,13 +9,13 @@ describe("authorize.admin exit iframe path", () => {
   test("Uses App Bridge to exit iFrame when the url matches auth.exitIframePath", async () => {
     // GIVEN
     const config = testConfig();
-    const shopify = shopifyApp(config);
+    const shopifyServer =  shopifyApp(config);
 
     // WHEN
     const exitTo = encodeURIComponent(config.appUrl);
     const url = `${APP_URL}/auth/exit-iframe?exitIframe=${exitTo}`;
     const response = await getThrownResponse(
-      shopify.authenticate.admin,
+      shopifyServer.authenticate.admin,
       new Request(url)
     );
 
@@ -37,13 +37,13 @@ describe("authorize.admin exit iframe path", () => {
     // GIVEN
     const authPathPrefix = "/shopify";
     const config = testConfig({ authPathPrefix });
-    const shopify = shopifyApp(config);
+    const shopifyServer =  shopifyApp(config);
 
     // WHEN
     const exitTo = encodeURIComponent(config.appUrl);
     const url = `${APP_URL}${authPathPrefix}/exit-iframe?exitIframe=${exitTo}`;
     const response = await getThrownResponse(
-      shopify.authenticate.admin,
+      shopifyServer.authenticate.admin,
       new Request(url)
     );
 
@@ -63,13 +63,13 @@ describe("authorize.admin exit iframe path", () => {
 
   test("Allows relative paths as exitIframe param", async () => {
     // GIVEN
-    const shopify = shopifyApp(testConfig());
+    const shopifyServer =  shopifyApp(testConfig());
 
     // WHEN
     const exitTo = encodeURIComponent("/my-path");
     const url = `${APP_URL}/auth/exit-iframe?exitIframe=${exitTo}`;
     const response = await getThrownResponse(
-      shopify.authenticate.admin,
+      shopifyServer.authenticate.admin,
       new Request(url)
     );
 

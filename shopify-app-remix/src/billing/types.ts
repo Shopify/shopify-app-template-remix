@@ -56,7 +56,7 @@ export interface BillingContext<Config extends AppConfigArg> {
    * export const MONTHLY_PLAN = 'Monthly subscription';
    * export const ANNUAL_PLAN = 'Annual subscription';
    *
-   * export const shopify = shopifyApp({
+   * export const shopifyServer =  shopifyApp({
    *   // ...etc
    *   billing: {
    *     [MONTHLY_PLAN]: {
@@ -97,7 +97,7 @@ export interface BillingContext<Config extends AppConfigArg> {
    * export const MONTHLY_PLAN = 'Monthly subscription';
    * export const ANNUAL_PLAN = 'Annual subscription';
    *
-   * export const shopify = shopifyApp({
+   * export const shopifyServer =  shopifyApp({
    *   // ...etc
    *   billing: {
    *     [MONTHLY_PLAN]: {
@@ -150,7 +150,7 @@ export interface BillingContext<Config extends AppConfigArg> {
    * export const MONTHLY_PLAN = 'Monthly subscription';
    * export const ANNUAL_PLAN = 'Annual subscription';
    *
-   * export const shopify = shopifyApp({
+   * export const shopifyServer =  shopifyApp({
    *   // ...etc
    *   billing: {
    *     [MONTHLY_PLAN]: {
@@ -201,7 +201,7 @@ export interface BillingContext<Config extends AppConfigArg> {
    * export const MONTHLY_PLAN = 'Monthly subscription';
    * export const ANNUAL_PLAN = 'Annual subscription';
    *
-   * export const shopify = shopifyApp({
+   * export const shopifyServer =  shopifyApp({
    *   // ...etc
    *   billing: {
    *     [MONTHLY_PLAN]: {

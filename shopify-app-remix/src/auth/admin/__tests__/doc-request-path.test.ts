@@ -30,14 +30,14 @@ describe("authorize.admin doc request path", () => {
       { shop: "invalid", host: BASE64_HOST },
     ])("throws when %s", async ({ shop, host }) => {
       // GIVEN
-      const shopify = shopifyApp(testConfig());
+      const shopifyServer =  shopifyApp(testConfig());
       const searchParams = new URLSearchParams();
       if (shop) searchParams.set("shop", shop);
       if (host) searchParams.set("host", host);
 
       // WHEN
       const response = await getThrownResponse(
-        shopify.authenticate.admin,
+        shopifyServer.authenticate.admin,
         new Request(`${APP_URL}?${searchParams.toString()}`)
       );
 
@@ -48,11 +48,11 @@ describe("authorize.admin doc request path", () => {
     it("redirects to auth when not embedded and there is no offline session", async () => {
       // GIVEN
       const config = testConfig();
-      const shopify = shopifyApp(testConfig());
+      const shopifyServer =  shopifyApp(testConfig());
 
       // WHEN
       const response = await getThrownResponse(
-        shopify.authenticate.admin,
+        shopifyServer.authenticate.admin,
         new Request(`${APP_URL}?shop=${TEST_SHOP}&host=${BASE64_HOST}`)
       );
 
@@ -62,11 +62,11 @@ describe("authorize.admin doc request path", () => {
 
     it("redirects to exit-iframe when embedded and there is no offline session", async () => {
       // GIVEN
-      const shopify = shopifyApp(testConfig());
+      const shopifyServer =  shopifyApp(testConfig());
 
       // WHEN
       const response = await getThrownResponse(
-        shopify.authenticate.admin,
+        shopifyServer.authenticate.admin,
         new Request(
           `${APP_URL}?embedded=1&shop=${TEST_SHOP}&host=${BASE64_HOST}`
         )
@@ -88,8 +88,8 @@ describe("authorize.admin doc request path", () => {
     it("redirects to auth when not embedded on an embedded app, and the API token is invalid", async () => {
       // GIVEN
       const config = testConfig();
-      const shopify = shopifyApp(config);
-      await setUpValidSession(shopify.sessionStorage);
+      const shopifyServer =  shopifyApp(config);
+      await setUpValidSession(shopifyServer.sessionStorage);
 
       await mockExternalRequest({
         request: new Request(GRAPHQL_URL, { method: "POST" }),
@@ -98,7 +98,7 @@ describe("authorize.admin doc request path", () => {
 
       // WHEN
       const response = await getThrownResponse(
-        shopify.authenticate.admin,
+        shopifyServer.authenticate.admin,
         new Request(`${APP_URL}?shop=${TEST_SHOP}&host=${BASE64_HOST}`)
       );
 
@@ -109,8 +109,8 @@ describe("authorize.admin doc request path", () => {
     it("returns non-401 codes when not embedded on an embedded app and the request fails", async () => {
       // GIVEN
       const config = testConfig();
-      const shopify = shopifyApp(config);
-      await setUpValidSession(shopify.sessionStorage);
+      const shopifyServer =  shopifyApp(config);
+      await setUpValidSession(shopifyServer.sessionStorage);
 
       await mockExternalRequest({
         request: new Request(GRAPHQL_URL, { method: "POST" }),
@@ -122,7 +122,7 @@ describe("authorize.admin doc request path", () => {
 
       // WHEN
       const response = await getThrownResponse(
-        shopify.authenticate.admin,
+        shopifyServer.authenticate.admin,
         new Request(`${APP_URL}?shop=${TEST_SHOP}&host=${BASE64_HOST}`)
       );
 
@@ -137,8 +137,8 @@ describe("authorize.admin doc request path", () => {
     it("returns a 500 when not embedded on an embedded app and the request fails", async () => {
       // GIVEN
       const config = testConfig();
-      const shopify = shopifyApp(config);
-      await setUpValidSession(shopify.sessionStorage);
+      const shopifyServer =  shopifyApp(config);
+      await setUpValidSession(shopifyServer.sessionStorage);
 
       await mockExternalRequest({
         request: new Request(GRAPHQL_URL, { method: "POST" }),
@@ -149,7 +149,7 @@ describe("authorize.admin doc request path", () => {
 
       // WHEN
       const response = await getThrownResponse(
-        shopify.authenticate.admin,
+        shopifyServer.authenticate.admin,
         new Request(`${APP_URL}?shop=${TEST_SHOP}&host=${BASE64_HOST}`)
       );
 
@@ -163,8 +163,8 @@ describe("authorize.admin doc request path", () => {
 
     it("redirects to the embedded app URL if there is a valid session but the app isn't embedded yet", async () => {
       // GIVEN
-      const shopify = shopifyApp(testConfig());
-      await setUpValidSession(shopify.sessionStorage);
+      const shopifyServer =  shopifyApp(testConfig());
+      await setUpValidSession(shopifyServer.sessionStorage);
 
       await mockExternalRequest({
         request: new Request(GRAPHQL_URL, { method: "POST" }),
@@ -173,7 +173,7 @@ describe("authorize.admin doc request path", () => {
 
       // WHEN
       const response = await getThrownResponse(
-        shopify.authenticate.admin,
+        shopifyServer.authenticate.admin,
         new Request(`${APP_URL}?shop=${TEST_SHOP}&host=${BASE64_HOST}`)
       );
 
@@ -187,12 +187,12 @@ describe("authorize.admin doc request path", () => {
 
     it("redirects to the bounce page URL if id_token search param is missing", async () => {
       // GIVEN
-      const shopify = shopifyApp(testConfig());
-      await setUpValidSession(shopify.sessionStorage);
+      const shopifyServer =  shopifyApp(testConfig());
+      await setUpValidSession(shopifyServer.sessionStorage);
 
       // WHEN
       const response = await getThrownResponse(
-        shopify.authenticate.admin,
+        shopifyServer.authenticate.admin,
         new Request(
           `${APP_URL}?embedded=1&shop=${TEST_SHOP}&host=${BASE64_HOST}`
         )
@@ -215,12 +215,12 @@ describe("authorize.admin doc request path", () => {
 
     it("throws a 401 if app is embedded and the id_token search param is invalid", async () => {
       // GIVEN
-      const shopify = shopifyApp(testConfig());
-      await setUpValidSession(shopify.sessionStorage);
+      const shopifyServer =  shopifyApp(testConfig());
+      await setUpValidSession(shopifyServer.sessionStorage);
 
       // WHEN
       const response = await getThrownResponse(
-        shopify.authenticate.admin,
+        shopifyServer.authenticate.admin,
         new Request(
           `${APP_URL}?embedded=1&shop=${TEST_SHOP}&host=${BASE64_HOST}&id_token=invalid`
         )
@@ -232,14 +232,14 @@ describe("authorize.admin doc request path", () => {
 
     it("redirects to exit-iframe if app is embedded and there is no session for the id_token when embedded", async () => {
       // GIVEN
-      const shopify = shopifyApp(testConfig());
-      await setUpValidSession(shopify.sessionStorage);
+      const shopifyServer =  shopifyApp(testConfig());
+      await setUpValidSession(shopifyServer.sessionStorage);
       const otherShopDomain = "other-shop.myshopify.io";
 
       // WHEN
       const { token } = getJwt({ dest: `https://${otherShopDomain}` });
       const response = await getThrownResponse(
-        shopify.authenticate.admin,
+        shopifyServer.authenticate.admin,
         new Request(
           `${APP_URL}?embedded=1&shop=${TEST_SHOP}&host=${BASE64_HOST}&id_token=${token}`
         )
@@ -262,13 +262,13 @@ describe("authorize.admin doc request path", () => {
 
     it("redirects to exit-iframe if app is embedded and the session is no longer valid for the id_token when embedded", async () => {
       // GIVEN
-      const shopify = shopifyApp(testConfig({ scopes: ["otherTestScope"] }));
-      await setUpValidSession(shopify.sessionStorage);
+      const shopifyServer =  shopifyApp(testConfig({ scopes: ["otherTestScope"] }));
+      await setUpValidSession(shopifyServer.sessionStorage);
 
       // WHEN
       const { token } = getJwt();
       const response = await getThrownResponse(
-        shopify.authenticate.admin,
+        shopifyServer.authenticate.admin,
         new Request(
           `${APP_URL}?embedded=1&shop=${TEST_SHOP}&host=${BASE64_HOST}&id_token=${token}`
         )
@@ -290,8 +290,8 @@ describe("authorize.admin doc request path", () => {
     it("redirects to auth if there is no session cookie for non-embedded apps when at the top level", async () => {
       // GIVEN
       const config = testConfig();
-      const shopify = shopifyApp(testConfig({ isEmbeddedApp: false }));
-      await setUpValidSession(shopify.sessionStorage);
+      const shopifyServer =  shopifyApp(testConfig({ isEmbeddedApp: false }));
+      await setUpValidSession(shopifyServer.sessionStorage);
 
       // WHEN
       const request = new Request(
@@ -299,7 +299,7 @@ describe("authorize.admin doc request path", () => {
       );
 
       const response = await getThrownResponse(
-        shopify.authenticate.admin,
+        shopifyServer.authenticate.admin,
         request
       );
 
@@ -310,8 +310,8 @@ describe("authorize.admin doc request path", () => {
     it("redirects to auth if there is no session for non-embedded apps when at the top level", async () => {
       // GIVEN
       const config = testConfig({ isEmbeddedApp: false });
-      const shopify = shopifyApp(config);
-      await setUpValidSession(shopify.sessionStorage);
+      const shopifyServer =  shopifyApp(config);
+      await setUpValidSession(shopifyServer.sessionStorage);
 
       // WHEN
       const request = new Request(
@@ -324,7 +324,7 @@ describe("authorize.admin doc request path", () => {
       });
 
       const response = await getThrownResponse(
-        shopify.authenticate.admin,
+        shopifyServer.authenticate.admin,
         request
       );
 
@@ -338,8 +338,8 @@ describe("authorize.admin doc request path", () => {
         isEmbeddedApp: false,
         scopes: ["otherTestScope"],
       });
-      const shopify = shopifyApp(config);
-      const session = await setUpValidSession(shopify.sessionStorage);
+      const shopifyServer =  shopifyApp(config);
+      const session = await setUpValidSession(shopifyServer.sessionStorage);
 
       // WHEN
       const request = new Request(
@@ -352,7 +352,7 @@ describe("authorize.admin doc request path", () => {
       });
 
       const response = await getThrownResponse(
-        shopify.authenticate.admin,
+        shopifyServer.authenticate.admin,
         request
       );
 
@@ -366,20 +366,20 @@ describe("authorize.admin doc request path", () => {
     (isOnline) => {
       it("returns the context if the session is valid and the app is embedded", async () => {
         // GIVEN
-        const shopify = shopifyApp(testConfig({ useOnlineTokens: isOnline }));
+        const shopifyServer =  shopifyApp(testConfig({ useOnlineTokens: isOnline }));
 
         let testSession: Session;
-        testSession = await setUpValidSession(shopify.sessionStorage);
+        testSession = await setUpValidSession(shopifyServer.sessionStorage);
         if (isOnline) {
           testSession = await setUpValidSession(
-            shopify.sessionStorage,
+            shopifyServer.sessionStorage,
             isOnline
           );
         }
 
         // WHEN
         const { token } = getJwt();
-        const { admin, session } = await shopify.authenticate.admin(
+        const { admin, session } = await shopifyServer.authenticate.admin(
           new Request(
             `${APP_URL}?embedded=1&shop=${TEST_SHOP}&host=${BASE64_HOST}&id_token=${token}`
           )
@@ -392,13 +392,13 @@ describe("authorize.admin doc request path", () => {
 
       it("returns the context if the session is valid and the app is not embedded", async () => {
         // GIVEN
-        const shopify = shopifyApp({ ...testConfig(), isEmbeddedApp: false });
+        const shopifyServer =  shopifyApp({ ...testConfig(), isEmbeddedApp: false });
 
         let testSession: Session;
-        testSession = await setUpValidSession(shopify.sessionStorage);
+        testSession = await setUpValidSession(shopifyServer.sessionStorage);
         if (isOnline) {
           testSession = await setUpValidSession(
-            shopify.sessionStorage,
+            shopifyServer.sessionStorage,
             isOnline
           );
         }
@@ -413,7 +413,7 @@ describe("authorize.admin doc request path", () => {
           cookieValue: testSession.id,
         });
 
-        const { admin, session } = await shopify.authenticate.admin(request);
+        const { admin, session } = await shopifyServer.authenticate.admin(request);
 
         // THEN
         expect(session).toBe(testSession);

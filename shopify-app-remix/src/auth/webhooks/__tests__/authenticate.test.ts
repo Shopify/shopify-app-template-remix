@@ -25,7 +25,7 @@ describe("Webhook validation", () => {
     // GIVEN
     const sessionStorage = new MemorySessionStorage();
     const config = testConfig({ sessionStorage, restResources });
-    const shopify = shopifyApp(config);
+    const shopifyServer =  shopifyApp(config);
     const body = {some: "data"};
 
     const session = new Session({
@@ -46,7 +46,7 @@ describe("Webhook validation", () => {
       topic,
       webhookId,
       payload
-    } = await shopify.authenticate.webhook(
+    } = await shopifyServer.authenticate.webhook(
       new Request(`${APP_URL}/webhooks`, {
         method: "POST",
         body: JSON.stringify(body),
@@ -72,11 +72,11 @@ describe("Webhook validation", () => {
   it("throws a 400 on invalid HMAC", async () => {
     // GIVEN
     const config = testConfig();
-    const shopify = shopifyApp(config);
+    const shopifyServer =  shopifyApp(config);
 
     // WHEN
     const response = await getThrownResponse(
-      shopify.authenticate.webhook,
+      shopifyServer.authenticate.webhook,
       new Request(`${APP_URL}/webhooks`, {
         method: "POST",
         body: JSON.stringify({}),
@@ -99,11 +99,11 @@ describe("Webhook validation", () => {
   ])("throws a 400 when header %s is missing", async (header) => {
     // GIVEN
     const config = testConfig();
-    const shopify = shopifyApp(config);
+    const shopifyServer =  shopifyApp(config);
 
     // WHEN
     const response = await getThrownResponse(
-      shopify.authenticate.webhook,
+      shopifyServer.authenticate.webhook,
       new Request(`${APP_URL}/webhooks`, {
         method: "POST",
         body: JSON.stringify({}),
@@ -119,11 +119,11 @@ describe("Webhook validation", () => {
     // GIVEN
     const sessionStorage = new MemorySessionStorage();
     const config = testConfig({ sessionStorage });
-    const shopify = shopifyApp(config);
+    const shopifyServer =  shopifyApp(config);
 
     // WHEN
     const response = await getThrownResponse(
-      shopify.authenticate.webhook,
+      shopifyServer.authenticate.webhook,
       new Request(`${APP_URL}/webhooks`, {
         method: "POST",
         body: JSON.stringify({}),

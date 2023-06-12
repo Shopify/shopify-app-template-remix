@@ -8,11 +8,11 @@ import {
 describe("authorize.admin", () => {
   test("rejects bot requests", async () => {
     // GIVEN
-    const shopify = shopifyApp(testConfig());
+    const shopifyServer =  shopifyApp(testConfig());
 
     // WHEN
     const response = await getThrownResponse(
-      shopify.authenticate.admin,
+      shopifyServer.authenticate.admin,
       new Request(APP_URL, {
         headers: {
           "User-Agent": "Googlebot",

@@ -36,10 +36,10 @@ describe("shopifyApp", () => {
     });
 
     // WHEN
-    const shopify = shopifyApp(config);
+    const shopifyServer =  shopifyApp(config);
 
     // THEN
-    expect(shopify).toBeDefined();
+    expect(shopifyServer).toBeDefined();
   });
 
   it("fails with an invalid config", () => {
@@ -98,9 +98,9 @@ describe("shopifyApp", () => {
     }
 
     // WHEN
-    const shopify = shopifyApp(config);
+    const shopifyServer =  shopifyApp(config);
 
     // THEN
-    expect(shopify.sessionStorage).toBeInstanceOf(SQLiteSessionStorage);
+    expect(shopifyServer.sessionStorage).toBeInstanceOf(SQLiteSessionStorage);
   });
 });

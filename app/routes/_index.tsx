@@ -13,7 +13,7 @@ import {
   Grid,
 } from "@shopify/polaris";
 
-import { shopify } from "../shopify.server";
+import { shopifyServer } from "../shopify.server";
 import { ProductsCard } from "../components/ProductsCard.jsx";
 // eslint-disable-next-line no-warning-comments
 // TODO figure out why this shows as an error in vscode only
@@ -22,13 +22,13 @@ import { ProductsCard } from "../components/ProductsCard.jsx";
 import trophyImage from "../assets/home-trophy.png";
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const { admin, session } = await shopify.authenticate.admin(request);
+  const { admin, session } = await shopifyServer.authenticate.admin(request);
 
   return json(await admin.rest.Product.count({ session }));
 };
 
 export async function action({ request }: ActionArgs) {
-  const { admin, session } = await shopify.authenticate.admin(request);
+  const { admin, session } = await shopifyServer.authenticate.admin(request);
 
   await Promise.all(
     [...Array(5).keys()].map(async (i) => {

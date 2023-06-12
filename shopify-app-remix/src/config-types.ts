@@ -39,7 +39,7 @@ export interface AppConfigArg<
    *
    * import prisma from "~/db.server";
    *
-   * export const shopify = shopifyApp({
+   * export const shopifyServer =  shopifyApp({
    *   // ... etc
    *   sessionStorage: new PrismaSessionStorage(prisma),
    * });
@@ -71,7 +71,7 @@ export interface AppConfigArg<
    * // app/shopify.server.ts
    * import { DeliveryMethod, shopifyApp } from "@shopify/shopify-app-remix";
    *
-   * export const shopify = shopifyApp({
+   * export const shopifyServer =  shopifyApp({
    *   webhooks: {
    *     APP_UNINSTALLED: {
    *       deliveryMethod: DeliveryMethod.Http,
@@ -122,7 +122,7 @@ export interface AppConfigArg<
    * import { DeliveryMethod, shopifyApp } from "@shopify/shopify-app-remix";
    * import { seedStoreData } from "~/db/seeds"
    *
-   * export const shopify = shopifyApp({
+   * export const shopifyServer =  shopifyApp({
    *   hooks: {
    *     afterAuth: async ({ session }) => {
    *       seedStoreData({session})
@@ -155,7 +155,7 @@ export interface AppConfigArg<
    * ```ts
    * import { LATEST_API_VERSION, shopifyApp } from "@shopify/shopify-app-remix";
    *
-   * export const shopify = shopifyApp({
+   * export const shopifyServer =  shopifyApp({
    *   // ...etc
    *   apiVersion: LATEST_API_VERSION,
    * });
@@ -176,7 +176,7 @@ export interface AppConfigArg<
    * // app/shopify.server.ts
    * import { LATEST_API_VERSION, shopifyApp } from "@shopify/shopify-app-remix";
    *
-   * export const shopify = shopifyApp({
+   * export const shopifyServer =  shopifyApp({
    *   // ...etc
    *   apiVersion: LATEST_API_VERSION,
    * });
@@ -227,7 +227,7 @@ interface HooksConfig {
    * import { DeliveryMethod, shopifyApp } from "@shopify/shopify-app-remix";
    * import { seedStoreData } from "~/db/seeds"
    *
-   * export const shopify = shopifyApp({
+   * export const shopifyServer =  shopifyApp({
    *   hooks: {
    *     afterAuth: async ({ session }) => {
    *       shopify.registerWebhooks({ session });
@@ -271,7 +271,7 @@ export interface AdminApiContext<
    * import { shopifyApp } from "@shopify/shopify-app-remix";
    * import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
    *
-   * export const shopify = shopifyApp({
+   * export const shopifyServer =  shopifyApp({
    *   restResources,
    *   // ...etc
    * });
@@ -293,7 +293,7 @@ export interface AdminApiContext<
    * import { shopifyApp } from "@shopify/shopify-app-remix";
    * import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
    *
-   * export const shopify = shopifyApp({
+   * export const shopifyServer =  shopifyApp({
    *   restResources,
    *   // ...etc
    * });

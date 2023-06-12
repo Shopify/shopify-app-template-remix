@@ -13,7 +13,7 @@ import { mockExternalRequests } from "../../../__tests__/request-mock";
 describe("Webhook registration", () => {
   it("registers webhooks", async () => {
     // GIVEN
-    const shopify = shopifyApp(
+    const shopifyServer =  shopifyApp(
       testConfig({
         webhooks: {
           PRODUCTS_CREATE: {
@@ -53,7 +53,7 @@ describe("Webhook registration", () => {
     );
 
     // WHEN
-    const results = await shopify.registerWebhooks({ session });
+    const results = await shopifyServer.registerWebhooks({ session });
 
     // THEN
     expect(results).toMatchObject({
@@ -63,7 +63,7 @@ describe("Webhook registration", () => {
 
   it("logs when registration fails", async () => {
     // GIVEN
-    const shopify = shopifyApp(
+    const shopifyServer =  shopifyApp(
       testConfig({
         webhooks: {
           NOT_A_VALID_TOPIC: {
@@ -105,7 +105,7 @@ describe("Webhook registration", () => {
     );
 
     // WHEN
-    const results = await shopify.registerWebhooks({ session });
+    const results = await shopifyServer.registerWebhooks({ session });
 
     // THEN
     expect(results).toMatchObject({

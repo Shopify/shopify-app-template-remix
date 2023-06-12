@@ -34,10 +34,10 @@ const BILLING_CONFIG: Shopify["config"]["billing"] = {
 describe("Cancel billing", () => {
   it("returns an AppSubscription when the cancellation is successful", async () => {
     // GIVEN
-    const shopify = shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
-    await setUpValidSession(shopify.sessionStorage);
+    const shopifyServer =  shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
+    await setUpValidSession(shopifyServer.sessionStorage);
 
-    const { billing } = await shopify.authenticate.admin(
+    const { billing } = await shopifyServer.authenticate.admin(
       new Request(`${APP_URL}/billing`, {
         headers: { Authorization: `Bearer ${getJwt().token}` },
       })
@@ -62,12 +62,12 @@ describe("Cancel billing", () => {
   it("redirects to authentication when at the top level when Shopify invalidated the session", async () => {
     // GIVEN
     const config = testConfig();
-    const shopify = shopifyApp({
+    const shopifyServer =  shopifyApp({
       ...config,
       isEmbeddedApp: false,
       billing: BILLING_CONFIG,
     });
-    const session = await setUpValidSession(shopify.sessionStorage);
+    const session = await setUpValidSession(shopifyServer.sessionStorage);
 
     const request = new Request(`${APP_URL}/billing?shop=${TEST_SHOP}`);
     signRequestCookie({
@@ -76,7 +76,7 @@ describe("Cancel billing", () => {
       cookieValue: session.id,
     });
 
-    const { billing } = await shopify.authenticate.admin(request);
+    const { billing } = await shopifyServer.authenticate.admin(request);
 
     await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -103,15 +103,15 @@ describe("Cancel billing", () => {
 
   it("redirects to exit-iframe with authentication using app bridge when embedded and Shopify invalidated the session", async () => {
     // GIVEN
-    const shopify = shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
-    await setUpValidSession(shopify.sessionStorage);
+    const shopifyServer =  shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
+    await setUpValidSession(shopifyServer.sessionStorage);
 
     const { token } = getJwt();
     const request = new Request(
       `${APP_URL}/billing?embedded=1&shop=${TEST_SHOP}&host=${BASE64_HOST}&id_token=${token}`
     );
 
-    const { billing } = await shopify.authenticate.admin(request);
+    const { billing } = await shopifyServer.authenticate.admin(request);
 
     await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -149,8 +149,8 @@ describe("Cancel billing", () => {
 
   it("returns redirection headers during fetch requests when Shopify invalidated the session", async () => {
     // GIVEN
-    const shopify = shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
-    await setUpValidSession(shopify.sessionStorage);
+    const shopifyServer =  shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
+    await setUpValidSession(shopifyServer.sessionStorage);
 
     const request = new Request(`${APP_URL}/billing`, {
       headers: {
@@ -158,7 +158,7 @@ describe("Cancel billing", () => {
       },
     });
 
-    const { billing } = await shopify.authenticate.admin(request);
+    const { billing } = await shopifyServer.authenticate.admin(request);
 
     await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -191,12 +191,12 @@ describe("Cancel billing", () => {
 
   it("throws errors other than authentication errors", async () => {
     // GIVEN
-    const shopify = shopifyApp({
+    const shopifyServer =  shopifyApp({
       ...testConfig(),
       isEmbeddedApp: false,
       billing: BILLING_CONFIG,
     });
-    const session = await setUpValidSession(shopify.sessionStorage);
+    const session = await setUpValidSession(shopifyServer.sessionStorage);
 
     await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -213,7 +213,7 @@ describe("Cancel billing", () => {
       cookieValue: session.id,
     });
 
-    const { billing } = await shopify.authenticate.admin(request);
+    const { billing } = await shopifyServer.authenticate.admin(request);
 
     // THEN
     await expect(

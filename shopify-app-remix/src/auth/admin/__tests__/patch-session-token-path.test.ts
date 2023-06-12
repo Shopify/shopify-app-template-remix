@@ -9,12 +9,12 @@ describe("authorize.admin path session token path", () => {
   test("Uses AppBridge to get a session token if the URL is for auth.patchSessionTokenPath", async () => {
     // GIVEN
     const config = testConfig();
-    const shopify = shopifyApp(config);
+    const shopifyServer =  shopifyApp(config);
 
     // WHEN
     const url = `${APP_URL}/auth/session-token`;
     const response = await getThrownResponse(
-      shopify.authenticate.admin,
+      shopifyServer.authenticate.admin,
       new Request(url)
     );
 
@@ -32,12 +32,12 @@ describe("authorize.admin path session token path", () => {
     // GIVEN
     const authPathPrefix = "/shopify";
     const config = testConfig({ authPathPrefix });
-    const shopify = shopifyApp(config);
+    const shopifyServer =  shopifyApp(config);
 
     // WHEN
     const url = `${APP_URL}${authPathPrefix}/session-token`;
     const response = await getThrownResponse(
-      shopify.authenticate.admin,
+      shopifyServer.authenticate.admin,
       new Request(url)
     );
 

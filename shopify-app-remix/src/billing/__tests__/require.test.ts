@@ -36,14 +36,14 @@ describe("Billing require", () => {
     // GIVEN
     const config = testConfig();
     await setUpValidSession(config.sessionStorage);
-    const shopify = shopifyApp({ ...config, billing: BILLING_CONFIG });
+    const shopifyServer =  shopifyApp({ ...config, billing: BILLING_CONFIG });
 
     await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
       response: new Response(responses.EMPTY_SUBSCRIPTIONS),
     });
 
-    const { billing } = await shopify.authenticate.admin(
+    const { billing } = await shopifyServer.authenticate.admin(
       new Request(`${APP_URL}/billing`, {
         headers: {
           Authorization: `Bearer ${getJwt().token}`,
@@ -70,14 +70,14 @@ describe("Billing require", () => {
     // GIVEN
     const config = testConfig();
     await setUpValidSession(config.sessionStorage);
-    const shopify = shopifyApp({ ...config, billing: BILLING_CONFIG });
+    const shopifyServer =  shopifyApp({ ...config, billing: BILLING_CONFIG });
 
     await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
       response: new Response(responses.EXISTING_SUBSCRIPTION),
     });
 
-    const { billing } = await shopify.authenticate.admin(
+    const { billing } = await shopifyServer.authenticate.admin(
       new Request(`${APP_URL}/billing`, {
         headers: {
           Authorization: `Bearer ${getJwt().token}`,
@@ -108,7 +108,7 @@ describe("Billing require", () => {
       billing: BILLING_CONFIG,
     });
     const session = await setUpValidSession(config.sessionStorage);
-    const shopify = shopifyApp(config);
+    const shopifyServer =  shopifyApp(config);
 
     await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -125,7 +125,7 @@ describe("Billing require", () => {
       cookieValue: session.id,
     });
 
-    const { billing } = await shopify.authenticate.admin(request);
+    const { billing } = await shopifyServer.authenticate.admin(request);
 
     // WHEN
     const response = await getThrownResponse(
@@ -147,7 +147,7 @@ describe("Billing require", () => {
     // GIVEN
     const config = testConfig();
     await setUpValidSession(config.sessionStorage);
-    const shopify = shopifyApp({ ...config, billing: BILLING_CONFIG });
+    const shopifyServer =  shopifyApp({ ...config, billing: BILLING_CONFIG });
 
     await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -162,7 +162,7 @@ describe("Billing require", () => {
       `${APP_URL}/billing?embedded=1&shop=${TEST_SHOP}&host=${BASE64_HOST}&id_token=${token}`
     );
 
-    const { billing } = await shopify.authenticate.admin(request);
+    const { billing } = await shopifyServer.authenticate.admin(request);
 
     // WHEN
     const response = await getThrownResponse(
@@ -195,7 +195,7 @@ describe("Billing require", () => {
     // GIVEN
     const config = testConfig();
     await setUpValidSession(config.sessionStorage);
-    const shopify = shopifyApp({ ...config, billing: BILLING_CONFIG });
+    const shopifyServer =  shopifyApp({ ...config, billing: BILLING_CONFIG });
 
     await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -211,7 +211,7 @@ describe("Billing require", () => {
       },
     });
 
-    const { billing } = await shopify.authenticate.admin(request);
+    const { billing } = await shopifyServer.authenticate.admin(request);
 
     // WHEN
     const response = await getThrownResponse(
@@ -237,7 +237,7 @@ describe("Billing require", () => {
     // GIVEN
     const config = testConfig();
     const session = await setUpValidSession(config.sessionStorage);
-    const shopify = shopifyApp({
+    const shopifyServer =  shopifyApp({
       ...config,
       isEmbeddedApp: false,
       billing: BILLING_CONFIG,
@@ -258,7 +258,7 @@ describe("Billing require", () => {
       cookieValue: session.id,
     });
 
-    const { billing } = await shopify.authenticate.admin(request);
+    const { billing } = await shopifyServer.authenticate.admin(request);
 
     // THEN
     await expect(

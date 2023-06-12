@@ -17,11 +17,11 @@ describe("authorize.session token header path", () => {
   describe("errors", () => {
     it("throws a 401 if the session token is invalid", async () => {
       // GIVEN
-      const shopify = shopifyApp(testConfig());
+      const shopifyServer =  shopifyApp(testConfig());
 
       // WHEN
       const response = await getThrownResponse(
-        shopify.authenticate.admin,
+        shopifyServer.authenticate.admin,
         new Request(`${APP_URL}?shop=${TEST_SHOP}&host=${BASE64_HOST}`, {
           headers: { Authorization: "Bearer im-a-valid-token-promise" },
         })
@@ -34,12 +34,12 @@ describe("authorize.session token header path", () => {
     describe.each([true, false])("when isOnline: %s", (isOnline) => {
       it(`returns app bridge redirection headers if there is no session`, async () => {
         // GIVEN
-        const shopify = shopifyApp(testConfig({ useOnlineTokens: isOnline }));
+        const shopifyServer =  shopifyApp(testConfig({ useOnlineTokens: isOnline }));
 
         // WHEN
         const { token } = getJwt();
         const response = await getThrownResponse(
-          shopify.authenticate.admin,
+          shopifyServer.authenticate.admin,
           new Request(`${APP_URL}?shop=${TEST_SHOP}&host=${BASE64_HOST}`, {
             headers: { Authorization: `Bearer ${token}` },
           })
@@ -58,15 +58,15 @@ describe("authorize.session token header path", () => {
 
       it(`returns app bridge redirection headers if the session is no longer valid`, async () => {
         // GIVEN
-        const shopify = shopifyApp(
+        const shopifyServer =  shopifyApp(
           testConfig({ useOnlineTokens: isOnline, scopes: ["otherTestScope"] })
         );
-        await setUpValidSession(shopify.sessionStorage, isOnline);
+        await setUpValidSession(shopifyServer.sessionStorage, isOnline);
 
         // WHEN
         const { token } = getJwt();
         const response = await getThrownResponse(
-          shopify.authenticate.admin,
+          shopifyServer.authenticate.admin,
           new Request(`${APP_URL}?shop=${TEST_SHOP}&host=${BASE64_HOST}`, {
             headers: { Authorization: `Bearer ${token}` },
           })
@@ -90,17 +90,17 @@ describe("authorize.session token header path", () => {
     (isOnline) => {
       it("returns context when session exists for embedded apps", async () => {
         // GIVEN
-        const shopify = shopifyApp(testConfig({ useOnlineTokens: isOnline }));
+        const shopifyServer =  shopifyApp(testConfig({ useOnlineTokens: isOnline }));
 
         const testSession = await setUpValidSession(
-          shopify.sessionStorage,
+          shopifyServer.sessionStorage,
           isOnline
         );
 
         // WHEN
         const { token, payload } = getJwt();
         const { sessionToken, admin, session } =
-          await shopify.authenticate.admin(
+          await shopifyServer.authenticate.admin(
             new Request(`${APP_URL}?shop=${TEST_SHOP}&host=${BASE64_HOST}`, {
               headers: { Authorization: `Bearer ${token}` },
             })
@@ -114,16 +114,16 @@ describe("authorize.session token header path", () => {
 
       it("returns context when session exists for non-embedded apps", async () => {
         // GIVEN
-        const shopify = shopifyApp({
+        const shopifyServer =  shopifyApp({
           ...testConfig(),
           isEmbeddedApp: false,
           useOnlineTokens: isOnline,
         });
 
         let testSession: Session;
-        testSession = await setUpValidSession(shopify.sessionStorage);
+        testSession = await setUpValidSession(shopifyServer.sessionStorage);
         if (isOnline) {
-          testSession = await setUpValidSession(shopify.sessionStorage, true);
+          testSession = await setUpValidSession(shopifyServer.sessionStorage, true);
         }
 
         // WHEN
@@ -135,7 +135,7 @@ describe("authorize.session token header path", () => {
           cookieName: SESSION_COOKIE_NAME,
           cookieValue: testSession.id,
         });
-        const { admin, session } = await shopify.authenticate.admin(request);
+        const { admin, session } = await shopifyServer.authenticate.admin(request);
 
         // THEN
         expect(session).toBe(testSession);

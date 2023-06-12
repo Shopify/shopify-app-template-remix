@@ -166,8 +166,8 @@ describe("admin.authenticate context", () => {
   );
 
   async function setUpEmbeddedFlow() {
-    const shopify = shopifyApp({ ...testConfig(), restResources });
-    await setUpValidSession(shopify.sessionStorage);
+    const shopifyServer =  shopifyApp({ ...testConfig(), restResources });
+    await setUpValidSession(shopifyServer.sessionStorage);
 
     const { token } = getJwt();
     const request = new Request(
@@ -175,14 +175,14 @@ describe("admin.authenticate context", () => {
     );
 
     return {
-      shopify,
-      ...(await shopify.authenticate.admin(request)),
+      shopifyServer,
+      ...(await shopifyServer.authenticate.admin(request)),
     };
   }
 
   async function setUpFetchFlow() {
-    const shopify = shopifyApp({ ...testConfig(), restResources });
-    await setUpValidSession(shopify.sessionStorage);
+    const shopifyServer =  shopifyApp({ ...testConfig(), restResources });
+    await setUpValidSession(shopifyServer.sessionStorage);
 
     const { token } = getJwt();
     const request = new Request(APP_URL, {
@@ -190,18 +190,18 @@ describe("admin.authenticate context", () => {
     });
 
     return {
-      shopify,
-      ...(await shopify.authenticate.admin(request)),
+      shopifyServer,
+      ...(await shopifyServer.authenticate.admin(request)),
     };
   }
 
   async function setUpNonEmbeddedFlow() {
-    const shopify = shopifyApp({
+    const shopifyServer =  shopifyApp({
       ...testConfig(),
       restResources,
       isEmbeddedApp: false,
     });
-    const session = await setUpValidSession(shopify.sessionStorage);
+    const session = await setUpValidSession(shopifyServer.sessionStorage);
 
     const request = new Request(`${APP_URL}?shop=${TEST_SHOP}`);
     signRequestCookie({
@@ -211,8 +211,8 @@ describe("admin.authenticate context", () => {
     });
 
     return {
-      shopify,
-      ...(await shopify.authenticate.admin(request)),
+      shopifyServer,
+      ...(await shopifyServer.authenticate.admin(request)),
     };
   }
 
