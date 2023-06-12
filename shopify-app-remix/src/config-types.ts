@@ -34,12 +34,12 @@ export interface AppConfigArg<
    * @example
    * Using Prisma
    * ```ts
-   * import { shopifyApp } from "@shopify/shopify-app-remix";
+   * import { shopifyAppServer } from "@shopify/shopify-app-remix";
    * import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
    *
    * import prisma from "~/db.server";
    *
-   * export const shopifyServer =  shopifyApp({
+   * export const shopifyServer =  shopifyAppServer({
    *   // ... etc
    *   sessionStorage: new PrismaSessionStorage(prisma),
    * });
@@ -71,7 +71,7 @@ export interface AppConfigArg<
    * // app/shopify.server.ts
    * import { DeliveryMethod, shopifyApp } from "@shopify/shopify-app-remix";
    *
-   * export const shopifyServer =  shopifyApp({
+   * export const shopifyServer =  shopifyAppServer({
    *   webhooks: {
    *     APP_UNINSTALLED: {
    *       deliveryMethod: DeliveryMethod.Http,
@@ -89,7 +89,7 @@ export interface AppConfigArg<
    * // app/routes/webhooks.jsx
    * import { ActionArgs } from "@remix-run/node";
    *
-   * import { shopify } from "../shopify.server";
+   * import { shopifyServer } from "../shopify.server";
    * import db from "../db.server";
    *
    * export const action = async ({ request }: ActionArgs) => {
@@ -122,7 +122,7 @@ export interface AppConfigArg<
    * import { DeliveryMethod, shopifyApp } from "@shopify/shopify-app-remix";
    * import { seedStoreData } from "~/db/seeds"
    *
-   * export const shopifyServer =  shopifyApp({
+   * export const shopifyServer =  shopifyAppServer({
    *   hooks: {
    *     afterAuth: async ({ session }) => {
    *       seedStoreData({session})
@@ -155,7 +155,7 @@ export interface AppConfigArg<
    * ```ts
    * import { LATEST_API_VERSION, shopifyApp } from "@shopify/shopify-app-remix";
    *
-   * export const shopifyServer =  shopifyApp({
+   * export const shopifyServer =  shopifyAppServer({
    *   // ...etc
    *   apiVersion: LATEST_API_VERSION,
    * });
@@ -176,14 +176,14 @@ export interface AppConfigArg<
    * // app/shopify.server.ts
    * import { LATEST_API_VERSION, shopifyApp } from "@shopify/shopify-app-remix";
    *
-   * export const shopifyServer =  shopifyApp({
+   * export const shopifyServer =  shopifyAppServer({
    *   // ...etc
    *   apiVersion: LATEST_API_VERSION,
    * });
    *
    * // app/routes/auth/$.jsx
    * import { LoaderArgs } from "@remix-run/node";
-   * import { shopify } from "../../shopify.server";
+   * import { shopifyServer } from "../../shopify.server";
    *
    * export async function loader({ request }: LoaderArgs) {
    *   return shopify.authenticate.admin(request);
@@ -227,7 +227,7 @@ interface HooksConfig {
    * import { DeliveryMethod, shopifyApp } from "@shopify/shopify-app-remix";
    * import { seedStoreData } from "~/db/seeds"
    *
-   * export const shopifyServer =  shopifyApp({
+   * export const shopifyServer =  shopifyAppServer({
    *   hooks: {
    *     afterAuth: async ({ session }) => {
    *       shopify.registerWebhooks({ session });
@@ -268,17 +268,17 @@ export interface AdminApiContext<
    * Getting the number of orders in a store using rest resources
    * ```ts
    * // app/shopify.server.ts
-   * import { shopifyApp } from "@shopify/shopify-app-remix";
+   * import { shopifyAppServer } from "@shopify/shopify-app-remix";
    * import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
    *
-   * export const shopifyServer =  shopifyApp({
+   * export const shopifyServer =  shopifyAppServer({
    *   restResources,
    *   // ...etc
    * });
    *
    * // app/routes/**\/.ts
    * import { LoaderArgs, json } from "@remix-run/node";
-   * import { shopify } from "../shopify.server";
+   * import { shopifyServer } from "../shopify.server";
    *
    * export const loader = async ({ request }: LoaderArgs) => {
    *   const { admin, session } = await shopify.authenticate.admin(request);
@@ -290,17 +290,17 @@ export interface AdminApiContext<
    * Making a GET request to the REST API
    * ```ts
    * // app/shopify.server.ts
-   * import { shopifyApp } from "@shopify/shopify-app-remix";
+   * import { shopifyAppServer } from "@shopify/shopify-app-remix";
    * import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
    *
-   * export const shopifyServer =  shopifyApp({
+   * export const shopifyServer =  shopifyAppServer({
    *   restResources,
    *   // ...etc
    * });
    *
    * // app/routes/**\/.ts
    * import { LoaderArgs, json } from "@remix-run/node";
-   * import { shopify } from "../shopify.server";
+   * import { shopifyServer } from "../shopify.server";
    *
    * export const loader = async ({ request }: LoaderArgs) => {
    *   const customers = await admin.rest.get({ path: "/customers/count.json" });
@@ -322,7 +322,7 @@ export interface AdminApiContext<
    * Creating a new product
    * ```ts
    * import { ActionArgs } from "@remix-run/node";
-   * import { shopify } from "../shopify.server";
+   * import { shopifyServer } from "../shopify.server";
    *
    * export async function action({ request }: ActionArgs) {
    *   const { admin } = await shopify.authenticate.admin(request);

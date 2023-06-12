@@ -2,7 +2,7 @@ import { Session } from "@shopify/shopify-api";
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
 import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memory";
 
-import { shopifyApp } from "../../..";
+import { shopifyAppServer } from "../../..";
 import {
   APP_URL,
   TEST_SHOP,
@@ -25,7 +25,7 @@ describe("Webhook validation", () => {
     // GIVEN
     const sessionStorage = new MemorySessionStorage();
     const config = testConfig({ sessionStorage, restResources });
-    const shopifyServer =  shopifyApp(config);
+    const shopifyServer =  shopifyAppServer(config);
     const body = {some: "data"};
 
     const session = new Session({
@@ -72,7 +72,7 @@ describe("Webhook validation", () => {
   it("throws a 400 on invalid HMAC", async () => {
     // GIVEN
     const config = testConfig();
-    const shopifyServer =  shopifyApp(config);
+    const shopifyServer =  shopifyAppServer(config);
 
     // WHEN
     const response = await getThrownResponse(
@@ -99,7 +99,7 @@ describe("Webhook validation", () => {
   ])("throws a 400 when header %s is missing", async (header) => {
     // GIVEN
     const config = testConfig();
-    const shopifyServer =  shopifyApp(config);
+    const shopifyServer =  shopifyAppServer(config);
 
     // WHEN
     const response = await getThrownResponse(
@@ -119,7 +119,7 @@ describe("Webhook validation", () => {
     // GIVEN
     const sessionStorage = new MemorySessionStorage();
     const config = testConfig({ sessionStorage });
-    const shopifyServer =  shopifyApp(config);
+    const shopifyServer =  shopifyAppServer(config);
 
     // WHEN
     const response = await getThrownResponse(

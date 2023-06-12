@@ -1,4 +1,4 @@
-import { shopifyApp } from "../../..";
+import { shopifyAppServer } from "../../..";
 import {
   APP_URL,
   TEST_SHOP,
@@ -11,7 +11,7 @@ describe("authorize.admin auth path", () => {
   test("throws an 400 Response if the shop param is missing", async () => {
     // GIVEN
     const config = testConfig();
-    const shopifyServer =  shopifyApp(config);
+    const shopifyServer =  shopifyAppServer(config);
 
     // WHEN
     const url = `${APP_URL}/auth`;
@@ -27,7 +27,7 @@ describe("authorize.admin auth path", () => {
   test("throws an 400 Response if the shop param is invalid", async () => {
     // GIVEN
     const config = testConfig();
-    const shopifyServer =  shopifyApp(config);
+    const shopifyServer =  shopifyAppServer(config);
 
     // WHEN
     const url = `${APP_URL}/auth?shop=invalid_shop`;
@@ -43,7 +43,7 @@ describe("authorize.admin auth path", () => {
   test("throws an 302 Response to begin auth", async () => {
     // GIVEN
     const config = testConfig();
-    const shopifyServer =  shopifyApp(config);
+    const shopifyServer =  shopifyAppServer(config);
 
     // WHEN
     const url = `${APP_URL}/auth?shop=${TEST_SHOP}`;

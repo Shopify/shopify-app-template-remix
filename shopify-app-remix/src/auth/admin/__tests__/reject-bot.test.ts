@@ -1,4 +1,4 @@
-import { shopifyApp } from "../../..";
+import { shopifyAppServer } from "../../..";
 import {
   APP_URL,
   getThrownResponse,
@@ -8,7 +8,7 @@ import {
 describe("authorize.admin", () => {
   test("rejects bot requests", async () => {
     // GIVEN
-    const shopifyServer =  shopifyApp(testConfig());
+    const shopifyServer =  shopifyAppServer(testConfig());
 
     // WHEN
     const response = await getThrownResponse(

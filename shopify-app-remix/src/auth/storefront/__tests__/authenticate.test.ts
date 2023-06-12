@@ -1,4 +1,4 @@
-import { shopifyApp } from "../../..";
+import { shopifyAppServer } from "../../..";
 import {
   APP_URL,
   getJwt,
@@ -10,7 +10,7 @@ describe("JWT validation", () => {
   it("returns token when successful", async () => {
     // GIVEN
     const config = testConfig();
-    const shopifyServer =  shopifyApp(config);
+    const shopifyServer =  shopifyAppServer(config);
     const { token, payload } = getJwt();
 
     // WHEN
@@ -29,7 +29,7 @@ describe("JWT validation", () => {
   it("throws a 401 on missing Authorization bearer token", async () => {
     // GIVEN
     const config = testConfig();
-    const shopifyServer =  shopifyApp(config);
+    const shopifyServer =  shopifyAppServer(config);
 
     // WHEN
     const response = await getThrownResponse(
@@ -44,7 +44,7 @@ describe("JWT validation", () => {
   it("throws a 401 on invalid Authorization bearer token", async () => {
     // GIVEN
     const config = testConfig();
-    const shopifyServer =  shopifyApp(config);
+    const shopifyServer =  shopifyAppServer(config);
 
     // WHEN
     const response = await getThrownResponse(
@@ -61,7 +61,7 @@ describe("JWT validation", () => {
   it("rejects bot requests", async () => {
     // GIVEN
     const config = testConfig();
-    const shopifyServer =  shopifyApp(config);
+    const shopifyServer =  shopifyAppServer(config);
 
     // WHEN
     const response = await getThrownResponse(

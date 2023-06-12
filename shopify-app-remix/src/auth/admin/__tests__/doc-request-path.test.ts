@@ -4,7 +4,7 @@ import {
   Session,
 } from "@shopify/shopify-api";
 
-import { shopifyApp } from "../../..";
+import { shopifyAppServer } from "../../..";
 import {
   API_KEY,
   APP_URL,
@@ -30,7 +30,7 @@ describe("authorize.admin doc request path", () => {
       { shop: "invalid", host: BASE64_HOST },
     ])("throws when %s", async ({ shop, host }) => {
       // GIVEN
-      const shopifyServer =  shopifyApp(testConfig());
+      const shopifyServer =  shopifyAppServer(testConfig());
       const searchParams = new URLSearchParams();
       if (shop) searchParams.set("shop", shop);
       if (host) searchParams.set("host", host);
@@ -48,7 +48,7 @@ describe("authorize.admin doc request path", () => {
     it("redirects to auth when not embedded and there is no offline session", async () => {
       // GIVEN
       const config = testConfig();
-      const shopifyServer =  shopifyApp(testConfig());
+      const shopifyServer =  shopifyAppServer(testConfig());
 
       // WHEN
       const response = await getThrownResponse(
@@ -62,7 +62,7 @@ describe("authorize.admin doc request path", () => {
 
     it("redirects to exit-iframe when embedded and there is no offline session", async () => {
       // GIVEN
-      const shopifyServer =  shopifyApp(testConfig());
+      const shopifyServer =  shopifyAppServer(testConfig());
 
       // WHEN
       const response = await getThrownResponse(
@@ -88,7 +88,7 @@ describe("authorize.admin doc request path", () => {
     it("redirects to auth when not embedded on an embedded app, and the API token is invalid", async () => {
       // GIVEN
       const config = testConfig();
-      const shopifyServer =  shopifyApp(config);
+      const shopifyServer =  shopifyAppServer(config);
       await setUpValidSession(shopifyServer.sessionStorage);
 
       await mockExternalRequest({
@@ -109,7 +109,7 @@ describe("authorize.admin doc request path", () => {
     it("returns non-401 codes when not embedded on an embedded app and the request fails", async () => {
       // GIVEN
       const config = testConfig();
-      const shopifyServer =  shopifyApp(config);
+      const shopifyServer =  shopifyAppServer(config);
       await setUpValidSession(shopifyServer.sessionStorage);
 
       await mockExternalRequest({
@@ -137,7 +137,7 @@ describe("authorize.admin doc request path", () => {
     it("returns a 500 when not embedded on an embedded app and the request fails", async () => {
       // GIVEN
       const config = testConfig();
-      const shopifyServer =  shopifyApp(config);
+      const shopifyServer =  shopifyAppServer(config);
       await setUpValidSession(shopifyServer.sessionStorage);
 
       await mockExternalRequest({
@@ -163,7 +163,7 @@ describe("authorize.admin doc request path", () => {
 
     it("redirects to the embedded app URL if there is a valid session but the app isn't embedded yet", async () => {
       // GIVEN
-      const shopifyServer =  shopifyApp(testConfig());
+      const shopifyServer =  shopifyAppServer(testConfig());
       await setUpValidSession(shopifyServer.sessionStorage);
 
       await mockExternalRequest({
@@ -187,7 +187,7 @@ describe("authorize.admin doc request path", () => {
 
     it("redirects to the bounce page URL if id_token search param is missing", async () => {
       // GIVEN
-      const shopifyServer =  shopifyApp(testConfig());
+      const shopifyServer =  shopifyAppServer(testConfig());
       await setUpValidSession(shopifyServer.sessionStorage);
 
       // WHEN
@@ -215,7 +215,7 @@ describe("authorize.admin doc request path", () => {
 
     it("throws a 401 if app is embedded and the id_token search param is invalid", async () => {
       // GIVEN
-      const shopifyServer =  shopifyApp(testConfig());
+      const shopifyServer =  shopifyAppServer(testConfig());
       await setUpValidSession(shopifyServer.sessionStorage);
 
       // WHEN
@@ -232,7 +232,7 @@ describe("authorize.admin doc request path", () => {
 
     it("redirects to exit-iframe if app is embedded and there is no session for the id_token when embedded", async () => {
       // GIVEN
-      const shopifyServer =  shopifyApp(testConfig());
+      const shopifyServer =  shopifyAppServer(testConfig());
       await setUpValidSession(shopifyServer.sessionStorage);
       const otherShopDomain = "other-shop.myshopify.io";
 
@@ -262,7 +262,7 @@ describe("authorize.admin doc request path", () => {
 
     it("redirects to exit-iframe if app is embedded and the session is no longer valid for the id_token when embedded", async () => {
       // GIVEN
-      const shopifyServer =  shopifyApp(testConfig({ scopes: ["otherTestScope"] }));
+      const shopifyServer =  shopifyAppServer(testConfig({ scopes: ["otherTestScope"] }));
       await setUpValidSession(shopifyServer.sessionStorage);
 
       // WHEN
@@ -290,7 +290,7 @@ describe("authorize.admin doc request path", () => {
     it("redirects to auth if there is no session cookie for non-embedded apps when at the top level", async () => {
       // GIVEN
       const config = testConfig();
-      const shopifyServer =  shopifyApp(testConfig({ isEmbeddedApp: false }));
+      const shopifyServer =  shopifyAppServer(testConfig({ isEmbeddedApp: false }));
       await setUpValidSession(shopifyServer.sessionStorage);
 
       // WHEN
@@ -310,7 +310,7 @@ describe("authorize.admin doc request path", () => {
     it("redirects to auth if there is no session for non-embedded apps when at the top level", async () => {
       // GIVEN
       const config = testConfig({ isEmbeddedApp: false });
-      const shopifyServer =  shopifyApp(config);
+      const shopifyServer =  shopifyAppServer(config);
       await setUpValidSession(shopifyServer.sessionStorage);
 
       // WHEN
@@ -338,7 +338,7 @@ describe("authorize.admin doc request path", () => {
         isEmbeddedApp: false,
         scopes: ["otherTestScope"],
       });
-      const shopifyServer =  shopifyApp(config);
+      const shopifyServer =  shopifyAppServer(config);
       const session = await setUpValidSession(shopifyServer.sessionStorage);
 
       // WHEN
@@ -366,7 +366,7 @@ describe("authorize.admin doc request path", () => {
     (isOnline) => {
       it("returns the context if the session is valid and the app is embedded", async () => {
         // GIVEN
-        const shopifyServer =  shopifyApp(testConfig({ useOnlineTokens: isOnline }));
+        const shopifyServer =  shopifyAppServer(testConfig({ useOnlineTokens: isOnline }));
 
         let testSession: Session;
         testSession = await setUpValidSession(shopifyServer.sessionStorage);
@@ -392,7 +392,7 @@ describe("authorize.admin doc request path", () => {
 
       it("returns the context if the session is valid and the app is not embedded", async () => {
         // GIVEN
-        const shopifyServer =  shopifyApp({ ...testConfig(), isEmbeddedApp: false });
+        const shopifyServer =  shopifyAppServer({ ...testConfig(), isEmbeddedApp: false });
 
         let testSession: Session;
         testSession = await setUpValidSession(shopifyServer.sessionStorage);

@@ -18,7 +18,7 @@ import {
   testConfig,
 } from "../../../__tests__/test-helper";
 import { mockExternalRequest } from "../../../__tests__/request-mock";
-import { shopifyApp } from "../../..";
+import { shopifyAppServer } from "../../..";
 import { APP_BRIDGE_REAUTH_HEADER } from "../../../auth/helpers/redirect-with-app-bridge-headers";
 import { AdminApiContext } from "../../../config-types";
 
@@ -166,7 +166,7 @@ describe("admin.authenticate context", () => {
   );
 
   async function setUpEmbeddedFlow() {
-    const shopifyServer =  shopifyApp({ ...testConfig(), restResources });
+    const shopifyServer =  shopifyAppServer({ ...testConfig(), restResources });
     await setUpValidSession(shopifyServer.sessionStorage);
 
     const { token } = getJwt();
@@ -181,7 +181,7 @@ describe("admin.authenticate context", () => {
   }
 
   async function setUpFetchFlow() {
-    const shopifyServer =  shopifyApp({ ...testConfig(), restResources });
+    const shopifyServer =  shopifyAppServer({ ...testConfig(), restResources });
     await setUpValidSession(shopifyServer.sessionStorage);
 
     const { token } = getJwt();
@@ -196,7 +196,7 @@ describe("admin.authenticate context", () => {
   }
 
   async function setUpNonEmbeddedFlow() {
-    const shopifyServer =  shopifyApp({
+    const shopifyServer =  shopifyAppServer({
       ...testConfig(),
       restResources,
       isEmbeddedApp: false,

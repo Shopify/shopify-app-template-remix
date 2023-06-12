@@ -23,7 +23,7 @@ interface AdminContextInternal<
    * ```ts
    * // app/routes/**\/.ts
    * import { LoaderArgs, json } from "@remix-run/node";
-   * import { shopify } from "../shopify.server";
+   * import { shopifyServer } from "../shopify.server";
    * import { getWidgets } from "~/db/widgets.server";
    *
    * export const loader = async ({ request }: LoaderArgs) => {
@@ -38,16 +38,16 @@ interface AdminContextInternal<
    * Getting your app's user specific widget data using an online session
    * ```ts
    * // shopify.server.ts
-   * import { shopifyApp } from "@shopify/shopify-app-remix";
+   * import { shopifyAppServer } from "@shopify/shopify-app-remix";
    *
-   * export const shopifyServer =  shopifyApp({
+   * export const shopifyServer =  shopifyAppServer({
    *   // ...etc
    *   useOnlineTokens: true,
    * });
    *
    * // app/routes/**\/.ts
    * import { LoaderArgs, json } from "@remix-run/node";
-   * import { shopify } from "../shopify.server";
+   * import { shopifyServer } from "../shopify.server";
    * import { getWidgets } from "~/db/widgets.server";
    *
    * export const loader = async ({ request }: LoaderArgs) => {
@@ -84,16 +84,16 @@ export interface EmbeddedAdminContext<
    * Getting your app's user specific widget data using the session token
    * ```ts
    * // shopify.server.ts
-   * import { shopifyApp } from "@shopify/shopify-app-remix";
+   * import { shopifyAppServer } from "@shopify/shopify-app-remix";
    *
-   * export const shopifyServer =  shopifyApp({
+   * export const shopifyServer =  shopifyAppServer({
    *   // ...etc
    *   useOnlineTokens: true,
    * });
    *
    * // app/routes/**\/.ts
    * import { LoaderArgs, json } from "@remix-run/node";
-   * import { shopify } from "../shopify.server";
+   * import { shopifyServer } from "../shopify.server";
    * import { getWidgets } from "~/db/widgets.server";
    *
    * export const loader = async ({ request }: LoaderArgs) => {

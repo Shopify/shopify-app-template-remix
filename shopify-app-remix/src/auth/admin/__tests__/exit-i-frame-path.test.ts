@@ -1,4 +1,4 @@
-import { shopifyApp } from "../../..";
+import { shopifyAppServer } from "../../..";
 import {
   APP_URL,
   getThrownResponse,
@@ -9,7 +9,7 @@ describe("authorize.admin exit iframe path", () => {
   test("Uses App Bridge to exit iFrame when the url matches auth.exitIframePath", async () => {
     // GIVEN
     const config = testConfig();
-    const shopifyServer =  shopifyApp(config);
+    const shopifyServer =  shopifyAppServer(config);
 
     // WHEN
     const exitTo = encodeURIComponent(config.appUrl);
@@ -37,7 +37,7 @@ describe("authorize.admin exit iframe path", () => {
     // GIVEN
     const authPathPrefix = "/shopify";
     const config = testConfig({ authPathPrefix });
-    const shopifyServer =  shopifyApp(config);
+    const shopifyServer =  shopifyAppServer(config);
 
     // WHEN
     const exitTo = encodeURIComponent(config.appUrl);
@@ -63,7 +63,7 @@ describe("authorize.admin exit iframe path", () => {
 
   test("Allows relative paths as exitIframe param", async () => {
     // GIVEN
-    const shopifyServer =  shopifyApp(testConfig());
+    const shopifyServer =  shopifyAppServer(testConfig());
 
     // WHEN
     const exitTo = encodeURIComponent("/my-path");

@@ -1,6 +1,6 @@
 import { SESSION_COOKIE_NAME, Session } from "@shopify/shopify-api";
 
-import { shopifyApp } from "../../..";
+import { shopifyAppServer } from "../../..";
 import {
   APP_URL,
   BASE64_HOST,
@@ -17,7 +17,7 @@ describe("authorize.session token header path", () => {
   describe("errors", () => {
     it("throws a 401 if the session token is invalid", async () => {
       // GIVEN
-      const shopifyServer =  shopifyApp(testConfig());
+      const shopifyServer =  shopifyAppServer(testConfig());
 
       // WHEN
       const response = await getThrownResponse(
@@ -34,7 +34,7 @@ describe("authorize.session token header path", () => {
     describe.each([true, false])("when isOnline: %s", (isOnline) => {
       it(`returns app bridge redirection headers if there is no session`, async () => {
         // GIVEN
-        const shopifyServer =  shopifyApp(testConfig({ useOnlineTokens: isOnline }));
+        const shopifyServer =  shopifyAppServer(testConfig({ useOnlineTokens: isOnline }));
 
         // WHEN
         const { token } = getJwt();
@@ -58,7 +58,7 @@ describe("authorize.session token header path", () => {
 
       it(`returns app bridge redirection headers if the session is no longer valid`, async () => {
         // GIVEN
-        const shopifyServer =  shopifyApp(
+        const shopifyServer =  shopifyAppServer(
           testConfig({ useOnlineTokens: isOnline, scopes: ["otherTestScope"] })
         );
         await setUpValidSession(shopifyServer.sessionStorage, isOnline);
@@ -90,7 +90,7 @@ describe("authorize.session token header path", () => {
     (isOnline) => {
       it("returns context when session exists for embedded apps", async () => {
         // GIVEN
-        const shopifyServer =  shopifyApp(testConfig({ useOnlineTokens: isOnline }));
+        const shopifyServer =  shopifyAppServer(testConfig({ useOnlineTokens: isOnline }));
 
         const testSession = await setUpValidSession(
           shopifyServer.sessionStorage,
@@ -114,7 +114,7 @@ describe("authorize.session token header path", () => {
 
       it("returns context when session exists for non-embedded apps", async () => {
         // GIVEN
-        const shopifyServer =  shopifyApp({
+        const shopifyServer =  shopifyAppServer({
           ...testConfig(),
           isEmbeddedApp: false,
           useOnlineTokens: isOnline,

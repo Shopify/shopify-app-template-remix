@@ -1,5 +1,5 @@
 import { mockExternalRequest } from "../../../__tests__/request-mock";
-import { shopifyApp } from "../../..";
+import { shopifyAppServer } from "../../..";
 import {
   BASE64_HOST,
   TEST_SHOP,
@@ -14,7 +14,7 @@ describe("authorize.admin auth callback path", () => {
     test("throws an error if the shop param is missing", async () => {
       // GIVEN
       const config = testConfig();
-      const shopifyServer =  shopifyApp(config);
+      const shopifyServer =  shopifyAppServer(config);
 
       // WHEN
       const response = await getThrownResponse(
@@ -30,7 +30,7 @@ describe("authorize.admin auth callback path", () => {
     test("throws an error if the shop param is not valid", async () => {
       // GIVEN
       const config = testConfig();
-      const shopifyServer =  shopifyApp(config);
+      const shopifyServer =  shopifyAppServer(config);
 
       // WHEN
       const response = await getThrownResponse(
@@ -46,7 +46,7 @@ describe("authorize.admin auth callback path", () => {
     test("throws an 302 Response to begin auth if CookieNotFound error", async () => {
       // GIVEN
       const config = testConfig();
-      const shopifyServer =  shopifyApp(config);
+      const shopifyServer =  shopifyAppServer(config);
 
       // WHEN
       const callbackUrl = getCallbackUrl(config);
@@ -71,7 +71,7 @@ describe("authorize.admin auth callback path", () => {
     test("throws a 400 if there is no HMAC param", async () => {
       // GIVEN
       const config = testConfig();
-      const shopifyServer =  shopifyApp(config);
+      const shopifyServer =  shopifyAppServer(config);
 
       // WHEN
       const state = "nonce";
@@ -98,7 +98,7 @@ describe("authorize.admin auth callback path", () => {
     test("throws a 400 if the HMAC param is invalid", async () => {
       // GIVEN
       const config = testConfig();
-      const shopifyServer =  shopifyApp(config);
+      const shopifyServer =  shopifyAppServer(config);
 
       // WHEN
       const state = "nonce";
@@ -126,7 +126,7 @@ describe("authorize.admin auth callback path", () => {
     test("throws a 500 if any other errors are thrown", async () => {
       // GIVEN
       const config = testConfig();
-      const shopifyServer =  shopifyApp({
+      const shopifyServer =  shopifyAppServer({
         ...config,
         hooks: {
           afterAuth: () => {
@@ -151,7 +151,7 @@ describe("authorize.admin auth callback path", () => {
     test("Exchanges the code for a token and saves it to SessionStorage", async () => {
       // GIVEN
       const config = testConfig();
-      const shopifyServer =  shopifyApp(config);
+      const shopifyServer =  shopifyAppServer(config);
 
       // WHEN
       await mockCodeExchangeRequest("offline");
@@ -178,7 +178,7 @@ describe("authorize.admin auth callback path", () => {
     test("throws an 302 Response to begin auth if token was offline and useOnlineTokens is true", async () => {
       // GIVEN
       const config = testConfig({ useOnlineTokens: true });
-      const shopifyServer =  shopifyApp(config);
+      const shopifyServer =  shopifyAppServer(config);
 
       // WHEN
       await mockCodeExchangeRequest("offline");
@@ -203,7 +203,7 @@ describe("authorize.admin auth callback path", () => {
     test("Does not throw a 302 Response to begin auth if token was online", async () => {
       // GIVEN
       const config = testConfig({ useOnlineTokens: true });
-      const shopifyServer =  shopifyApp(config);
+      const shopifyServer =  shopifyAppServer(config);
 
       // WHEN
       await mockCodeExchangeRequest("online");
@@ -225,7 +225,7 @@ describe("authorize.admin auth callback path", () => {
           afterAuth: afterAuthMock,
         },
       });
-      const shopifyServer =  shopifyApp(config);
+      const shopifyServer =  shopifyAppServer(config);
 
       // WHEN
       await mockCodeExchangeRequest();
@@ -241,7 +241,7 @@ describe("authorize.admin auth callback path", () => {
     test("throws a 302 response to the emebdded app URL if isEmbeddedApp is true", async () => {
       // GIVEN
       const config = testConfig();
-      const shopifyServer =  shopifyApp(config);
+      const shopifyServer =  shopifyAppServer(config);
 
       // WHEN
       await mockCodeExchangeRequest("offline");
@@ -262,7 +262,7 @@ describe("authorize.admin auth callback path", () => {
       const config = testConfig({
         isEmbeddedApp: false,
       });
-      const shopifyServer =  shopifyApp(config);
+      const shopifyServer =  shopifyAppServer(config);
 
       // WHEN
       await mockCodeExchangeRequest("offline");

@@ -61,7 +61,7 @@ type SessionStorageType<Config extends AppConfigArg> =
  * An object your app can use to interact with Shopify.
  *
  */
-export interface ShopifyApp<Config extends AppConfigArg> {
+export interface ShopifyAppServer<Config extends AppConfigArg> {
   /**
    * The SessionStorage instance your app is using.
    *
@@ -71,9 +71,9 @@ export interface ShopifyApp<Config extends AppConfigArg> {
    * Defaulting to `SQLiteSessionStorage`
    * ```ts
    * // app/shopify.server.ts
-   * import { shopifyApp } from "@shopify/shopify-app-remix";
+   * import { shopifyAppServer } from "@shopify/shopify-app-remix";
    *
-   * const shopifyServer =  shopifyApp({
+   * const shopifyServer =  shopifyAppServer({
    *   // ...etc
    * })
    *
@@ -84,11 +84,11 @@ export interface ShopifyApp<Config extends AppConfigArg> {
    * Using Prisma
    * ```ts
    * // app/shopify.server.ts
-   * import { shopifyApp } from "@shopify/shopify-app-remix";
+   * import { shopifyAppServer } from "@shopify/shopify-app-remix";
    * import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
    * import prisma from "~/db.server";
    *
-   * const shopifyServer =  shopifyApp({
+   * const shopifyServer =  shopifyAppServer({
    *   sesssionStorage: new PrismaSessionStorage(prisma),
    *   // ...etc
    * })
@@ -105,7 +105,7 @@ export interface ShopifyApp<Config extends AppConfigArg> {
    * ```ts
    * import { DeliveryMethod, shopifyApp } from "@shopify/shopify-app-remix";
    *
-   * export const shopifyServer =  shopifyApp({
+   * export const shopifyServer =  shopifyAppServer({
    *   hooks: {
    *     afterAuth: async ({ session }) => {
    *       shopify.registerWebhooks({ session });
@@ -145,14 +145,14 @@ export interface ShopifyApp<Config extends AppConfigArg> {
      * import { LATEST_API_VERSION, shopifyApp } from "@shopify/shopify-app-remix";
      * import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
      *
-     * export const shopifyServer =  shopifyApp({
+     * export const shopifyServer =  shopifyAppServer({
      *   restResources,
      *   // ...etc
      * });
      *
      * // app/routes/**\/*.jsx
      * import { LoaderArgs, json } from "@remix-run/node";
-     * import { shopify } from "../../shopify.server";
+     * import { shopifyServer } from "../../shopify.server";
      *
      * export async function loader({ request }: LoaderArgs) {
      *   const {admin, session, sessionToken, billing} = shopify.authenticate.admin(request);
@@ -177,7 +177,7 @@ export interface ShopifyApp<Config extends AppConfigArg> {
      * ```ts
      * // app/routes/api/checkout.jsx
      * import { LoaderArgs, json } from "@remix-run/node";
-     * import { shopify } from "../../shopify.server";
+     * import { shopifyServer } from "../../shopify.server";
      * import { getWidgets } from "~/db/widgets";
      *
      * export async function loader({ request }: LoaderArgs) {
@@ -205,7 +205,7 @@ export interface ShopifyApp<Config extends AppConfigArg> {
      *   shopifyApp,
      * } from "@shopify/shopify-app-remix";
      *
-     * export const shopifyServer =  shopifyApp({
+     * export const shopifyServer =  shopifyAppServer({
      *   webhooks: {
      *    APP_UNINSTALLED: {
      *       deliveryMethod: DeliveryMethod.Http,
@@ -222,7 +222,7 @@ export interface ShopifyApp<Config extends AppConfigArg> {
      *
      * // app/routes/webhooks.ts
      * import { ActionArgs } from "@remix-run/node";
-     * import { shopify } from "../shopify.server";
+     * import { shopifyServer } from "../shopify.server";
      * import db from "../db.server";
      *
      * export const action = async ({ request }: ActionArgs) => {

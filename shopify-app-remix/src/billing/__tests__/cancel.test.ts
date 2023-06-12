@@ -5,7 +5,7 @@ import {
   Shopify,
 } from "@shopify/shopify-api";
 
-import { shopifyApp } from "../..";
+import { shopifyAppServer } from "../..";
 import {
   APP_URL,
   BASE64_HOST,
@@ -34,7 +34,7 @@ const BILLING_CONFIG: Shopify["config"]["billing"] = {
 describe("Cancel billing", () => {
   it("returns an AppSubscription when the cancellation is successful", async () => {
     // GIVEN
-    const shopifyServer =  shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
+    const shopifyServer =  shopifyAppServer({ ...testConfig(), billing: BILLING_CONFIG });
     await setUpValidSession(shopifyServer.sessionStorage);
 
     const { billing } = await shopifyServer.authenticate.admin(
@@ -62,7 +62,7 @@ describe("Cancel billing", () => {
   it("redirects to authentication when at the top level when Shopify invalidated the session", async () => {
     // GIVEN
     const config = testConfig();
-    const shopifyServer =  shopifyApp({
+    const shopifyServer =  shopifyAppServer({
       ...config,
       isEmbeddedApp: false,
       billing: BILLING_CONFIG,
@@ -103,7 +103,7 @@ describe("Cancel billing", () => {
 
   it("redirects to exit-iframe with authentication using app bridge when embedded and Shopify invalidated the session", async () => {
     // GIVEN
-    const shopifyServer =  shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
+    const shopifyServer =  shopifyAppServer({ ...testConfig(), billing: BILLING_CONFIG });
     await setUpValidSession(shopifyServer.sessionStorage);
 
     const { token } = getJwt();
@@ -149,7 +149,7 @@ describe("Cancel billing", () => {
 
   it("returns redirection headers during fetch requests when Shopify invalidated the session", async () => {
     // GIVEN
-    const shopifyServer =  shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
+    const shopifyServer =  shopifyAppServer({ ...testConfig(), billing: BILLING_CONFIG });
     await setUpValidSession(shopifyServer.sessionStorage);
 
     const request = new Request(`${APP_URL}/billing`, {
@@ -191,7 +191,7 @@ describe("Cancel billing", () => {
 
   it("throws errors other than authentication errors", async () => {
     // GIVEN
-    const shopifyServer =  shopifyApp({
+    const shopifyServer =  shopifyAppServer({
       ...testConfig(),
       isEmbeddedApp: false,
       billing: BILLING_CONFIG,

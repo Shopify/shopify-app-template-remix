@@ -5,7 +5,7 @@ import { SQLiteSessionStorage } from "@shopify/shopify-app-session-storage-sqlit
 import * as shopifyApiPackage from "@shopify/shopify-api";
 
 import {
-  shopifyApp,
+  shopifyAppServer,
   LATEST_API_VERSION as APP_LATEST_API_VERSION,
   LogSeverity,
   DeliveryMethod,
@@ -15,7 +15,7 @@ import { AppConfigArg } from "../config-types";
 
 import { testConfig } from "./test-helper";
 
-describe("shopifyApp", () => {
+describe("shopifyAppServer", () => {
   /* eslint-disable no-process-env */
   const oldEnv = process.env;
 
@@ -36,14 +36,14 @@ describe("shopifyApp", () => {
     });
 
     // WHEN
-    const shopifyServer =  shopifyApp(config);
+    const shopifyServer =  shopifyAppServer(config);
 
     // THEN
     expect(shopifyServer).toBeDefined();
   });
 
   it("fails with an invalid config", () => {
-    expect(() => shopifyApp({} as any)).toThrowError(ShopifyError);
+    expect(() => shopifyAppServer({} as any)).toThrowError(ShopifyError);
   });
 
   it("fixes the port if it's not set", () => {
@@ -52,7 +52,7 @@ describe("shopifyApp", () => {
     process.env.PORT = "1234";
 
     // WHEN
-    shopifyApp(testConfig({ appUrl: "http://localhost" }));
+    shopifyAppServer(testConfig({ appUrl: "http://localhost" }));
 
     // THEN
     expect(shopifyApiPackage.shopifyApi).toHaveBeenCalledWith(
@@ -70,7 +70,7 @@ describe("shopifyApp", () => {
     });
 
     // WHEN
-    shopifyApp(config);
+    shopifyAppServer(config);
 
     // THEN
     const { userAgentPrefix } = (shopifyApiPackage.shopifyApi as any).mock
@@ -98,7 +98,7 @@ describe("shopifyApp", () => {
     }
 
     // WHEN
-    const shopifyServer =  shopifyApp(config);
+    const shopifyServer =  shopifyAppServer(config);
 
     // THEN
     expect(shopifyServer.sessionStorage).toBeInstanceOf(SQLiteSessionStorage);

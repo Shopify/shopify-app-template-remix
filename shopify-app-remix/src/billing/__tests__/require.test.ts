@@ -5,7 +5,7 @@ import {
   Shopify,
 } from "@shopify/shopify-api";
 
-import { shopifyApp } from "../..";
+import { shopifyAppServer } from "../..";
 import {
   APP_URL,
   BASE64_HOST,
@@ -36,7 +36,7 @@ describe("Billing require", () => {
     // GIVEN
     const config = testConfig();
     await setUpValidSession(config.sessionStorage);
-    const shopifyServer =  shopifyApp({ ...config, billing: BILLING_CONFIG });
+    const shopifyServer =  shopifyAppServer({ ...config, billing: BILLING_CONFIG });
 
     await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -70,7 +70,7 @@ describe("Billing require", () => {
     // GIVEN
     const config = testConfig();
     await setUpValidSession(config.sessionStorage);
-    const shopifyServer =  shopifyApp({ ...config, billing: BILLING_CONFIG });
+    const shopifyServer =  shopifyAppServer({ ...config, billing: BILLING_CONFIG });
 
     await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -108,7 +108,7 @@ describe("Billing require", () => {
       billing: BILLING_CONFIG,
     });
     const session = await setUpValidSession(config.sessionStorage);
-    const shopifyServer =  shopifyApp(config);
+    const shopifyServer =  shopifyAppServer(config);
 
     await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -147,7 +147,7 @@ describe("Billing require", () => {
     // GIVEN
     const config = testConfig();
     await setUpValidSession(config.sessionStorage);
-    const shopifyServer =  shopifyApp({ ...config, billing: BILLING_CONFIG });
+    const shopifyServer =  shopifyAppServer({ ...config, billing: BILLING_CONFIG });
 
     await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -195,7 +195,7 @@ describe("Billing require", () => {
     // GIVEN
     const config = testConfig();
     await setUpValidSession(config.sessionStorage);
-    const shopifyServer =  shopifyApp({ ...config, billing: BILLING_CONFIG });
+    const shopifyServer =  shopifyAppServer({ ...config, billing: BILLING_CONFIG });
 
     await mockExternalRequest({
       request: new Request(GRAPHQL_URL, { method: "POST", body: "test" }),
@@ -237,7 +237,7 @@ describe("Billing require", () => {
     // GIVEN
     const config = testConfig();
     const session = await setUpValidSession(config.sessionStorage);
-    const shopifyServer =  shopifyApp({
+    const shopifyServer =  shopifyAppServer({
       ...config,
       isEmbeddedApp: false,
       billing: BILLING_CONFIG,

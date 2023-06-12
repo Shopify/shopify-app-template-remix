@@ -1,6 +1,6 @@
 import { DeliveryMethod, Session } from "@shopify/shopify-api";
 
-import { shopifyApp } from "../../..";
+import { shopifyAppServer } from "../../..";
 import {
   GRAPHQL_URL,
   TEST_SHOP,
@@ -13,7 +13,7 @@ import { mockExternalRequests } from "../../../__tests__/request-mock";
 describe("Webhook registration", () => {
   it("registers webhooks", async () => {
     // GIVEN
-    const shopifyServer =  shopifyApp(
+    const shopifyServer =  shopifyAppServer(
       testConfig({
         webhooks: {
           PRODUCTS_CREATE: {
@@ -63,7 +63,7 @@ describe("Webhook registration", () => {
 
   it("logs when registration fails", async () => {
     // GIVEN
-    const shopifyServer =  shopifyApp(
+    const shopifyServer =  shopifyAppServer(
       testConfig({
         webhooks: {
           NOT_A_VALID_TOPIC: {

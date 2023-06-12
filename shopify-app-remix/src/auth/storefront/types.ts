@@ -13,7 +13,7 @@ export interface StorefrontContext {
    * Getting your app's user specific widget data using the session token
    * // app/routes/**\/.ts
    * import { LoaderArgs, json } from "@remix-run/node";
-   * import { shopify } from "../shopify.server";
+   * import { shopifyServer } from "../shopify.server";
    * import { getWidgets } from "~/db/widgets.server";
    *
    * export const loader = async ({ request }: LoaderArgs) => {

@@ -13,14 +13,14 @@ import { SQLiteSessionStorage } from "@shopify/shopify-app-session-storage-sqlit
 
 import { AppConfig, AppConfigArg } from "./config-types";
 import { SHOPIFY_REMIX_LIBRARY_VERSION } from "./version";
-import { BasicParams, MandatoryTopics, ShopifyApp } from "./types";
+import { BasicParams, MandatoryTopics, ShopifyAppServer } from "./types";
 import { registerWebhooksFactory } from "./auth/webhooks";
 import { AuthStrategy } from "./auth/admin/authenticate";
 import { authenticateWebhookFactory } from "./auth/webhooks/authenticate";
 import { authenticateStorefrontFactory } from "./auth/storefront/authenticate";
 import { overrideLogger } from "./override-logger";
 
-export { ShopifyApp } from "./types";
+export { ShopifyAppServer as ShopifyServer } from "./types";
 
 export {
   LATEST_API_VERSION,
@@ -33,14 +33,14 @@ export {
  * Creates an object your app will use to interact with Shopify.
  *
  * @param appConfig Configuration options for your shopify app.  For example, the scopes your app needs.
- * @returns `ShopifyApp` An object constructed using your appConfig.  It has methods for interacting with Shopify.
+ * @returns `ShopifyServer` An object constructed using your appConfig.  It has methods for interacting with Shopify.
  *
  * @example
  * The minimum viable configuration
  * ```ts
- * import { shopifyApp } from "@shopify/shopify-app-remix";
+ * import { shopifyAppServer } from "@shopify/shopify-app-remix";
  *
- * export const shopifyServer =  shopifyApp({
+ * export const shopifyServer =  shopifyAppServer({
  *   apiKey: process.env.SHOPIFY_API_KEY!,
  *   apiSecretKey: process.env.SHOPIFY_API_SECRET!,
  *   scopes: process.env.SCOPES?.split(",")!,
@@ -48,11 +48,11 @@ export {
  * });
  * ```
  */
-export function shopifyApp<
+export function shopifyAppServer<
   Config extends AppConfigArg<Resources, Storage>,
   Resources extends ShopifyRestResources,
   Storage extends SessionStorage
->(appConfig: Config): ShopifyApp<Config> {
+>(appConfig: Config): ShopifyAppServer<Config> {
   const api = deriveApi<Resources>(appConfig);
   const config = deriveConfig<Storage>(appConfig, api.config);
   const logger = overrideLogger(api.logger);

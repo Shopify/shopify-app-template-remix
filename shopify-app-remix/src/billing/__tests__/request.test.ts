@@ -6,7 +6,7 @@ import {
   Shopify,
 } from "@shopify/shopify-api";
 
-import { shopifyApp } from "../..";
+import { shopifyAppServer } from "../..";
 import {
   APP_URL,
   BASE64_HOST,
@@ -39,7 +39,7 @@ describe("Billing request", () => {
   // TODO: This is currently blocked because the authenticator doesn't work properly with non-embedded apps
   it("redirects to payment confirmation URL when successful and at the top level for non-embedded apps", async () => {
     // GIVEN
-    const shopifyServer =  shopifyApp({
+    const shopifyServer =  shopifyAppServer({
       ...testConfig(),
       isEmbeddedApp: false,
       billing: BILLING_CONFIG,
@@ -75,7 +75,7 @@ describe("Billing request", () => {
 
   it("redirects to exit-iframe with payment confirmation URL when successful using app bridge when embedded", async () => {
     // GIVEN
-    const shopifyServer =  shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
+    const shopifyServer =  shopifyAppServer({ ...testConfig(), billing: BILLING_CONFIG });
     await setUpValidSession(shopifyServer.sessionStorage);
 
     await mockExternalRequest({
@@ -113,7 +113,7 @@ describe("Billing request", () => {
 
   it("returns redirection headers when successful during fetch requests", async () => {
     // GIVEN
-    const shopifyServer =  shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
+    const shopifyServer =  shopifyAppServer({ ...testConfig(), billing: BILLING_CONFIG });
     await setUpValidSession(shopifyServer.sessionStorage);
 
     await mockExternalRequest({
@@ -145,7 +145,7 @@ describe("Billing request", () => {
   it("redirects to authentication when at the top level when Shopify invalidated the session", async () => {
     // GIVEN
     const config = testConfig();
-    const shopifyServer =  shopifyApp({
+    const shopifyServer =  shopifyAppServer({
       ...config,
       isEmbeddedApp: false,
       billing: BILLING_CONFIG,
@@ -181,7 +181,7 @@ describe("Billing request", () => {
 
   it("redirects to exit-iframe with authentication using app bridge when embedded and Shopify invalidated the session", async () => {
     // GIVEN
-    const shopifyServer =  shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
+    const shopifyServer =  shopifyAppServer({ ...testConfig(), billing: BILLING_CONFIG });
     await setUpValidSession(shopifyServer.sessionStorage);
 
     await mockExternalRequest({
@@ -222,7 +222,7 @@ describe("Billing request", () => {
 
   it("returns redirection headers during fetch requests when Shopify invalidated the session", async () => {
     // GIVEN
-    const shopifyServer =  shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
+    const shopifyServer =  shopifyAppServer({ ...testConfig(), billing: BILLING_CONFIG });
     await setUpValidSession(shopifyServer.sessionStorage);
 
     await mockExternalRequest({
@@ -257,7 +257,7 @@ describe("Billing request", () => {
 
   it("throws errors other than authentication errors", async () => {
     // GIVEN
-    const shopifyServer =  shopifyApp({
+    const shopifyServer =  shopifyAppServer({
       ...testConfig(),
       isEmbeddedApp: false,
       billing: BILLING_CONFIG,
@@ -289,7 +289,7 @@ describe("Billing request", () => {
 
   it("throws a BillingError when the response contains user errors", async () => {
     // GIVEN
-    const shopifyServer =  shopifyApp({ ...testConfig(), billing: BILLING_CONFIG });
+    const shopifyServer =  shopifyAppServer({ ...testConfig(), billing: BILLING_CONFIG });
     await setUpValidSession(shopifyServer.sessionStorage);
 
     await mockExternalRequest({
