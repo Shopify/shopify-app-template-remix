@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  AlphaCard,
+  Card,
   VerticalStack,
   Text,
   Button,
@@ -15,7 +15,7 @@ interface ProductsCardProps {
 
 export function ProductsCard({ count, loading }: ProductsCardProps) {
   return (
-    <AlphaCard>
+    <Card>
       <VerticalStack gap="5">
         <Text variant="headingMd" as="h2">
           Product Counter
@@ -41,6 +41,6 @@ export function ProductsCard({ count, loading }: ProductsCardProps) {
           </Form>
         </HorizontalStack>
       </VerticalStack>
-    </AlphaCard>
+    </Card>
   );
 }
