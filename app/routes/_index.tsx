@@ -9,7 +9,7 @@ import {
   Link,
   Text,
   VerticalStack,
-  AlphaCard,
+  Card,
   Grid,
 } from "@shopify/polaris";
 
@@ -67,7 +67,7 @@ export default function Index() {
     <Page narrowWidth>
       <Layout>
         <Layout.Section>
-          <AlphaCard>
+          <Card>
             <VerticalStack gap="5">
               <Text variant="headingMd" as="h2">
                 Nice work on building a Shopify app 🎉
@@ -124,7 +124,7 @@ export default function Index() {
                 </Grid.Cell>
               </Grid>
             </VerticalStack>
-          </AlphaCard>
+          </Card>
         </Layout.Section>
         <Layout.Section>
           <ProductsCard count={count} loading={isLoading} />
