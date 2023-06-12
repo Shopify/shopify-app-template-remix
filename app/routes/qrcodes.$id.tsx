@@ -44,9 +44,9 @@ export async function loader({ request, params }: LoaderArgs) {
   });
 
   const discounts: { label: string; value: string }[] =
-    body.data.codeDiscountNodes.edges.map((edge) => ({
-      label: edge.node.codeDiscount.codes.edges[0].node.code,
-      value: edge.node.id,
+    body.data.codeDiscountNodes.nodes.map(({ id, codeDiscount }) => ({
+      label: codeDiscount.codes.nodes[0].code,
+      value: id,
     }));
 
   const qrCodeId = params.id === "new" || !params.id ? null : Number(params.id);
@@ -372,35 +372,27 @@ export default function Index() {
 const DISCOUNT_QUERY = `
   query shopData($first: Int!) {
     codeDiscountNodes(first: $first) {
-      edges {
-        node {
-          id
-          codeDiscount {
-            ... on DiscountCodeBasic {
-              codes(first: 1) {
-                edges {
-                  node {
-                    code
-                  }
-                }
+      nodes {
+        id
+        codeDiscount {
+          ... on DiscountCodeBasic {
+            codes(first: 1) {
+              nodes {
+                code
               }
             }
-            ... on DiscountCodeBxgy {
-              codes(first: 1) {
-                edges {
-                  node {
-                    code
-                  }
-                }
+          }
+          ... on DiscountCodeBxgy {
+            codes(first: 1) {
+              nodes {
+                code
               }
             }
-            ... on DiscountCodeFreeShipping {
-              codes(first: 1) {
-                edges {
-                  node {
-                    code
-                  }
-                }
+          }
+          ... on DiscountCodeFreeShipping {
+            codes(first: 1) {
+              nodes {
+                code
               }
             }
           }
