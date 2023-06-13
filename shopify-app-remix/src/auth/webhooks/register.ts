@@ -17,7 +17,7 @@ export function registerWebhooksFactory({ api, logger }: BasicParams) {
             logger.error("Failed to register webhook", {
               topic,
               shop: session.shop,
-              result: rest.result,
+              result: JSON.stringify(rest.result),
             });
           }
         });
