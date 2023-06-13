@@ -1,6 +1,5 @@
 import { BasicParams } from "../../types";
 
-export const REATH_HEADER = "X-Shopify-API-Request-Failure-Reauthorize"
 export const REAUTH_URL_HEADER =
   "X-Shopify-API-Request-Failure-Reauthorize-Url";
 
@@ -19,5 +18,5 @@ export function redirectWithAppBridgeHeaders(
 }
 
 export function getAppBridgeHeaders(url: string) {
-  return { [REAUTH_URL_HEADER]: url, [REATH_HEADER]: "1", 'Access-Control-Expose-Headers': [REATH_HEADER, REAUTH_URL_HEADER].join(', ') }
+  return { [REAUTH_URL_HEADER]: url, 'Access-Control-Expose-Headers': REAUTH_URL_HEADER }
 }

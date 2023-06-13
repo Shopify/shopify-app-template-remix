@@ -23,7 +23,7 @@ import {
   mockExternalRequest,
   mockExternalRequests,
 } from "../../__tests__/request-mock";
-import { REAUTH_URL_HEADER, REATH_HEADER } from "../../auth/helpers/redirect-with-app-bridge-headers";
+import { REAUTH_URL_HEADER } from "../../auth/helpers/redirect-with-app-bridge-headers";
 
 import * as responses from "./mock-responses";
 
@@ -137,11 +137,10 @@ describe("Billing request", () => {
 
     // THEN
     expect(response.status).toEqual(302);
-    expect(response.headers.get(REATH_HEADER)).toEqual("1");
     expect(response.headers.get(REAUTH_URL_HEADER)).toEqual(
       responses.CONFIRMATION_URL
     );
-    expect(response.headers.get("Access-Control-Expose-Headers")).toBe(`${REATH_HEADER}, ${REAUTH_URL_HEADER}`)
+    expect(response.headers.get("Access-Control-Expose-Headers")).toBe(REAUTH_URL_HEADER)
 
   });
 
