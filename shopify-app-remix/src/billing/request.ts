@@ -8,9 +8,9 @@ import { redirect } from "@remix-run/server-runtime";
 import { BasicParams } from "../types";
 import { redirectToAuthPage } from "../auth/helpers";
 import { AppConfigArg } from "../config-types";
-import { APP_BRIDGE_REAUTH_HEADER } from "../auth/helpers/redirect-with-app-bridge-headers";
 
 import { RequestBillingOptions } from "./types";
+import { getAppBridgeHeaders } from "../auth/helpers/redirect-with-app-bridge-headers";
 
 export function requestBillingFactory<Config extends AppConfigArg>(
   params: BasicParams,
@@ -77,7 +77,7 @@ function redirectOutOfApp(
     throw new Response(undefined, {
       status: 302,
       statusText: "Redirect",
-      headers: { [APP_BRIDGE_REAUTH_HEADER]: url },
+      headers: getAppBridgeHeaders(url),
     });
   } else if (isEmbeddedRequest) {
     const params = new URLSearchParams({

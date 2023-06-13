@@ -19,7 +19,7 @@ import {
 } from "../../../__tests__/test-helper";
 import { mockExternalRequest } from "../../../__tests__/request-mock";
 import { shopifyApp } from "../../..";
-import { APP_BRIDGE_REAUTH_HEADER } from "../../../auth/helpers/redirect-with-app-bridge-headers";
+import { REAUTH_URL_HEADER, REATH_HEADER } from "../../../auth/helpers/redirect-with-app-bridge-headers";
 import { AdminApiContext } from "../../../config-types";
 
 describe("admin.authenticate context", () => {
@@ -154,9 +154,11 @@ describe("admin.authenticate context", () => {
 
         // THEN
         expect(response.status).toEqual(401);
+        expect(response.headers.get(REATH_HEADER)).toEqual("1")
+        expect(response.headers.get("Access-Control-Expose-Headers")).toBe(`${REATH_HEADER}, ${REAUTH_URL_HEADER}`)
 
         const { origin, pathname, searchParams } = new URL(
-          response.headers.get(APP_BRIDGE_REAUTH_HEADER)!
+          response.headers.get(REAUTH_URL_HEADER)!
         );
         expect(origin).toEqual(APP_URL);
         expect(pathname).toEqual("/auth");

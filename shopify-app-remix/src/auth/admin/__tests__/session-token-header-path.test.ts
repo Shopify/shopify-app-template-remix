@@ -11,7 +11,7 @@ import {
   signRequestCookie,
   testConfig,
 } from "../../../__tests__/test-helper";
-import { APP_BRIDGE_REAUTH_HEADER } from "../../../auth/helpers/redirect-with-app-bridge-headers";
+import { REAUTH_URL_HEADER, REATH_HEADER } from "../../../auth/helpers/redirect-with-app-bridge-headers";
 
 describe("authorize.session token header path", () => {
   describe("errors", () => {
@@ -46,11 +46,14 @@ describe("authorize.session token header path", () => {
         );
 
         // THEN
+        expect(response.status).toBe(401);
+        expect(response.headers.get(REATH_HEADER)).toEqual("1")
+        expect(response.headers.get("Access-Control-Expose-Headers")).toBe(`${REATH_HEADER}, ${REAUTH_URL_HEADER}`)
+
         const { origin, pathname, searchParams } = new URL(
-          response.headers.get(APP_BRIDGE_REAUTH_HEADER)!
+          response.headers.get(REAUTH_URL_HEADER)!
         );
 
-        expect(response.status).toBe(401);
         expect(origin).toBe(APP_URL);
         expect(pathname).toBe("/auth");
         expect(searchParams.get("shop")).toBe(TEST_SHOP);
@@ -74,10 +77,13 @@ describe("authorize.session token header path", () => {
 
         // THEN
         expect(response.status).toBe(401);
+        expect(response.headers.get(REATH_HEADER)).toEqual("1")
+        expect(response.headers.get("Access-Control-Expose-Headers")).toBe(`${REATH_HEADER}, ${REAUTH_URL_HEADER}`)
 
         const { origin, pathname, searchParams } = new URL(
-          response.headers.get(APP_BRIDGE_REAUTH_HEADER)!
+          response.headers.get(REAUTH_URL_HEADER)!
         );
+
         expect(origin).toBe(APP_URL);
         expect(pathname).toBe("/auth");
         expect(searchParams.get("shop")).toBe(TEST_SHOP);

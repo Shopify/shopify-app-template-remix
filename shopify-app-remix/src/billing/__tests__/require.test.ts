@@ -19,7 +19,7 @@ import {
   testConfig,
 } from "../../__tests__/test-helper";
 import { mockExternalRequest } from "../../__tests__/request-mock";
-import { APP_BRIDGE_REAUTH_HEADER } from "../../auth/helpers/redirect-with-app-bridge-headers";
+import { REAUTH_URL_HEADER, REATH_HEADER } from "../../auth/helpers/redirect-with-app-bridge-headers";
 
 import * as responses from "./mock-responses";
 
@@ -227,8 +227,12 @@ describe("Billing require", () => {
 
     // THEN
     expect(response.status).toEqual(401);
+    expect(response.headers.get(REATH_HEADER)).toEqual("1");
+    expect(response.headers.get("Access-Control-Expose-Headers")).toBe(`${REATH_HEADER}, ${REAUTH_URL_HEADER}`)
 
-    const reauthUrl = new URL(response.headers.get(APP_BRIDGE_REAUTH_HEADER)!);
+
+    const reauthUrl = new URL(response.headers.get(REAUTH_URL_HEADER)!);
+
     expect(reauthUrl.origin).toEqual(APP_URL);
     expect(reauthUrl.pathname).toEqual("/auth");
   });
