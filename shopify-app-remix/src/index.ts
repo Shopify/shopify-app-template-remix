@@ -130,6 +130,7 @@ function deriveConfig<Storage extends SessionStorage>(
       callbackPath: authPathPrefix + "/callback",
       patchSessionTokenPath: authPathPrefix + "/session-token",
       exitIframePath: authPathPrefix + "/exit-iframe",
+      loginPath: authPathPrefix + "/login",
     },
   };
 }

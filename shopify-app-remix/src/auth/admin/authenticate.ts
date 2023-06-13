@@ -55,13 +55,15 @@ export class AuthStrategy<
 
   public async authenticateAdmin(
     request: Request
-  ): Promise<AdminContext<Config, Resources>> {
+  ): Promise<AdminContext<Config, Resources> | null> {
     const { api, logger, config } = this;
 
     rejectBotRequest({ api, logger, config }, request);
 
     const url = new URL(request.url);
 
+    const isLoginGet = url.pathname === config.auth.loginPath && request.method === "GET"
+    const isLoginPost = url.pathname === config.auth.loginPath && request.method === "POST"
     const isPatchSessionToken =
       url.pathname === config.auth.patchSessionTokenPath;
     const isExitIframe = url.pathname === config.auth.exitIframePath;
@@ -72,7 +74,14 @@ export class AuthStrategy<
     logger.info("Authenticating admin request");
 
     let sessionContext: SessionContext;
-    if (isPatchSessionToken) {
+
+    if (isLoginGet) {
+      logger.debug("Rendering login page");
+      return null
+
+    } else if (isLoginPost) {
+      throw await this.handleLoginPost(request);
+    } else if (isPatchSessionToken) {
       logger.debug("Rendering bounce page");
       this.renderAppBridge();
     } else if (isExitIframe) {
@@ -117,6 +126,30 @@ export class AuthStrategy<
     } else {
       return context as AdminContext<Config, Resources>;
     }
+  }
+
+  private async handleLoginPost(request: Request): Promise<never> {
+    const { logger, api } = this;
+
+    logger.debug("Handling login post");
+
+    const formData = await request.formData();
+    const shop = formData.get("shop") as string;
+
+    if (!shop) {
+      throw new Response("Missing shop parameter", {status: 400})
+    }
+
+    const sanitizedShop = api.utils.sanitizeShop(shop);
+
+    if (!sanitizedShop) {
+      throw new Response("Invalid shop parameter", {status: 400})
+    }
+
+    const host = Buffer.from(`${shop}/admin`).toString('base64').replace(/[=]/g, '')
+    const url = `/?shop=${shop}&host=${host}`
+
+    throw redirect(url)
   }
 
   private async handleAuthBeginRequest(request: Request): Promise<never> {
