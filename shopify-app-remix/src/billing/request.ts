@@ -68,8 +68,6 @@ function redirectOutOfApp(
   const isEmbeddedRequest = requestUrl.searchParams.get("embedded") === "1";
   const isXhrRequest = request.headers.get("authorization");
 
-  // TODO This is similar but not exactly like some code in the oauth strategy - is it worth extracting into a helper?
-  // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28374220
   if (isXhrRequest) {
     // TODO Check this with the beta flag disabled (with the bounce page)
     // Remix is not including the X-Shopify-API-Request-Failure-Reauthorize-Url when throwing a Response
