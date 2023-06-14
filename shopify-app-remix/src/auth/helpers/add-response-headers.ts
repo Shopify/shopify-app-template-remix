@@ -1,4 +1,5 @@
 import { BasicParams } from "../../types";
+import { APP_BRIDGE_HEADERS } from "./redirect-with-app-bridge-headers";
 
 export function addResponseHeadersFactory(params: BasicParams) {
   const {api, config} = params;
@@ -12,7 +13,11 @@ export function addResponseHeadersFactory(params: BasicParams) {
         'Content-Security-Policy',
         `frame-ancestors https://${encodeURIComponent(shop)} https://admin.shopify.com;`
       );
-    }else {
+
+      Object.entries(APP_BRIDGE_HEADERS).forEach(([key, value]) => {
+        headers.append(key, value);
+      });
+    } else {
       headers.append('Content-Security-Policy', `frame-ancestors 'none';`);
     }
   }
