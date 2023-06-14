@@ -100,6 +100,43 @@ export interface ShopifyApp<Config extends AppConfigArg> {
    */
   sessionStorage: SessionStorageType<Config>;
 
+  /**
+   * Adds the required Content Security Policy headers for Shopify apps to the given Headers object.
+   *
+   * @example
+   * Globally adding CSP headers to entry.server.tsx.
+   * ```ts
+   * // ~/shopify.server.ts
+   * import { shopifyApp } from "@shopify/shopify-app-remix";
+   *
+   * export const shopify = shopifyApp({
+   *   // ...etc
+   * });
+   *
+   * // entry.server.tsx
+   * import { shopify } from "~/shopify.server";
+   *
+   * export default function handleRequest(
+   *   request: Request,
+   *   responseStatusCode: number,
+   *   responseHeaders: Headers,
+   *   remixContext: EntryContext,
+   *   loadContext: AppLoadContext
+   * ) {
+   *   const markup = renderToString(
+   *     <RemixServer context={remixContext} url={request.url} />
+   *   );
+   *
+   *   responseHeaders.set("Content-Type", "text/html");
+   *   shopify.addResponseHeaders(responseHeaders);
+   *
+   *   return new Response("<!DOCTYPE html>" + markup, {
+   *     status: responseStatusCode,
+   *     headers: responseHeaders,
+   *   });
+   * }
+   * ```
+   */
   addResponseHeaders: AddResponseHeaders;
 
   /**

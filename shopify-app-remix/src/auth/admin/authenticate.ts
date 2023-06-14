@@ -32,6 +32,7 @@ import {
 import { graphqlClientFactory } from "./graphql-client";
 
 import { AdminContext } from "./types";
+import { APP_BRIDGE_HEADERS } from "../helpers/redirect-with-app-bridge-headers";
 
 interface SessionContext {
   session: Session;
@@ -60,6 +61,9 @@ export class AuthStrategy<
     const { api, logger, config } = this;
 
     rejectBotRequest({ api, logger, config }, request);
+    if (request.method === "OPTIONS") {
+      throw new Response(null, { headers: APP_BRIDGE_HEADERS });
+    }
 
     let sessionContext: SessionContext;
     try {
