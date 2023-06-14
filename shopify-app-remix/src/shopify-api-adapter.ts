@@ -1,3 +1,5 @@
+import crypto from "crypto";
+
 import type {
   Headers as ShopifyHeaders,
   AdapterArgs,
@@ -13,11 +15,14 @@ import {
   setAbstractConvertRequestFunc,
   setAbstractConvertResponseFunc,
   setAbstractFetchFunc,
+  setCrypto,
 } from "@shopify/shopify-api/runtime";
 
 interface RemixAdapterArgs extends AdapterArgs {
   rawRequest: Request;
 }
+
+setCrypto(crypto as any)
 
 setAbstractRuntimeString(() => {
   return `Remix`;
