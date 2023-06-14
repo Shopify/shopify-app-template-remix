@@ -35,6 +35,8 @@ type RegisterWebhooks = (
   options: RegisterWebhooksOptions
 ) => Promise<RegisterReturn>;
 
+type AddResponseHeaders = (request: Request, headers: Headers) => void;
+
 type AuthenticateAdmin<
   Config extends AppConfigArg,
   Resources extends ShopifyRestResources = ShopifyRestResources
@@ -97,6 +99,9 @@ export interface ShopifyApp<Config extends AppConfigArg> {
    * ```
    */
   sessionStorage: SessionStorageType<Config>;
+
+  addResponseHeaders: AddResponseHeaders;
+
   /**
    * Register webhook topics for a store using the given session. Most likely you want to use this in combination with the afterAuth hook.
    *

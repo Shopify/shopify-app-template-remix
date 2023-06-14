@@ -19,6 +19,7 @@ import { AuthStrategy } from "./auth/admin/authenticate";
 import { authenticateWebhookFactory } from "./auth/webhooks/authenticate";
 import { authenticatePublicFactory } from "./auth/public/authenticate";
 import { overrideLogger } from "./override-logger";
+import { addResponseHeadersFactory } from "./auth/helpers/add-response-headers";
 
 export { ShopifyApp } from "./types";
 
@@ -66,6 +67,7 @@ export function shopifyApp<
 
   return {
     sessionStorage: config.sessionStorage,
+    addResponseHeaders: addResponseHeadersFactory(params),
     registerWebhooks: registerWebhooksFactory(params),
     authenticate: {
       admin: oauth.authenticateAdmin.bind(oauth),

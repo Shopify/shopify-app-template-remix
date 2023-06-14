@@ -14,7 +14,8 @@ import i18nextServer from "./i18n/i18next.server";
 import {
   loadLocalePolyfills,
   loadPluralRulesPolyfills,
-} from "./i18n/intlPolyfills";
+} from "./utils/intlPolyfills";
+import { shopify } from "./shopify.server";
 
 const ABORT_DELAY = 5_000;
 
@@ -39,6 +40,8 @@ export default async function handleRequest(
         lng,
       }),
   ]);
+
+  shopify.addResponseHeaders(request, responseHeaders);
 
   const callbackName = isbot(request.headers.get("user-agent"))
     ? "onAllReady"
