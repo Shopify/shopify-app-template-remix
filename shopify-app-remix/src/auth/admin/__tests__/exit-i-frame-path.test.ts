@@ -29,7 +29,7 @@ describe("authorize.admin exit iframe path", () => {
       "text/html;charset=utf-8"
     );
     expect(responseText).toContain(
-      `<script data-api-key="${config.apiKey}" src="https://cdn.shopify.com/shopifycloud/app-bridge-next/app-bridge.js"></script>`
+      `<script data-api-key="${config.apiKey}" src="https://cdn.shopify.com/shopifycloud/app-bridge-next.js"></script>`
     );
     expect(responseText).toContain(
       `<script>window.open("${decodeURIComponent(exitTo)}", "_top")</script>`
@@ -58,7 +58,7 @@ describe("authorize.admin exit iframe path", () => {
       "text/html;charset=utf-8"
     );
     expect(responseText).toContain(
-      `<script data-api-key="${config.apiKey}" src="https://cdn.shopify.com/shopifycloud/app-bridge-next/app-bridge.js"></script>`
+      `<script data-api-key="${config.apiKey}" src="https://cdn.shopify.com/shopifycloud/app-bridge-next.js"></script>`
     );
     expect(responseText).toContain(
       `<script>window.open("${decodeURIComponent(exitTo)}", "_top")</script>`

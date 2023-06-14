@@ -498,7 +498,7 @@ export class AuthStrategy<
 
     throw new Response(
       `
-        <script data-api-key="${config.apiKey}" src="https://cdn.shopify.com/shopifycloud/app-bridge-next/app-bridge.js"></script>
+        <script data-api-key="${config.apiKey}" src="https://cdn.shopify.com/shopifycloud/app-bridge-next.js"></script>
         ${redirectToScript}
       `,
       { headers: { "content-type": "text/html;charset=utf-8" } }
