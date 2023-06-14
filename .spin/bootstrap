@@ -1,4 +1,10 @@
 #!/bin/bash
 
 # Set up CLI dependencies
-yarn install
+npm remove @shopify/shopify-app-remix
+
+npm install
+
+npx prisma migrate dev
+
+(cd shopify-app-remix && npm install && npm run build && npm pack) && npm add ./shopify-app-remix/shopify-shopify-app-remix-1.0.0.tgz

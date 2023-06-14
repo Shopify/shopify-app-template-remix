@@ -107,6 +107,7 @@ function deriveApi<Resources extends ShopifyRestResources>(
     userAgentPrefix,
     isEmbeddedApp: appConfig.isEmbeddedApp ?? true,
     apiVersion: appConfig.apiVersion ?? LATEST_API_VERSION,
+    customShopDomains: [".*\\.spin\\.dev"],
   };
 
   return shopifyApi<Resources>(cleanApiConfig);
