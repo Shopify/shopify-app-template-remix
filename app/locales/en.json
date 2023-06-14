@@ -1,0 +1,19 @@
+{
+  "Index": {
+    "title": "New Remix App",
+    "heading": "Nice work on building a Shopify app 🎉",
+    "learnMore": "Learn more about building out your app in <ShopifyTutorialLink>this Shopify tutorial</ShopifyTutorialLink> 📚",
+    "startPopulatingYourApp": "Ready to go? Start populating your app with some sample products to view and test in your store.",
+    "trophyAltText": "Nice work on building a Shopify app",
+    "yourAppIsReadyToExplore": "Your app is ready to explore! It contains everything you need to get started including the <PolarisLink>Polaris design system</PolarisLink>, <AdminApiLink>Shopify Admin API</AdminApiLink>, and <AppBridgeLink>App Bridge</AppBridgeLink> UI library and components."
+  },
+  "ProductsCard": {
+    "description": "Sample products are created with a default title and price. You can remove them at any time.",
+    "populateProductsButton": {
+      "one": "Populate {{count}} product",
+      "other": "Populate {{count}} products"
+    },
+    "title": "Product Counter",
+    "totalProductsHeading": "TOTAL PRODUCTS"
+  }
+}
