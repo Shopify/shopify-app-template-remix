@@ -15,10 +15,6 @@ import {
 
 import { shopify } from "../shopify.server";
 import { ProductsCard } from "../components/ProductsCard.jsx";
-// eslint-disable-next-line no-warning-comments
-// TODO figure out why this shows as an error in vscode only
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import trophyImage from "../assets/home-trophy.png";
 import { useTranslation, Trans } from "react-i18next";
 
@@ -83,20 +79,23 @@ export default function Index() {
                         components={{
                           PolarisLink: (
                             // eslint-disable-next-line jsx-a11y/anchor-has-content
-                            <Link url="https://polaris.shopify.com/" external />
+                            <Link
+                              url="https://polaris.shopify.com/"
+                              target="_blank"
+                            />
                           ),
                           AdminApiLink: (
                             // eslint-disable-next-line jsx-a11y/anchor-has-content
                             <Link
                               url="https://shopify.dev/api/admin-graphql"
-                              external
+                              target="_blank"
                             />
                           ),
                           AppBridgeLink: (
                             // eslint-disable-next-line jsx-a11y/anchor-has-content
                             <Link
                               url="https://shopify.dev/apps/tools/app-bridge"
-                              external
+                              target="_blank"
                             />
                           ),
                         }}
@@ -112,9 +111,10 @@ export default function Index() {
                         i18nKey="Index.learnMore"
                         components={{
                           ShopifyTutorialLink: (
+                            // eslint-disable-next-line jsx-a11y/anchor-has-content
                             <Link
                               url="https://shopify.dev/apps/getting-started/add-functionality"
-                              external
+                              target="_blank"
                             />
                           ),
                         }}
