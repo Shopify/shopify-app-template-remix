@@ -1,0 +1,35 @@
+#!/usr/bin/bash
+
+set -ex
+
+function wait_for() {
+  NAME=$1
+  FQDN=$2
+  SUBDOMAIN=$3
+
+  if [ -n "$SUBDOMAIN" ]; then
+    PING_URL="https://$SUBDOMAIN.$FQDN/services/ping"
+  else
+    PING_URL="https://$FQDN/services/ping"
+  fi
+
+  if [[ -n "$FQDN" ]]; then
+    echo "$NAME detected in Spin instance; waiting for $NAME before proceeding"
+
+    (( timeout = 1000 + SECONDS ))
+
+    until [[ $(curl -s -o /dev/null -w "%{http_code}" "$PING_URL") != "502" ]]; do
+      if (( SECONDS >= timeout )); then
+        echo "Timed out trying to ping $NAME" >&2
+        exit 1
+      fi
+
+      echo "Still waiting for $NAME"
+      sleep 10
+    done
+
+    echo "$NAME is now running"
+  fi
+}
+
+wait_for "Partners" $SPIN_PARTNERS_SERVICE_FQDN

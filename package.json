@@ -1,5 +1,5 @@
 {
-  "name": "app",
+  "name": "remix-iap-lib-test",
   "private": true,
   "scripts": {
     "build": "NODE_ENV=production remix build",

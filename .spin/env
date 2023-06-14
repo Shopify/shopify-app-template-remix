@@ -1,0 +1,11 @@
+
+# Env variables for the CLI process
+SHOPIFY_CLI_1P_DEV=1
+SHOPIFY_CLI_ORGANIZATION=9082
+SHOPIFY_FLAG_APP_API_KEY=x-remix-iap-lib-test-key
+SHOPIFY_FLAG_STORE=1p-development-store-1
+SHOPIFY_CLI_COLUMNS=300
+
+# Env variables for the Rails process
+SHOPIFY_API_KEY=x-remix-iap-lib-test-key
+SHOPIFY_API_SECRET=x-remix-iap-lib-test-secret

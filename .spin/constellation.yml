@@ -1,0 +1,5 @@
+schema: v1
+extend: partners
+resources_profile: 3xlarge
+repos:
+  - remix-iap-lib-test

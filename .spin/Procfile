@@ -1,0 +1,1 @@
+server: yarn dev; python3 -m http.server $SERVER_PORT & sleep 1; kill $!

@@ -1,0 +1,161 @@
+#!/usr/bin/env ruby
+
+require "erb"
+require "json"
+require "yaml"
+
+REPO_BASE = "/home/spin/src/github.com/Shopify"
+DEV_CONFIG_PATH = ".spin/development_config.*yml"
+SHOPIFY_CONFIG_PATH = "/tmp/development_config.yml"
+APP_DATA_PATH = "/tmp/app_data.json"
+
+class DevelopmentConfig
+  attr_reader :data
+
+  class Template
+    def myshopify_domain
+      ENV.fetch("SPIN_FQDN", "myshopify.io")
+    end
+
+    def get_binding
+      binding
+    end
+  end
+
+  def initialize(path, env: {})
+    @env = env
+    template = ERB.new(File.read(path))
+    interpolated_yaml = template.result(Template.new.get_binding)
+    @data = YAML.safe_load(interpolated_yaml)
+
+    name = @env[:repo].gsub("_", "-")
+
+    @data.tap do |config|
+      config["app"] ||= {}
+      config["app"]["application_developer"] ||= "shopify"
+      config["app"]["application_url"] ||= "https://#{@env[:app_host]}"
+      config["app"]["api_key"] ||= "#{name[0...28]}-key"
+      config["app"]["embedded"] ||= true
+      config["app"]["handle"] ||= slugify(config.dig("app", "title"))
+      config["app"]["redirect_url"] ||= "https://#{@env[:app_host]}/auth/shopify/callback"
+      config["app"]["shared_secret"] ||= "#{name}-secret"
+      config["shop"] ||= {}
+      config["shop"]["id"] ||= 1
+      config["shop"]["beta_flags"] ||= []
+    end
+  end
+
+  def slugify(str)
+    str.downcase.strip.gsub(" ", "-").gsub(/[^\w-]/, "")
+  end
+end
+
+def check_partners_gcs_credentials
+  return if File.exist?("/etc/spin/secrets/partners-gcs-credentials")
+
+  # Partners GCS credentials are necessary for `shopify app deploy`
+  puts "Missing /etc/spin/secrets/partners-gcs-credentials, see" \
+    "https://vault.shopify.io/page/Test-extensions~ToYp.md#constellation-setup-instructions" \
+    "for instructions on how to configure these credentials"
+end
+
+def repo_exists(name)
+  Dir.exist?("#{REPO_BASE}/#{name}")
+end
+
+def required_repos_exist
+  repo_exists("identity") &&
+    repo_exists("partners") &&
+    repo_exists("shopify")
+end
+
+def exec_from(path, command)
+  %x(shadowenv exec --dir #{path} -- #{command})
+end
+
+def run_rake_task(repo:, cmd:, env: {})
+  env_vars = env.map { |k, v| "#{k}=#{v}" }.join(" ")
+
+  %x(cd #{REPO_BASE}/#{repo} && #{env_vars} shadowenv exec -- bin/rails #{cmd})
+end
+
+def setup_app(repo_path, config_path)
+  puts "\nBootstrapping development environment from config: #{config_path}"
+
+  app_host = exec_from(repo_path, "printenv SPIN_APP_HOST").chomp
+  config = DevelopmentConfig.new(config_path, env: { app_host: app_host, repo: File.basename(repo_path) })
+  File.write(SHOPIFY_CONFIG_PATH, config.data["app"].to_yaml)
+
+  shop_betas = config.data.dig("shop", "beta_flags").to_a.join(",")
+  shop_id = config.data.dig("shop", "id")
+
+  # 1. Create or update API client
+  # 2. Grant app access scopes
+  # 3. Enable app and shop beta flags
+  puts run_rake_task(
+    repo: "shopify",
+    cmd: "dev:create_app_from_config",
+    env: {
+      SHOP_ID: shop_id,
+      DEVELOPMENT_CONFIG_PATH: SHOPIFY_CONFIG_PATH,
+      APP_DATA_PATH: APP_DATA_PATH,
+      SHOP_BETAS: shop_betas,
+    },
+  )
+
+  unless File.exist?(APP_DATA_PATH)
+    puts "dev:create_app_from_config rake task did not complete successfully."
+    puts "App data file '#{APP_DATA_PATH}' does not exist."
+    exit 1
+  end
+
+  app_data = JSON.parse(File.read(APP_DATA_PATH))
+  app_id = app_data.fetch("id")
+  partner_id = app_data.fetch("application_developer_id")
+
+  # 4. Seed the app in the Partners database so it can be used from the CLI
+  puts run_rake_task(
+    repo: "partners",
+    cmd: "seed:seed_app_from_shopify",
+    env: {
+      API_CLIENT_ID: app_id,
+    },
+  )
+
+  # 5. Enable partner org beta flags (and other app betas if applicable)
+  puts run_rake_task(
+    repo: "partners",
+    cmd: "extensions:betas:enable[all,#{partner_id},#{app_id}]",
+  )
+end
+
+def cleanup
+  File.delete(SHOPIFY_CONFIG_PATH)
+  File.delete(APP_DATA_PATH)
+rescue Errno::ENOENT
+end
+
+def setup_apps(configs)
+  configs.each do |config_path|
+    config_path = File.join(REPO_BASE, config_path)
+    repo_path = File.expand_path("../../", config_path)
+    setup_app(repo_path, config_path)
+  end
+end
+
+unless required_repos_exist
+  puts "You must be in a constellation that includes partners, shopify and identity to bootstrap extensions"
+  exit 1
+end
+
+dev_configs = Dir.glob("*/#{DEV_CONFIG_PATH}", base: REPO_BASE)
+
+if dev_configs.none?
+  puts "No development config files detected (#{DEV_CONFIG_PATH}) in any repos."
+end
+
+puts "[INFO] Services are active, bootstrapping extension development environment"
+setup_apps(dev_configs)
+cleanup
+check_partners_gcs_credentials
+

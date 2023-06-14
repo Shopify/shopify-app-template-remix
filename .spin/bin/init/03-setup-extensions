@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# This has to match the shop id inside development_config.yml
+SHOP_ID=9

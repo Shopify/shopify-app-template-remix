@@ -1,0 +1,76 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "json"
+require "fileutils"
+
+REPO_BASE = "/home/spin/src/github.com/Shopify"
+DEVELOPMENT_RAKE_PATH = ".spin/script/create-tokens.rake"
+SHADOWENV_SUBPATH = ".shadowenv.d"
+SHADOWENV_CLI_ENV_SUBPATH  = "#{SHADOWENV_SUBPATH}/999-cli.lisp"
+SHOPIFY_CLI_IDENTITY_TOKEN = "SHOPIFY_CLI_IDENTITY_TOKEN"
+SHOPIFY_CLI_REFRESH_TOKEN = "SHOPIFY_CLI_REFRESH_TOKEN"
+
+def repo_folder(name, subfolder: nil)
+  "#{REPO_BASE}/#{name}#{subfolder ? "/#{subfolder}" : ""}"
+end
+
+def repo_exists(name)
+  Dir.exist?(repo_folder(name))
+end
+
+def run_rake_task(repo:, cmd:, env: {})
+  env_vars = env.map { |k, v| "#{k}=#{v}" }.join(" ")
+
+  `cd #{REPO_BASE}/#{repo} && #{env_vars} shadowenv exec -- bin/rails #{cmd}`
+end
+
+def setup_token_repo(repo, token)
+  return unless File.directory?("#{REPO_BASE}/#{repo}/#{SHADOWENV_SUBPATH}")
+  puts("Token added to #{REPO_BASE}/#{repo}")
+  File.open("#{REPO_BASE}/#{repo}/#{SHADOWENV_CLI_ENV_SUBPATH}", "w+") do |file|
+    file.write(
+      "(env/set \"#{SHOPIFY_CLI_IDENTITY_TOKEN}\" \"#{token["access_token"]}\")\n"
+    )
+    file.write(
+      "(env/set \"#{SHOPIFY_CLI_REFRESH_TOKEN}\" \"#{token["refresh_token"]}\")\n"
+    )
+  end
+end
+
+def setup_token(token)
+  Dir.chdir(REPO_BASE) do
+    Dir
+      .glob("*")
+      .select { |f| File.directory?(f) }
+      .each { |repo| setup_token_repo(repo, token) }
+  end
+end
+
+def create_token
+  rake_identity_repo = repo_folder("identity", subfolder: "lib/tasks")
+  rake_script = "#{ENV.fetch("SPIN_REPO_SOURCE_PATH")}/#{DEVELOPMENT_RAKE_PATH}"
+  puts("Copy #{rake_script} in #{rake_identity_repo}")
+  FileUtils.cp(rake_script, rake_identity_repo)
+  puts("Running development:token:create rake task...")
+  response = run_rake_task(repo: "identity", cmd: "development:token:create")
+  response
+    .each_line
+    .filter { |line| line.start_with?("create_token") }
+    .map { |line| line.split("create_token=").last }
+    .map do |token_str|
+      token = JSON.parse(token_str)
+      puts("Created token: #{token}")
+      token
+    end
+    .first
+end
+
+unless repo_exists("identity")
+  puts "You must be in a constellation that includes identity to create a token"
+  exit 1
+end
+
+token = create_token
+setup_token(token)
+sleep(2)

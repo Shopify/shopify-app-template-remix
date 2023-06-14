@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Set up CLI dependencies
+yarn install

@@ -1,0 +1,26 @@
+app:
+  title: Remix iap lib test
+  application_developer: shopify
+  kind: oauth2
+  embedded: true
+  api_key: x-remix-iap-lib-test-key
+  shared_secret: x-remix-iap-lib-test-secret
+  is_channel: false
+  visible: true
+  admin_featured: false
+  preauthorized_access_scope_str: read_customers, read_discounts, read_products, read_marketing_events, write_files, read_files, read_content,
+  webhook_api_version: 2022-07
+  beta_flags:
+    - brand_setting_graphql_api
+  scope_permissions:
+    - read_internal_graphql_admin_api
+    - read_checkout_settings
+    - read_brand
+    - read_online_store
+    - write_files
+    - read_files
+
+shop:
+  id: 9
+  beta_flags:
+    - online_store_color_schemes_ga
