@@ -20,8 +20,7 @@ import {
   requestBillingFactory,
   requireBillingFactory,
 } from "../../billing";
-
-import { AdminContext } from "./types";
+import { addResponseHeadersFactory } from "../helpers/add-response-headers";
 import {
   beginAuth,
   getSessionTokenHeader,
@@ -31,6 +30,8 @@ import {
   rejectBotRequest,
 } from "../helpers";
 import { graphqlClientFactory } from "./graphql-client";
+
+import { AdminContext } from "./types";
 
 interface SessionContext {
   session: Session;
@@ -60,6 +61,40 @@ export class AuthStrategy<
 
     rejectBotRequest({ api, logger, config }, request);
 
+    let sessionContext: SessionContext;
+    try {
+      sessionContext = await this.handleRequest(request);
+    } catch (errorOrResponse) {
+      if (
+        errorOrResponse instanceof Response &&
+        errorOrResponse.status >= 200 &&
+        errorOrResponse.status < 300
+      ) {
+        addResponseHeadersFactory({api, config, logger})(request, errorOrResponse.headers);
+      }
+
+      throw errorOrResponse;
+    }
+
+    const context = {
+      admin: this.createAdminApiContext(request, sessionContext.session),
+      billing: this.createBillingContext(request, sessionContext.session),
+      session: sessionContext.session,
+    };
+
+    if (config.isEmbeddedApp) {
+      return {
+        ...context,
+        sessionToken: sessionContext!.token!,
+      } as AdminContext<Config, Resources>;
+    } else {
+      return context as AdminContext<Config, Resources>;
+    }
+  }
+
+  private async handleRequest(request: Request): Promise<SessionContext> {
+    const { api, logger, config } = this;
+
     const url = new URL(request.url);
 
     const isPatchSessionToken =
@@ -71,7 +106,6 @@ export class AuthStrategy<
 
     logger.info("Authenticating admin request");
 
-    let sessionContext: SessionContext;
     if (isPatchSessionToken) {
       logger.debug("Rendering bounce page");
       this.renderAppBridge();
@@ -90,7 +124,7 @@ export class AuthStrategy<
         sessionTokenHeader
       );
 
-      sessionContext = await this.validateAuthenticatedSession(
+      return await this.validateAuthenticatedSession(
         request,
         sessionToken
       );
@@ -100,22 +134,7 @@ export class AuthStrategy<
       await this.ensureAppIsEmbeddedIfRequired(request);
       await this.ensureSessionTokenSearchParamIfRequired(request);
 
-      sessionContext = await this.ensureSessionExists(request);
-    }
-
-    const context = {
-      admin: this.createAdminApiContext(request, sessionContext.session),
-      billing: this.createBillingContext(request, sessionContext.session),
-      session: sessionContext.session,
-    };
-
-    if (config.isEmbeddedApp) {
-      return {
-        ...context,
-        sessionToken: sessionContext!.token!,
-      } as AdminContext<Config, Resources>;
-    } else {
-      return context as AdminContext<Config, Resources>;
+      return await this.ensureSessionExists(request);
     }
   }
 
