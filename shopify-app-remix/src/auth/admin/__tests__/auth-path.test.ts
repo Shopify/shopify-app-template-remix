@@ -3,6 +3,7 @@ import {
   APP_URL,
   TEST_SHOP,
   expectBeginAuthRedirect,
+  expectResponseHeaders,
   getThrownResponse,
   testConfig,
 } from "../../../__tests__/test-helper";
@@ -54,5 +55,6 @@ describe("authorize.admin auth path", () => {
 
     // THEN
     expectBeginAuthRedirect(config, response);
+    expectResponseHeaders(response);
   });
 });

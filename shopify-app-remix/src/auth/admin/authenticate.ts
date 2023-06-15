@@ -20,7 +20,8 @@ import {
   requestBillingFactory,
   requireBillingFactory,
 } from "../../billing";
-import { addResponseHeadersFactory } from "../helpers/add-response-headers";
+import { addResponseHeaders } from "../helpers/add-response-headers";
+import { APP_BRIDGE_HEADERS } from "../helpers/redirect-with-app-bridge-headers";
 import {
   beginAuth,
   getSessionTokenHeader,
@@ -29,10 +30,9 @@ import {
   validateSessionToken,
   rejectBotRequest,
 } from "../helpers";
-import { graphqlClientFactory } from "./graphql-client";
 
+import { graphqlClientFactory } from "./graphql-client";
 import { AdminContext } from "./types";
-import { APP_BRIDGE_HEADERS } from "../helpers/redirect-with-app-bridge-headers";
 
 interface SessionContext {
   session: Session;
@@ -61,20 +61,14 @@ export class AuthStrategy<
     const { api, logger, config } = this;
 
     rejectBotRequest({ api, logger, config }, request);
-    if (request.method === "OPTIONS") {
-      throw new Response(null, { headers: APP_BRIDGE_HEADERS });
-    }
+    this.respondToOptionsRequest(request);
 
     let sessionContext: SessionContext;
     try {
-      sessionContext = await this.handleRequest(request);
+      sessionContext = await this.authenticateAndGetSessionContext(request);
     } catch (errorOrResponse) {
-      if (
-        errorOrResponse instanceof Response &&
-        errorOrResponse.status >= 200 &&
-        errorOrResponse.status < 300
-      ) {
-        addResponseHeadersFactory({api, config, logger})(request, errorOrResponse.headers);
+      if (errorOrResponse instanceof Response) {
+        this.ensureResponseHeaders(request, errorOrResponse);
       }
 
       throw errorOrResponse;
@@ -96,7 +90,7 @@ export class AuthStrategy<
     }
   }
 
-  private async handleRequest(request: Request): Promise<SessionContext> {
+  private async authenticateAndGetSessionContext(request: Request): Promise<SessionContext> {
     const { api, logger, config } = this;
 
     const url = new URL(request.url);
@@ -501,6 +495,23 @@ export class AuthStrategy<
       `,
       { headers: { "content-type": "text/html;charset=utf-8" } }
     );
+  }
+
+  private respondToOptionsRequest(request: Request) {
+    if (request.method === "OPTIONS") {
+      throw new Response(null, { headers: APP_BRIDGE_HEADERS });
+    }
+  }
+
+  private ensureResponseHeaders(request: Request, response: Response): void {
+    const { config } = this;
+
+    const shop = new URL(request.url).searchParams.get("shop")!;
+
+    // We want the headers to be present on any successful response, or when returning App Bridge headers for re-auth
+    if (response.status >= 200 && response.status < 300 || response.status === 401) {
+      addResponseHeaders(response.headers, config.isEmbeddedApp, shop);
+    }
   }
 
   private overriddenRestClient(request: Request, session: Session) {

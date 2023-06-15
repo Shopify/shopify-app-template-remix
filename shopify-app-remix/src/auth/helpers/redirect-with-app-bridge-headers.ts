@@ -1,4 +1,5 @@
 import { BasicParams } from "../../types";
+import { addResponseHeaders } from "./add-response-headers";
 
 export const REAUTH_URL_HEADER =
   "X-Shopify-API-Request-Failure-Reauthorize-Url";
@@ -19,13 +20,15 @@ export function redirectWithAppBridgeHeaders(
   throw new Response(undefined, {
     status: 401,
     statusText: "Unauthorized",
-    headers: getAppBridgeHeaders(redirectUri),
+    headers: getAppBridgeHeaders(params, redirectUri, shop),
   });
 }
 
-export function getAppBridgeHeaders(url: string) {
-  return {
-    ...APP_BRIDGE_HEADERS,
-    [REAUTH_URL_HEADER]: url,
-  }
+export function getAppBridgeHeaders(params: BasicParams, url: string, shop: string) {
+  const { config } = params;
+  const headers = new Headers({[REAUTH_URL_HEADER]: url});
+
+  addResponseHeaders(headers, config.isEmbeddedApp, shop);
+
+  return headers;
 }

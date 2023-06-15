@@ -13,6 +13,7 @@ import {
   SHOPIFY_HOST,
   TEST_SHOP,
   expectBeginAuthRedirect,
+  expectResponseHeaders,
   getJwt,
   getThrownResponse,
   setUpValidSession,
@@ -58,6 +59,7 @@ describe("authorize.admin doc request path", () => {
 
       // THEN
       expectBeginAuthRedirect(config, response);
+      expectResponseHeaders(response);
     });
 
     it("redirects to exit-iframe when embedded and there is no offline session", async () => {
@@ -74,6 +76,7 @@ describe("authorize.admin doc request path", () => {
 
       // THEN
       expect(response.status).toBe(302);
+      expectResponseHeaders(response);
 
       const { pathname, searchParams } = new URL(
         response.headers.get("location")!,
@@ -104,6 +107,7 @@ describe("authorize.admin doc request path", () => {
 
       // THEN
       expectBeginAuthRedirect(config, response);
+      expectResponseHeaders(response);
     });
 
     it("returns non-401 codes when not embedded on an embedded app and the request fails", async () => {
@@ -128,6 +132,7 @@ describe("authorize.admin doc request path", () => {
 
       // THEN
       expect(response.status).toBe(500);
+      expectResponseHeaders(response);
       expect(config.logger?.log).toHaveBeenCalledWith(
         LogSeverity.Error,
         expect.stringContaining("Something went wrong!")
@@ -155,6 +160,7 @@ describe("authorize.admin doc request path", () => {
 
       // THEN
       expect(response.status).toBe(500);
+      expectResponseHeaders(response);
       expect(config.logger!.log).toHaveBeenCalledWith(
         LogSeverity.Error,
         expect.stringContaining("Something went wrong!")
@@ -179,6 +185,7 @@ describe("authorize.admin doc request path", () => {
 
       // THEN
       expect(response.status).toBe(302);
+      expectResponseHeaders(response);
 
       const { hostname, pathname } = new URL(response.headers.get("location")!);
       expect(hostname).toBe(SHOPIFY_HOST);
@@ -200,6 +207,7 @@ describe("authorize.admin doc request path", () => {
 
       // THEN
       expect(response.status).toBe(302);
+      expectResponseHeaders(response);
 
       const { pathname, searchParams } = new URL(
         response.headers.get("location")!,
@@ -228,6 +236,7 @@ describe("authorize.admin doc request path", () => {
 
       // THEN
       expect(response.status).toBe(401);
+      expectResponseHeaders(response);
     });
 
     it("redirects to exit-iframe if app is embedded and there is no session for the id_token when embedded", async () => {
@@ -247,6 +256,7 @@ describe("authorize.admin doc request path", () => {
 
       // THEN
       expect(response.status).toBe(302);
+      expectResponseHeaders(response);
 
       const { pathname, searchParams } = new URL(
         response.headers.get("location")!,
@@ -281,6 +291,7 @@ describe("authorize.admin doc request path", () => {
       );
 
       expect(response.status).toBe(302);
+      expectResponseHeaders(response);
       expect(pathname).toBe("/auth/exit-iframe");
       expect(searchParams.get("shop")).toBe(TEST_SHOP);
       expect(searchParams.get("host")).toBe(BASE64_HOST);
@@ -305,6 +316,7 @@ describe("authorize.admin doc request path", () => {
 
       // THEN
       expectBeginAuthRedirect(config, response);
+      expectResponseHeaders(response, false);
     });
 
     it("redirects to auth if there is no session for non-embedded apps when at the top level", async () => {
@@ -330,6 +342,7 @@ describe("authorize.admin doc request path", () => {
 
       // THEN
       expectBeginAuthRedirect(config, response);
+      expectResponseHeaders(response, false);
     });
 
     it("redirects to auth if the session is no longer valid for non-embedded apps when at the top level", async () => {
@@ -358,6 +371,7 @@ describe("authorize.admin doc request path", () => {
 
       // THEN
       expectBeginAuthRedirect(config, response);
+      expectResponseHeaders(response, false);
     });
   });
 
