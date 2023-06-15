@@ -7,5 +7,5 @@ CREATE TABLE "Session" (
     "scope" TEXT,
     "expires" DATETIME,
     "accessToken" TEXT NOT NULL,
-    "userId" INTEGER
+    "userId" BIGINT
 );
