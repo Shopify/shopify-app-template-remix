@@ -4,6 +4,14 @@
   "description": "",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./node": "./dist/node.js"
+  },
   "scripts": {
     "test": "jest",
     "build": "tsc"
@@ -21,15 +29,16 @@
     "ts-jest": "^29.1.0"
   },
   "dependencies": {
-    "@shopify/shopify-api": "^7.3.0",
+    "@shopify/shopify-api": "^7.3.1",
     "@shopify/shopify-app-session-storage": "^1.1.2",
     "@shopify/shopify-app-session-storage-sqlite": "^1.2.2",
+    "isbot": "^3.6.5",
     "semver": "^7.5.0",
-    "tslib": "^2.5.0",
-    "isbot": "^3.6.5"
+    "tslib": "^2.5.0"
   },
   "files": [
     "dist/*",
+    "!dist/**/__tests__",
     "!bundle/*",
     "!tsconfig.tsbuildinfo",
     "!node_modules"

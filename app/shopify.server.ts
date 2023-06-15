@@ -1,3 +1,4 @@
+import "@shopify/shopify-app-remix/node";
 import {
   BillingInterval,
   DeliveryMethod,

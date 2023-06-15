@@ -35,6 +35,7 @@ Create `app/shopify.server.js`. We will use this file to configure our Shopify a
 
 ```ts
 // app/shopify.server.js
+import "@shopify/shopify-app-remix/node";
 import { LATEST_API_VERSION, shopifyApp } from "@shopify/shopify-app-remix";
 
 export const shopify = shopifyApp({
@@ -45,6 +46,9 @@ export const shopify = shopifyApp({
   apiVersion: LATEST_API_VERSION,
 });
 ```
+
+> **Note**: The above example imports `"@shopify/shopify-app-remix/node"` to set the package up to work with Node.js.
+> If you're using a different runtime, you can remove that line.
 
 A description of these config options:
 
