@@ -124,7 +124,7 @@ export default function App() {
 }
 ```
 
-Important: This version of App Bridge must be loaded from the CDN, in the document head.
+> **Note**: This version of App Bridge must be loaded from the CDN, in the document head.
 
 ## Loading your app in admin
 
