@@ -14,6 +14,7 @@ import "../shopify-api-adapter";
 import "../adapters/node";
 
 import { AppConfigArg } from "../config-types";
+import { REAUTH_URL_HEADER } from "../auth/helpers/redirect-with-app-bridge-headers";
 
 // eslint-disable-next-line import/no-mutable-exports
 export function testConfig(
@@ -172,4 +173,24 @@ export function expectBeginAuthRedirect(
     `${config.appUrl}/auth/callback`
   );
   expect(searchParams.get("state")).toStrictEqual(expect.any(String));
+}
+
+export function expectResponseHeaders(response: Response, isEmbeddedApp = true) {
+  if ((response.status < 200 || response.status >= 300) && response.status !== 401) {
+    return;
+  }
+
+  const headers = response.headers;
+  if (isEmbeddedApp) {
+    expect(headers.get('Content-Security-Policy')).toEqual(
+      `frame-ancestors https://${encodeURIComponent(TEST_SHOP)} https://admin.shopify.com;`
+    );
+    expect(headers.get("Access-Control-Allow-Origin")).toEqual("*");
+    expect(headers.get("Access-Control-Allow-Headers")).toEqual("Authorization");
+    expect(headers.get("Access-Control-Expose-Headers")).toEqual(REAUTH_URL_HEADER);
+  } else {
+    expect(headers.get('Content-Security-Policy')).toEqual(
+      `frame-ancestors 'none';`
+    );
+  }
 }
