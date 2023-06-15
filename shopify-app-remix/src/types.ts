@@ -103,6 +103,8 @@ export interface ShopifyApp<Config extends AppConfigArg> {
   /**
    * Adds the required Content Security Policy headers for Shopify apps to the given Headers object.
    *
+   * {@link https://shopify.dev/docs/apps/store/security/iframe-protection}
+   *
    * @example
    * Globally adding CSP headers to entry.server.tsx.
    * ```ts
@@ -120,15 +122,14 @@ export interface ShopifyApp<Config extends AppConfigArg> {
    *   request: Request,
    *   responseStatusCode: number,
    *   responseHeaders: Headers,
-   *   remixContext: EntryContext,
-   *   loadContext: AppLoadContext
+   *   remixContext: EntryContext
    * ) {
    *   const markup = renderToString(
    *     <RemixServer context={remixContext} url={request.url} />
    *   );
    *
    *   responseHeaders.set("Content-Type", "text/html");
-   *   shopify.addResponseHeaders(responseHeaders);
+   *   shopify.addResponseHeaders(request, responseHeaders);
    *
    *   return new Response("<!DOCTYPE html>" + markup, {
    *     status: responseStatusCode,
