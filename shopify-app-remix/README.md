@@ -35,7 +35,7 @@ Create `app/shopify.server.js`. We will use this file to configure our Shopify a
 
 ```ts
 // app/shopify.server.js
-import "@shopify/shopify-app-remix/node";
+import "@shopify/shopify-app-remix/adapters/node";
 import { LATEST_API_VERSION, shopifyApp } from "@shopify/shopify-app-remix";
 
 export const shopify = shopifyApp({
@@ -46,9 +46,6 @@ export const shopify = shopifyApp({
   apiVersion: LATEST_API_VERSION,
 });
 ```
-
-> **Note**: The above example imports `"@shopify/shopify-app-remix/node"` to set the package up to work with Node.js.
-> If you're using a different runtime, you can remove that line.
 
 A description of these config options:
 
@@ -129,6 +126,19 @@ export default function App() {
 ```
 
 > **Note**: This version of App Bridge must be loaded from the CDN, in the document head.
+
+## Setting up for your runtime
+
+By default, this package will work with the runtimes supported by [Remix adapters](https://remix.run/docs/en/1.17.1/other-api/adapter#official-adapters) because it relies on the same [Web Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).
+
+Since Node.js doesn't fully implement that API, apps will need to import an extra adapter to set it up before using this package's exports.
+
+In the [Getting Started](#getting-started) section above, you'll notice that the example runs
+```ts
+import "@shopify/shopify-app-remix/adapters/node"
+```
+before calling `shopifyApp`.
+If you're running on a runtime other than Node, you can simply omit that line.
 
 ## Loading your app in admin
 

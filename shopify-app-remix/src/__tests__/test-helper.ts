@@ -11,7 +11,7 @@ import { SessionStorage } from "@shopify/shopify-app-session-storage";
 import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memory";
 
 import "../shopify-api-adapter";
-import "../node";
+import "../adapters/node";
 
 import { AppConfigArg } from "../config-types";
 
