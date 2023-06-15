@@ -51,14 +51,15 @@ export function requestBillingFactory<Config extends AppConfigArg>(
       }
     }
 
-    throw redirectOutOfApp(params, request, result.confirmationUrl);
+    throw redirectOutOfApp(params, request, result.confirmationUrl, session.shop);
   };
 }
 
 function redirectOutOfApp(
   params: BasicParams,
   request: Request,
-  url: string
+  url: string,
+  shop: string
 ): Response {
   const { config, logger } = params;
 
@@ -75,11 +76,11 @@ function redirectOutOfApp(
     throw new Response(undefined, {
       status: 302,
       statusText: "Redirect",
-      headers: getAppBridgeHeaders(url),
+      headers: getAppBridgeHeaders(params, url, shop),
     });
   } else if (isEmbeddedRequest) {
     const params = new URLSearchParams({
-      shop: requestUrl.searchParams.get("shop")!,
+      shop,
       host: requestUrl.searchParams.get("host")!,
       exitIframe: url,
     });
