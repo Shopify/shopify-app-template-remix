@@ -12,7 +12,7 @@
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "shopify": "shopify",
     "prisma": "prisma",
-    "postinstall": "prisma generate && prisma migrate dev"
+    "setup": "prisma generate && prisma migrate deploy"
   },
   "dependencies": {
     "@formatjs/intl-locale": "^3.3.0",
