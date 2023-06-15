@@ -312,4 +312,4 @@ const shopify = shopifyApp({
 });
 ```
 
-Note that this requires a `schema.prisma` file as defined in the README for [Prisma app session storage](https://github.com/Shopify/shopify-app-js/blob/release-candidate/packages/shopify-app-session-storage-prisma/README.md)
+Note that this requires a `schema.prisma` file as defined in the README for [Prisma app session storage](https://github.com/Shopify/shopify-app-js/tree/main/packages/shopify-app-session-storage-prisma)
