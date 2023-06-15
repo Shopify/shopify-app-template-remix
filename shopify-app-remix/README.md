@@ -90,6 +90,44 @@ export async function loader({ request }: LoaderArgs) {
 }
 ```
 
+Finally if you app is embedded (this is the default) we need to setup [App Bridge](https://shopify.dev/docs/apps/tools/app-bridge) in `root.tsx.`.  To do this pass the `process.env.SHOPIFY_API_KEY` to the frontend via the loader and load App Bridge from the CDN in the document head.
+
+Here is an example:
+
+```ts
+// root.tsx
+export async function loader() {
+  return json({
+    apiKey: process.env.SHOPIFY_API_KEY,
+  });
+}
+
+export default function App() {
+  const { apiKey } = useLoaderData<typeof loader>();
+
+  return (
+    <html>
+      <head>
+        <Meta />
+        <Links />
+        {/* App Bridge must be loaded from the CDN at the head */}
+        <script
+          src="https://cdn.shopify.com/shopifycloud/app-bridge-next/app-bridge.js"
+          data-api-key={apiKey}
+        />
+      </head>
+      <body>
+        //
+      </body>
+    </html>
+  );
+}
+```
+
+Important: This version of App Bridge must be loaded from the CDN, in the document head.
+
+## Loading your app in admin
+
 To load your app within the Shopify Admin, you need to:
 
 1. Update your app's URL in your Partners Dashboard app setup page to `http://localhost:8080`
