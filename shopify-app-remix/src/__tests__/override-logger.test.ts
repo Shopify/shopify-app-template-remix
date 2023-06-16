@@ -1,4 +1,3 @@
-import "../shopify-api-adapter";
 import {
   ConfigParams,
   LATEST_API_VERSION,
@@ -8,6 +7,8 @@ import {
 
 import { overrideLogger } from "../override-logger";
 import { SHOPIFY_REMIX_LIBRARY_VERSION } from "../version";
+
+import "./test-helper";
 
 const LOG_FN = jest.fn();
 const VALID_API_CONFIG: ConfigParams = {

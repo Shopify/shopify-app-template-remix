@@ -10,6 +10,9 @@ import {
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
 import { MemorySessionStorage } from "@shopify/shopify-app-session-storage-memory";
 
+import "../shopify-api-adapter";
+import "../adapters/node";
+
 import { AppConfigArg } from "../config-types";
 
 // eslint-disable-next-line import/no-mutable-exports
