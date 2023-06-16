@@ -16,7 +16,7 @@ import {
 import { shopify } from "../shopify.server";
 import { ProductsCard } from "../components/ProductsCard.jsx";
 import trophyImage from "../assets/home-trophy.png";
-import { useTranslation, Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const { admin, session } = await shopify.authenticate.admin(request);
@@ -74,32 +74,32 @@ export default function Index() {
                 <Grid.Cell columnSpan={{ xs: 4, sm: 4, md: 4, lg: 9, xl: 9 }}>
                   <VerticalStack gap="5">
                     <Text variant="bodyMd" as="p">
-                      <Trans
-                        i18nKey="Index.yourAppIsReadyToExplore"
-                        components={{
-                          PolarisLink: (
-                            // eslint-disable-next-line jsx-a11y/anchor-has-content
-                            <Link
-                              url="https://polaris.shopify.com/"
-                              target="_blank"
-                            />
-                          ),
-                          AdminApiLink: (
-                            // eslint-disable-next-line jsx-a11y/anchor-has-content
-                            <Link
-                              url="https://shopify.dev/api/admin-graphql"
-                              target="_blank"
-                            />
-                          ),
-                          AppBridgeLink: (
-                            // eslint-disable-next-line jsx-a11y/anchor-has-content
-                            <Link
-                              url="https://shopify.dev/apps/tools/app-bridge"
-                              target="_blank"
-                            />
-                          ),
-                        }}
-                      />
+                      {t("Index.yourAppIsReadyToExplore", {
+                        polarisLink: (
+                          <Link
+                            url="https://polaris.shopify.com/"
+                            target="_blank"
+                          >
+                            {t("Index.polarisLinkText")}
+                          </Link>
+                        ),
+                        adminApiLink: (
+                          <Link
+                            url="https://shopify.dev/api/admin-graphql"
+                            target="_blank"
+                          >
+                            {t("Index.adminApiLinkText")}
+                          </Link>
+                        ),
+                        appBridgeLink: (
+                          <Link
+                            url="https://shopify.dev/apps/tools/app-bridge"
+                            target="_blank"
+                          >
+                            {t("Index.appBridgeLinkText")}
+                          </Link>
+                        ),
+                      })}
                     </Text>
 
                     <Text variant="bodyMd" as="p">
@@ -107,18 +107,16 @@ export default function Index() {
                     </Text>
 
                     <Text variant="bodyMd" as="p">
-                      <Trans
-                        i18nKey="Index.learnMore"
-                        components={{
-                          ShopifyTutorialLink: (
-                            // eslint-disable-next-line jsx-a11y/anchor-has-content
-                            <Link
-                              url="https://shopify.dev/apps/getting-started/add-functionality"
-                              target="_blank"
-                            />
-                          ),
-                        }}
-                      />
+                      {t("Index.learnMore", {
+                        shopifyTutorialLink: (
+                          <Link
+                            url="https://shopify.dev/apps/getting-started/add-functionality"
+                            target="_blank"
+                          >
+                            {t("Index.shopifyTutorialLinkText")}
+                          </Link>
+                        ),
+                      })}
                     </Text>
                   </VerticalStack>
                 </Grid.Cell>
