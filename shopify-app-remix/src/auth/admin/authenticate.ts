@@ -540,15 +540,23 @@ export class AuthStrategy<
         try {
           return await originalRequest.call(this, params);
         } catch (error) {
-          if (
-            error instanceof HttpResponseError &&
-            error.response.code === 401
-          ) {
-            await redirectToAuthPage(
-              { api, config, logger },
-              request,
-              session.shop
-            );
+          if (error instanceof HttpResponseError) {
+            if (error.response.code === 401) {
+              await redirectToAuthPage(
+                { api, config, logger },
+                request,
+                session.shop
+              );
+            } else {
+              // forward a minimal copy of the upstream HTTP response instead of an Error:
+              throw new Response(JSON.stringify(error.response.body), {
+                status: error.response.code,
+                headers: {
+                  'Content-Type': String(error.response.headers?.['content-type'] ?? ''),
+                  ...APP_BRIDGE_HEADERS,
+                },
+              });
+            }
           } else {
             throw error;
           }
