@@ -7,7 +7,7 @@ const i18next = new RemixI18Next({
     supportedLanguages: i18nextOptions.supportedLngs,
     fallbackLanguage: i18nextOptions.fallbackLng,
     searchParamKey: "locale",
-    order: ["searchParams", "header"],
+    order: ["header", "searchParams"],
   },
   i18next: {
     ...i18nextOptions,
