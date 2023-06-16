@@ -21,7 +21,6 @@ import {
   requireBillingFactory,
 } from "../../billing";
 import { addResponseHeaders } from "../helpers/add-response-headers";
-import { APP_BRIDGE_HEADERS } from "../helpers/redirect-with-app-bridge-headers";
 import {
   beginAuth,
   getSessionTokenHeader,
@@ -509,9 +508,9 @@ export class AuthStrategy<
   private respondToOptionsRequest(request: Request) {
     if (request.method === "OPTIONS") {
       throw new Response(null, {
+        status: 204,
         headers: {
-          ...APP_BRIDGE_HEADERS,
-          'Access-Control-Max-Age': '7200'
+          'Access-Control-Max-Age': '7200',
         }
       });
     }
@@ -522,10 +521,8 @@ export class AuthStrategy<
 
     const shop = new URL(request.url).searchParams.get("shop")!;
 
-    // We want the headers to be present on any successful response, or when returning App Bridge headers for re-auth
-    if (response.status >= 200 && response.status < 300 || response.status === 401) {
-      addResponseHeaders(response.headers, config.isEmbeddedApp, shop);
-    }
+    // We want the headers to be present on all responses:
+    addResponseHeaders(response.headers, config.isEmbeddedApp, shop);
   }
 
   private overriddenRestClient(request: Request, session: Session) {
@@ -553,7 +550,6 @@ export class AuthStrategy<
                 status: error.response.code,
                 headers: {
                   'Content-Type': String(error.response.headers?.['content-type'] ?? ''),
-                  ...APP_BRIDGE_HEADERS,
                 },
               });
             }

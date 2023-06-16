@@ -19,7 +19,7 @@ import { AuthStrategy } from "./auth/admin/authenticate";
 import { authenticateWebhookFactory } from "./auth/webhooks/authenticate";
 import { authenticatePublicFactory } from "./auth/public/authenticate";
 import { overrideLogger } from "./override-logger";
-import { addResponseHeadersFactory } from "./auth/helpers/add-response-headers";
+import { addResponseHeadersFactory, installGlobalResponseHeaders } from "./auth/helpers/add-response-headers";
 
 export { ShopifyApp } from "./types";
 
@@ -57,6 +57,8 @@ export function shopifyApp<
   const api = deriveApi<Resources>(appConfig);
   const config = deriveConfig<Storage>(appConfig, api.config);
   const logger = overrideLogger(api.logger);
+
+  installGlobalResponseHeaders(config.isEmbeddedApp);
 
   if (appConfig.webhooks) {
     api.webhooks.addHandlers(appConfig.webhooks);
