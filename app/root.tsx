@@ -13,7 +13,7 @@ import polarisStyles from "@shopify/polaris/build/esm/styles.css";
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useTranslation } from "react-i18next";
-import remixI18n from "./i18next.server";
+import remixI18n from "./i18n/i18next.server";
 
 export const meta: MetaFunction = ({ data }) => ({
   charset: "utf-8",

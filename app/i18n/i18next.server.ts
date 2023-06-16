@@ -1,5 +1,5 @@
 import { RemixI18Next } from "remix-i18next";
-import i18nextOptions from "./utils/i18nextOptions";
+import i18nextOptions from "./i18nextOptions";
 import Backend from "i18next-fs-backend";
 
 const i18next = new RemixI18Next({

@@ -2,7 +2,7 @@ import React from "react";
 import { startTransition, StrictMode } from "react";
 import { RemixBrowser } from "@remix-run/react";
 import { hydrateRoot } from "react-dom/client";
-import i18nextOptions from "./utils/i18nextOptions";
+import i18nextOptions from "./i18n/i18nextOptions";
 import i18next from "i18next";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import ShopifyFormat from "@shopify/i18next-shopify";
@@ -11,7 +11,7 @@ import resourcesToBackend from "i18next-resources-to-backend";
 import {
   loadLocalePolyfills,
   loadPluralRulesPolyfills,
-} from "./utils/intlPolyfills";
+} from "./i18n/intlPolyfills";
 
 function hydrate() {
   startTransition(() => {
