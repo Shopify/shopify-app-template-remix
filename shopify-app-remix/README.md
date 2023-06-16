@@ -283,18 +283,18 @@ export const action = async ({ request }: ActionArgs) => {
 };
 ```
 
-## Authenticating storefront requests
+## Authenticating public requests
 
-Your Remix app may need to authenticate requests coming from a storefront context. Here is how:
+Your Remix app may need to authenticate requests coming from a public context. An example of this would be a checkout extension. Here is how:
 
 ```ts
-// e.g: routes/api/storefront.tsx
+// e.g: routes/api/public/notes.tsx
 import { shopify } from "../shopify.server";
 import { LoaderArgs, json } from "@remix-run/node";
 import { getNotes } from "~/models/notes";
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const { sessionToken } = await shopify.authenticate.storefront(request);
+  const { sessionToken } = await shopify.authenticate.public(request);
 
   // E.g: Get notes using the shops admin domain
   return json(await getNotes(sessionToken.iss));

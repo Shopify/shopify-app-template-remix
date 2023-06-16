@@ -17,7 +17,7 @@ import { BasicParams, MandatoryTopics, ShopifyApp } from "./types";
 import { registerWebhooksFactory } from "./auth/webhooks";
 import { AuthStrategy } from "./auth/admin/authenticate";
 import { authenticateWebhookFactory } from "./auth/webhooks/authenticate";
-import { authenticateStorefrontFactory } from "./auth/storefront/authenticate";
+import { authenticatePublicFactory } from "./auth/public/authenticate";
 import { overrideLogger } from "./override-logger";
 
 export { ShopifyApp } from "./types";
@@ -69,7 +69,7 @@ export function shopifyApp<
     registerWebhooks: registerWebhooksFactory(params),
     authenticate: {
       admin: oauth.authenticateAdmin.bind(oauth),
-      storefront: authenticateStorefrontFactory(params),
+      public: authenticatePublicFactory(params),
       webhook: authenticateWebhookFactory<
         Resources,
         keyof Config["webhooks"] | MandatoryTopics

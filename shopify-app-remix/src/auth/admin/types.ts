@@ -97,7 +97,7 @@ export interface EmbeddedAdminContext<
    * import { getWidgets } from "~/db/widgets.server";
    *
    * export const loader = async ({ request }: LoaderArgs) => {
-   *   const { sessionToken } = await shopify.authenticate.storefront(
+   *   const { sessionToken } = await shopify.authenticate.public(
    *     request
    *   );
    *   return json(await getWidgets({user: sessionToken.sub}));
