@@ -39,4 +39,7 @@ export const shopify = shopifyApp({
       interval: BillingInterval.Every30Days,
     },
   },
+  ...(process.env.SHOP_CUSTOM_DOMAIN
+    ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
+    : {}),
 });
