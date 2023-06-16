@@ -508,7 +508,12 @@ export class AuthStrategy<
 
   private respondToOptionsRequest(request: Request) {
     if (request.method === "OPTIONS") {
-      throw new Response(null, { headers: APP_BRIDGE_HEADERS });
+      throw new Response(null, {
+        headers: {
+          ...APP_BRIDGE_HEADERS,
+          'Access-Control-Max-Age': '7200'
+        }
+      });
     }
   }
 
