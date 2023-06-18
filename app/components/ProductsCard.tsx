@@ -37,7 +37,7 @@ export function ProductsCard({ count, loading }: ProductsCardProps) {
           <Form method={"post"}>
             <input type="hidden" name="action" value="create-products" />
             <Button primary loading={loading} submit>
-              {t("ProductsCard.populateProductsButton", { count: 5 }) || ""}
+              {t("ProductsCard.populateProductsButton", { count: 5 })}
             </Button>
           </Form>
         </HorizontalStack>

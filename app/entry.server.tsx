@@ -9,12 +9,12 @@ import ShopifyFormat from "@shopify/i18next-shopify";
 import isbot from "isbot";
 import Backend from "i18next-fs-backend";
 import i18next from "i18next";
-import i18nextOptions from "./utils/i18nextOptions";
-import i18nextServer from "./i18next.server";
+import i18nextOptions from "./i18n/i18nextOptions";
+import i18nextServer from "./i18n/i18next.server";
 import {
   loadLocalePolyfills,
   loadPluralRulesPolyfills,
-} from "./utils/intlPolyfills";
+} from "./i18n/intlPolyfills";
 
 const ABORT_DELAY = 5_000;
 

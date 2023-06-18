@@ -2,10 +2,14 @@
   "Index": {
     "title": "Nouvelle application Remix",
     "heading": "Bravo pour l’application Shopify que vous avez créée 🎉",
-    "learnMore": "Découvrez comment concevoir votre application dans <ShopifyTutorialLink>ce tutoriel Shopify</ShopifyTutorialLink> 📚",
+    "learnMore": "Découvrez comment concevoir votre application dans {{shopifyTutorialLink}} 📚",
+    "shopifyTutorialLinkText": "ce tutoriel Shopify",
     "startPopulatingYourApp": "Vous souhaitez vous lancer ? Commencez à remplir votre application d’exemples de produits à afficher et tester dans votre boutique.",
     "trophyAltText": "Bravo pour l’application Shopify que vous avez créée",
-    "yourAppIsReadyToExplore": "Votre application est prête à être explorée ! Elle contient tout ce dont vous avez besoin pour vous lancer, y compris le <PolarisLink>système de design Polaris</PolarisLink>, l’<AdminApiLink>API Shopify Admin</AdminApiLink>, ainsi que la bibliothèque et les composants d’IU <AppBridgeLink>App Bridge</AppBridgeLink>."
+    "yourAppIsReadyToExplore": "Votre application est prête à être explorée ! Elle contient tout ce dont vous avez besoin pour vous lancer, y compris le {{polarisLink}}, l’{{adminApiLink}}, ainsi que la bibliothèque et les composants d’IU {{appBridgeLink}}.",
+    "polarisLinkText": "système de design Polaris",
+    "adminApiLinkText": "API Shopify Admin",
+    "appBridgeLinkText": "App Bridge"
   },
   "ProductsCard": {
     "description": "Les exemples de produits sont créés avec un titre et un prix par défaut. Vous pouvez les supprimer à tout moment.",
