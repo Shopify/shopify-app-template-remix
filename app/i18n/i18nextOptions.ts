@@ -12,7 +12,11 @@ export default {
    * The default locale for the app.
    */
   fallbackLng: "en",
+  interpolation: {
+    escapeValue: false,
+  },
   react: { useSuspense: false },
+  returnNull: false,
   /**
    * The supported locales for the app.
    *
