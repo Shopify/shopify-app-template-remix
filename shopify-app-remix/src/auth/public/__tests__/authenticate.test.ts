@@ -14,7 +14,7 @@ describe("JWT validation", () => {
     const { token, payload } = getJwt();
 
     // WHEN
-    const { sessionToken } = await shopify.authenticate.storefront(
+    const { sessionToken } = await shopify.authenticate.public(
       new Request(APP_URL, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -33,7 +33,7 @@ describe("JWT validation", () => {
 
     // WHEN
     const response = await getThrownResponse(
-      shopify.authenticate.storefront,
+      shopify.authenticate.public,
       new Request(APP_URL)
     );
 
@@ -48,7 +48,7 @@ describe("JWT validation", () => {
 
     // WHEN
     const response = await getThrownResponse(
-      shopify.authenticate.storefront,
+      shopify.authenticate.public,
       new Request(APP_URL, {
         headers: { Authorization: `Bearer this_is_not_a_valid_token` },
       })
@@ -65,7 +65,7 @@ describe("JWT validation", () => {
 
     // WHEN
     const response = await getThrownResponse(
-      shopify.authenticate.storefront,
+      shopify.authenticate.public,
       new Request(APP_URL, {
         headers: { "User-Agent": "Googlebot" },
       })

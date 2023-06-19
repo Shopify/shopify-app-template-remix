@@ -7,7 +7,7 @@ import { SessionStorage } from "@shopify/shopify-app-session-storage";
 
 import { AppConfig, AppConfigArg } from "./config-types";
 import { AdminContext } from "./auth/admin/types";
-import { StorefrontContext } from "./auth/storefront/types";
+import { PublicContext } from "./auth/public/types";
 import { RegisterWebhooksOptions } from "./auth/webhooks/types";
 import { WebhookContext } from "./auth/webhooks/types";
 
@@ -40,7 +40,7 @@ type AuthenticateAdmin<
   Resources extends ShopifyRestResources = ShopifyRestResources
 > = (request: Request) => Promise<AdminContext<Config, Resources>>;
 
-type AuthenticateStorefront = (request: Request) => Promise<StorefrontContext>;
+type AuthenticatePublic = (request: Request) => Promise<PublicContext>;
 
 type AuthenticateWebhook<
   Resources extends ShopifyRestResources = ShopifyRestResources,
@@ -164,12 +164,12 @@ export interface ShopifyApp<Config extends AppConfigArg> {
     admin: AuthenticateAdmin<Config, RestResourcesType<Config>>;
 
     /**
-     * Authenticate a storefront request and get back a session token
+     * Authenticate a public request and get back a session token
      *
      * An example of when to use this is a request from a checkout extension.
      *
      * @param request `Request` The incoming request to authenticate
-     * @returns `Promise<StorefrontContext>` An authenticated storefront context
+     * @returns `Promise<PublicContext>` An authenticated public context
      *
      * @example
      * Authenticating a request from a checkout extension
@@ -181,19 +181,19 @@ export interface ShopifyApp<Config extends AppConfigArg> {
      * import { getWidgets } from "~/db/widgets";
      *
      * export async function loader({ request }: LoaderArgs) {
-     *   const {sessionToken} = shopify.authenticate.storefront(request);
+     *   const {sessionToken} = shopify.authenticate.public(request);
      *
      *   return json(await getWidgets(sessionToken));
      * }
      * ```
      */
-    storefront: AuthenticateStorefront;
+    public: AuthenticatePublic;
 
     /**
      * Authenticate a Shopify webhook request, get back an authenticated admin context and details on the webhook request
      *
      * @param request `Request` The incoming request to authenticate
-     * @returns `Promise<StorefrontContext>` An authenticated storefront context
+     * @returns `Promise<PublicContext>` An authenticated public context
      *
      * @example
      * Authenticating a webhook request
