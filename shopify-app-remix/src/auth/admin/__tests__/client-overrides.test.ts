@@ -1,6 +1,6 @@
 import {
   ApiVersion,
-  HttpResponseError,
+  HttpMaxRetriesError,
   LATEST_API_VERSION,
   SESSION_COOKIE_NAME,
   Session,
@@ -20,7 +20,7 @@ import {
 } from "../../../__tests__/test-helper";
 import { mockExternalRequest } from "../../../__tests__/request-mock";
 import { shopifyApp } from "../../..";
-import { REAUTH_URL_HEADER } from "../../../auth/helpers/redirect-with-app-bridge-headers";
+import { REAUTH_URL_HEADER } from "../../../auth/helpers/add-response-headers";
 import { AdminApiContext } from "../../../config-types";
 
 describe("admin.authenticate context", () => {
@@ -104,15 +104,19 @@ describe("admin.authenticate context", () => {
         expect(pathname).toEqual("/admin/oauth/authorize");
       });
 
-      it("throws when request receives a non-401 response and not embedded", async () => {
+      it("throws a response when request receives a non-401 response and not embedded", async () => {
         // GIVEN
         const { admin, session } = await setUpNonEmbeddedFlow();
-        await mockRequest(403);
+        const requestMock = await mockRequest(403);
+
+        // WHEN
+        const response = await getThrownResponse(
+          async () => await action(admin, session),
+          requestMock
+        );
 
         // THEN
-        await expect(() => action(admin, session)).rejects.toThrowError(
-          HttpResponseError
-        );
+        expect(response.status).toEqual(403);
       });
 
       it("redirects to exit iframe when request receives a 401 response and embedded", async () => {
@@ -154,6 +158,35 @@ describe("admin.authenticate context", () => {
       });
     }
   );
+
+  it("re-throws errors other than HttpResponseErrors on GraphQL requests", async () => {
+    // GIVEN
+    const { admin } = await setUpEmbeddedFlow();
+
+    // WHEN
+    await mockGraphqlRequest()(429);
+    await mockGraphqlRequest()(429);
+
+    // THEN
+    await expect(async () => admin.graphql(
+      "mutation myMutation($ID: String!) { shop(ID: $ID) { name } }",
+      { variables: { ID: "123" }, tries: 2 }
+    )).rejects.toThrowError(HttpMaxRetriesError);
+  });
+
+  it("re-throws errors other than HttpResponseErrors on REST requests", async () => {
+    // GIVEN
+    const { admin } = await setUpEmbeddedFlow();
+
+    // WHEN
+    await mockRestRequest(429);
+    await mockRestRequest(429);
+
+    // THEN
+    await expect(
+      async () => admin.rest.get({ path: "/customers.json", tries: 2 })
+    ).rejects.toThrowError(HttpMaxRetriesError);
+  });
 
   async function setUpEmbeddedFlow() {
     const shopify = shopifyApp({ ...testConfig(), restResources });
@@ -211,6 +244,7 @@ describe("admin.authenticate context", () => {
       `https://${TEST_SHOP}/admin/api/${LATEST_API_VERSION}/customers.json`
     );
 
+
     await mockExternalRequest({
       request: requestMock,
       response: new Response(undefined, { status }),
@@ -225,6 +259,7 @@ describe("admin.authenticate context", () => {
         `https://${TEST_SHOP}/admin/api/${apiVersion}/graphql.json`,
         { method: "POST" }
       );
+
       await mockExternalRequest({
         request: requestMock,
         response: new Response(undefined, { status }),

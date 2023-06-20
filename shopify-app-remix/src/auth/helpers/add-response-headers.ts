@@ -1,10 +1,10 @@
 import { BasicParams } from "../../types";
-import { REAUTH_URL_HEADER } from "./redirect-with-app-bridge-headers";
 
 const DEFAULT_CSP = `frame-ancestors https://*.myshopify.com https://admin.shopify.com;`;
 
 const ORIGINAL_HEADERS = Symbol.for('originalHeaders');
 
+export const REAUTH_URL_HEADER = "X-Shopify-API-Request-Failure-Reauthorize-Url";
 export const APP_BRIDGE_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Authorization",
@@ -50,6 +50,7 @@ export function installGlobalResponseHeaders(isEmbeddedApp: boolean) {
         for (const key in APP_BRIDGE_HEADERS) {
           if (!headers.get(key)) {
             const value = APP_BRIDGE_HEADERS[key as keyof typeof APP_BRIDGE_HEADERS];
+            // console.log({key, value, APP_BRIDGE_HEADERS})
             headers.set(key, value);
           }
         }

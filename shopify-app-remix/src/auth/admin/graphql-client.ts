@@ -55,12 +55,22 @@ export function graphqlClientFactory({
         extraHeaders: options?.headers,
       });
     } catch (error) {
-      if (error instanceof HttpResponseError && error.response.code === 401) {
-        throw await redirectToAuthPage(
-          { api, config, logger },
-          request,
-          session.shop
-        );
+      if (error instanceof HttpResponseError) {
+        if (error.response.code === 401) {
+          throw await redirectToAuthPage(
+            { api, config, logger },
+            request,
+            session.shop
+          );
+        } else {
+          // forward a minimal copy of the upstream HTTP response instead of an Error:
+          throw new Response(JSON.stringify(error.response.body), {
+            status: error.response.code,
+            headers: {
+              'Content-Type': error.response.headers!['Content-Type'] as string,
+            },
+          });
+        }
       } else {
         throw error;
       }

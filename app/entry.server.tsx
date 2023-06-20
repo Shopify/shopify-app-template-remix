@@ -14,7 +14,7 @@ import i18nextServer from "./i18n/i18next.server";
 import {
   loadLocalePolyfills,
   loadPluralRulesPolyfills,
-} from "./utils/intlPolyfills";
+} from "./i18n/intlPolyfills";
 import { shopify } from "./shopify.server";
 
 const ABORT_DELAY = 5_000;
