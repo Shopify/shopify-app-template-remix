@@ -12,6 +12,7 @@ import {
   GRAPHQL_URL,
   TEST_SHOP,
   expectBeginAuthRedirect,
+  expectExitIframeRedirect,
   getJwt,
   getThrownResponse,
   setUpValidSession,
@@ -177,18 +178,7 @@ describe("Billing require", () => {
     );
 
     // THEN
-    expect(response.status).toEqual(302);
-
-    const locationUrl = new URL(
-      response.headers.get("Location")!,
-      "http://test.test"
-    );
-    expect(locationUrl.pathname).toEqual("/auth/exit-iframe");
-    expect(locationUrl.searchParams.get("shop")).toEqual(TEST_SHOP);
-    expect(locationUrl.searchParams.get("host")).toEqual(BASE64_HOST);
-    expect(locationUrl.searchParams.get("exitIframe")).toEqual(
-      `/auth?shop=${TEST_SHOP}`
-    );
+    expectExitIframeRedirect(response);
   });
 
   it("returns redirection headers during fetch requests when Shopify invalidated the session", async () => {

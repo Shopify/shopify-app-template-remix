@@ -13,6 +13,7 @@ import {
   SHOPIFY_HOST,
   TEST_SHOP,
   expectBeginAuthRedirect,
+  expectExitIframeRedirect,
   getJwt,
   getThrownResponse,
   setUpValidSession,
@@ -73,16 +74,7 @@ describe("authorize.admin doc request path", () => {
       );
 
       // THEN
-      expect(response.status).toBe(302);
-
-      const { pathname, searchParams } = new URL(
-        response.headers.get("location")!,
-        APP_URL
-      );
-      expect(pathname).toBe("/auth/exit-iframe");
-      expect(searchParams.get("shop")).toBe(TEST_SHOP);
-      expect(searchParams.get("host")).toBe(BASE64_HOST);
-      expect(searchParams.get("exitIframe")).toBe(`/auth?shop=${TEST_SHOP}`);
+      expectExitIframeRedirect(response);
     });
 
     it("redirects to auth when not embedded on an embedded app, and the API token is invalid", async () => {
@@ -246,18 +238,7 @@ describe("authorize.admin doc request path", () => {
       );
 
       // THEN
-      expect(response.status).toBe(302);
-
-      const { pathname, searchParams } = new URL(
-        response.headers.get("location")!,
-        APP_URL
-      );
-      expect(pathname).toBe("/auth/exit-iframe");
-      expect(searchParams.get("shop")).toBe(otherShopDomain);
-      expect(searchParams.get("host")).toBe(BASE64_HOST);
-      expect(searchParams.get("exitIframe")).toBe(
-        `/auth?shop=${otherShopDomain}`
-      );
+      expectExitIframeRedirect(response, { shop: otherShopDomain });
     });
 
     it("redirects to exit-iframe if app is embedded and the session is no longer valid for the id_token when embedded", async () => {
@@ -275,16 +256,7 @@ describe("authorize.admin doc request path", () => {
       );
 
       // THEN
-      const { pathname, searchParams } = new URL(
-        response.headers.get("location")!,
-        APP_URL
-      );
-
-      expect(response.status).toBe(302);
-      expect(pathname).toBe("/auth/exit-iframe");
-      expect(searchParams.get("shop")).toBe(TEST_SHOP);
-      expect(searchParams.get("host")).toBe(BASE64_HOST);
-      expect(searchParams.get("exitIframe")).toBe(`/auth?shop=${TEST_SHOP}`);
+      expectExitIframeRedirect(response);
     });
 
     it("redirects to auth if there is no session cookie for non-embedded apps when at the top level", async () => {

@@ -11,6 +11,7 @@ import {
   APP_URL,
   BASE64_HOST,
   TEST_SHOP,
+  expectExitIframeRedirect,
   getJwt,
   getThrownResponse,
   setUpValidSession,
@@ -126,19 +127,7 @@ describe("admin.authenticate context", () => {
         );
 
         // THEN
-        expect(response.status).toEqual(302);
-
-        const { pathname, searchParams } = new URL(
-          response.headers.get("Location")!,
-          APP_URL
-        );
-
-        expect(pathname).toEqual("/auth/exit-iframe");
-        expect(searchParams.get("shop")).toEqual(TEST_SHOP);
-        expect(searchParams.get("host")).toEqual(BASE64_HOST);
-        expect(searchParams.get("exitIframe")).toEqual(
-          `/auth?shop=${TEST_SHOP}`
-        );
+        expectExitIframeRedirect(response);
       });
 
       it("returns app bridge redirection headers when request receives a 401 response on fetch requests", async () => {
