@@ -4,7 +4,7 @@ import {
   getThrownResponse,
   testConfig,
 } from "../../../__tests__/test-helper";
-import { REAUTH_URL_HEADER } from "../../../auth/helpers/redirect-with-app-bridge-headers";
+import { REAUTH_URL_HEADER } from "../../../auth/helpers/add-response-headers";
 
 describe("authorize.admin", () => {
   test("responds to preflight OPTIONS requests", async () => {
@@ -18,7 +18,7 @@ describe("authorize.admin", () => {
     );
 
     // THEN
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(204);
     expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
     expect(response.headers.get("Access-Control-Allow-Headers")).toBe("Authorization");
     expect(response.headers.get("Access-Control-Expose-Headers")).toBe(REAUTH_URL_HEADER);

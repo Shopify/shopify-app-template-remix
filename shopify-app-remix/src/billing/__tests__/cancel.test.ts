@@ -19,7 +19,7 @@ import {
   testConfig,
 } from "../../__tests__/test-helper";
 import { mockExternalRequest } from "../../__tests__/request-mock";
-import { REAUTH_URL_HEADER } from "../../auth/helpers/redirect-with-app-bridge-headers";
+import { REAUTH_URL_HEADER } from "../../auth/helpers/add-response-headers";
 
 import * as responses from "./mock-responses";
 

@@ -1,8 +1,6 @@
 import { BasicParams } from "../../types";
-import { addResponseHeaders } from "./add-response-headers";
 
-export const REAUTH_URL_HEADER =
-  "X-Shopify-API-Request-Failure-Reauthorize-Url";
+import { REAUTH_URL_HEADER, addResponseHeaders } from "./add-response-headers";
 
 export function redirectWithAppBridgeHeaders(
   params: BasicParams,

@@ -14,7 +14,7 @@ import "../shopify-api-adapter";
 import "../adapters/node";
 
 import { AppConfigArg } from "../config-types";
-import { REAUTH_URL_HEADER } from "../auth/helpers/redirect-with-app-bridge-headers";
+import { REAUTH_URL_HEADER } from "../auth/helpers/add-response-headers";
 
 // eslint-disable-next-line import/no-mutable-exports
 export function testConfig(

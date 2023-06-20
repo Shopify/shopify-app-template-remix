@@ -540,7 +540,7 @@ export class AuthStrategy<
               throw new Response(JSON.stringify(error.response.body), {
                 status: error.response.code,
                 headers: {
-                  'Content-Type': String(error.response.headers?.['content-type'] ?? ''),
+                  'Content-Type': error.response.headers!['Content-Type'] as string,
                 },
               });
             }
