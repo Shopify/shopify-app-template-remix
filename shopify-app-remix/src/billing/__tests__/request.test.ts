@@ -13,6 +13,7 @@ import {
   GRAPHQL_URL,
   TEST_SHOP,
   expectBeginAuthRedirect,
+  expectExitIframeRedirect,
   getJwt,
   getThrownResponse,
   setUpValidSession,
@@ -97,18 +98,7 @@ describe("Billing request", () => {
     );
 
     // THEN
-    expect(response.status).toEqual(302);
-
-    const locationUrl = new URL(
-      response.headers.get("Location")!,
-      "http://test.test"
-    );
-    expect(locationUrl.pathname).toEqual("/auth/exit-iframe");
-    expect(locationUrl.searchParams.get("shop")).toEqual(TEST_SHOP);
-    expect(locationUrl.searchParams.get("host")).toEqual(BASE64_HOST);
-    expect(locationUrl.searchParams.get("exitIframe")).toEqual(
-      responses.CONFIRMATION_URL
-    );
+    expectExitIframeRedirect(response, { destination: responses.CONFIRMATION_URL });
   });
 
   it("returns redirection headers when successful during fetch requests", async () => {
@@ -208,18 +198,7 @@ describe("Billing request", () => {
     );
 
     // THEN
-    expect(response.status).toEqual(302);
-
-    const locationUrl = new URL(
-      response.headers.get("Location")!,
-      "http://test.test"
-    );
-    expect(locationUrl.pathname).toEqual("/auth/exit-iframe");
-    expect(locationUrl.searchParams.get("shop")).toEqual(TEST_SHOP);
-    expect(locationUrl.searchParams.get("host")).toEqual(BASE64_HOST);
-    expect(locationUrl.searchParams.get("exitIframe")).toEqual(
-      `/auth?shop=${TEST_SHOP}`
-    );
+    expectExitIframeRedirect(response);
   });
 
   it("returns redirection headers during fetch requests when Shopify invalidated the session", async () => {

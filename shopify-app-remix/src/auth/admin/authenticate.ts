@@ -127,7 +127,16 @@ export class AuthStrategy<
     const shop = this.ensureValidShopParam(request);
 
     logger.debug("OAuth request contained valid shop", { shop });
-    throw await beginAuth({ api, config, logger }, request, false, shop);
+
+    // If we're loading from an iframe or a fetch request, we need to break out of the iframe
+    if (
+      config.isEmbeddedApp &&
+      ['iframe', 'empty'].includes(request.headers.get('Sec-Fetch-Dest')!)
+    ) {
+      throw redirectWithExitIframe({api, config, logger}, request, shop);
+    } else {
+      throw await beginAuth({ api, config, logger }, request, false, shop);
+    }
   }
 
   private async handleAuthCallbackRequest(request: Request): Promise<never> {
@@ -188,7 +197,7 @@ export class AuthStrategy<
     const { api } = this;
     const url = new URL(request.url);
 
-    if (this.config.isEmbeddedApp) {
+    if (this.config.isEmbeddedApp && url.pathname !== this.config.auth.path) {
       const host = api.utils.sanitizeHost(url.searchParams.get("host")!);
       if (!host) {
         throw new Response(undefined, {
