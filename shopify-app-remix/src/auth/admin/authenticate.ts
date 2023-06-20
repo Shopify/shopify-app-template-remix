@@ -451,7 +451,7 @@ export class AuthStrategy<
     throw redirect(redirectUrl, { headers: responseHeaders });
   }
 
-  private redirectToBouncePage(url: URL): void {
+  private redirectToBouncePage(url: URL): never {
     const { api, config } = this;
 
     // TODO this is to work around a remix bug
