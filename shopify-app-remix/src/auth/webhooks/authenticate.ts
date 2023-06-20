@@ -11,10 +11,16 @@ export function authenticateWebhookFactory<
   return async function authenticate(
     request: Request
   ): Promise<WebhookContext<Topics, Resources>> {
+    if (request.method !== "POST") {
+      logger.debug(
+        "Received a non-POST request for a webhook. Only POST requests are allowed.",
+        { url: request.url, method: request.method }
+      );
+      throw new Response(undefined, { status: 405, statusText: "Method not allowed" });
+    }
+
     const rawBody = await request.text();
 
-    // TODO: Webhooks can only be POST requests, we should fail early in any other scenario
-    // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28378576
     const check = await api.webhooks.validate({
       rawBody,
       rawRequest: request,
