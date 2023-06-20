@@ -8,4 +8,4 @@ components:
     scheme: react
     owners: ["@Shopify/client-libraries-app-templates"]
     paths:
-      - public/locales/**/{{language}}.json
+      - locales/**/{{language}}.json
