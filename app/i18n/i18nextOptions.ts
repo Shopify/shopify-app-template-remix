@@ -16,7 +16,6 @@ export default {
     escapeValue: false,
   },
   react: { useSuspense: false },
-  returnNull: false,
   /**
    * The supported locales for the app.
    *
