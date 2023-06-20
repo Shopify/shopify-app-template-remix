@@ -24,8 +24,7 @@ describe("Webhook validation", () => {
   it("returns context when successful", async () => {
     // GIVEN
     const sessionStorage = new MemorySessionStorage();
-    const config = testConfig({ sessionStorage, restResources });
-    const shopify = shopifyApp(config);
+    const shopify = shopifyApp(testConfig({ sessionStorage, restResources }));
     const body = {some: "data"};
 
     const session = new Session({
@@ -71,8 +70,7 @@ describe("Webhook validation", () => {
 
   it("throws a 400 on invalid HMAC", async () => {
     // GIVEN
-    const config = testConfig();
-    const shopify = shopifyApp(config);
+    const shopify = shopifyApp(testConfig());
 
     // WHEN
     const response = await getThrownResponse(
@@ -98,8 +96,7 @@ describe("Webhook validation", () => {
     "X-Shopify-Hmac-Sha256",
   ])("throws a 400 when header %s is missing", async (header) => {
     // GIVEN
-    const config = testConfig();
-    const shopify = shopifyApp(config);
+    const shopify = shopifyApp(testConfig());
 
     // WHEN
     const response = await getThrownResponse(
@@ -118,8 +115,7 @@ describe("Webhook validation", () => {
   it("throws a 404 on missing sessions", async () => {
     // GIVEN
     const sessionStorage = new MemorySessionStorage();
-    const config = testConfig({ sessionStorage });
-    const shopify = shopifyApp(config);
+    const shopify = shopifyApp(testConfig({ sessionStorage }));
 
     // WHEN
     const response = await getThrownResponse(
@@ -133,6 +129,23 @@ describe("Webhook validation", () => {
 
     // THEN
     expect(response.status).toBe(404);
+  });
+
+  it("throws a 405 Method Not Allowed on non-POST requests", async () => {
+    // GIVEN
+    const shopify = shopifyApp(testConfig());
+
+    // WHEN
+    const response = await getThrownResponse(
+      shopify.authenticate.webhook,
+      new Request(`${APP_URL}/webhooks`, {
+        method: "GET",
+        headers: webhookHeaders(JSON.stringify({})),
+      })
+    );
+
+    // THEN
+    expect(response.status).toBe(405);
   });
 });
 
