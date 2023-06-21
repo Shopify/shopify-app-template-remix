@@ -32,7 +32,7 @@ describe("authorize.admin exit iframe path", () => {
       `<script data-api-key="${config.apiKey}" src="https://cdn.shopify.com/shopifycloud/app-bridge-next/app-bridge.js"></script>`
     );
     expect(responseText).toContain(
-      `<script>shopify.redirectTo("${decodeURIComponent(exitTo)}")</script>`
+      `<script>window.open("${decodeURIComponent(exitTo)}", "_top")</script>`
     );
   });
 
@@ -61,7 +61,7 @@ describe("authorize.admin exit iframe path", () => {
       `<script data-api-key="${config.apiKey}" src="https://cdn.shopify.com/shopifycloud/app-bridge-next/app-bridge.js"></script>`
     );
     expect(responseText).toContain(
-      `<script>shopify.redirectTo("${decodeURIComponent(exitTo)}")</script>`
+      `<script>window.open("${decodeURIComponent(exitTo)}", "_top")</script>`
     );
   });
 
