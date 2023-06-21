@@ -197,7 +197,9 @@ If there is a session for this user, this loader will return null. If there is n
 
 ### Using the Shopify admin GraphQL API
 
-To access the [Shopify Admin GraphQL API](https://shopify.dev/docs/api/admin-graphql) pass a request from a loader or an action to `shopify.authenticate.admin`. This will either redirect the merchant to install your app or it will give you access to API functions. E.g:
+To access the [Shopify Admin GraphQL API](https://shopify.dev/docs/api/admin-graphql) pass a request from a loader or an action to `shopify.authenticate.admin`.
+This will either redirect the merchant to install your app or it will give you access to API functions.
+E.g:
 
 ```ts
 // routes/**/*.tsx
@@ -207,7 +209,7 @@ import { ActionArgs, json } from "@remix-run/node";
 export async function action({ request }: ActionArgs) {
   const { admin } = await shopify.authenticate.admin(request);
 
-  await admin.graphql(
+  const response = await admin.graphql(
     `#graphql
     mutation populateProduct($input: ProductInput!) {
       productCreate(input: $input) {
@@ -225,8 +227,9 @@ export async function action({ request }: ActionArgs) {
       },
     }
   );
+  const parsedResponse = await response.json();
 
-  return null;
+  return json({ data: parsedResponse.data });
 }
 ```
 
