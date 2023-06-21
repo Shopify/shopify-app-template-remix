@@ -5,7 +5,8 @@ import {
   PutRequestParams,
   RequestParams,
   Session,
-  Shopify
+  Shopify,
+  ShopifyRestResources
 } from "@shopify/shopify-api";
 
 import { BasicParams } from "../../types";
@@ -17,8 +18,9 @@ interface RestClientOptions {
   session: Session;
 }
 
-export class RemixRestClient {
+export class RemixRestClient<Resources extends ShopifyRestResources> {
   public session: Session;
+  public resources: Resources;
   private params: BasicParams;
   private request: Request;
 

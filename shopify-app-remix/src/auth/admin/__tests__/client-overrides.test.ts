@@ -125,7 +125,7 @@ describe("admin.authenticate context", () => {
       testGroup: "REST resources",
       mockRequest: mockRestRequest,
       action: async (admin: AdminApiContext, session: Session) =>
-        await admin.rest.Customer.all({ session }),
+        await admin.rest.resources.Customer.all({ session }),
     },
     {
       testGroup: "GraphQL client",

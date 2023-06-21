@@ -253,7 +253,7 @@ Next pass a request to `shopify.authenticate.admin` in a loader or an action. Th
 // app/routes/**/*.tsx
 export const loader = async ({ request }: LoaderArgs) => {
   const { admin, session } = await shopify.authenticate.admin(request);
-  const data = await admin.rest.Product.count({ session });
+  const data = await admin.rest.resources.Product.count({ session });
 
   return json(data);
 };

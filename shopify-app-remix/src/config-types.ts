@@ -256,7 +256,7 @@ export interface AfterAuthOptions<
 }
 
 export interface AdminApiContext<
-  R extends ShopifyRestResources = ShopifyRestResources
+  Resources extends ShopifyRestResources = ShopifyRestResources
 > {
   /**
    * Methods for interacting with the Shopify Admin REST API
@@ -283,7 +283,7 @@ export interface AdminApiContext<
    *
    * export const loader = async ({ request }: LoaderArgs) => {
    *   const { admin, session } = await shopify.authenticate.admin(request);
-   *   return json(admin.rest.Order.count({ session }));
+   *   return json(admin.rest.resources.Order.count({ session }));
    * };
    * ```
    *
@@ -310,7 +310,7 @@ export interface AdminApiContext<
    * };
    * ```
    */
-  rest: RemixRestClient & R;
+  rest: RemixRestClient<Resources>;
 
   /**
    * Methods for interacting with the Shopify Admin GraphQL API

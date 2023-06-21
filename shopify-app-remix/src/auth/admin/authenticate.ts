@@ -528,30 +528,34 @@ export class AuthStrategy<
   private overriddenRestClient(request: Request, session: Session) {
     const { api, config, logger } = this;
 
-    const client = new RemixRestClient({
+    const client = new RemixRestClient<Resources>({
       params: { api, config, logger },
       request,
       session
     });
 
-    const RestResourceClient = restResourceClientFactory({
-      params: { api, config, logger },
-      request,
-      session
-    });
-    Object.entries(api.rest).forEach(([name, resource]) => {
-      class RemixResource extends resource {
-        public static Client = RestResourceClient;
-      }
+    if (api.rest) {
+      client.resources = {} as Resources;
 
-      Reflect.defineProperty(RemixResource, "name", {
-        value: name,
+      const RestResourceClient = restResourceClientFactory({
+        params: { api, config, logger },
+        request,
+        session
       });
+      Object.entries(api.rest).forEach(([name, resource]) => {
+        class RemixResource extends resource {
+          public static Client = RestResourceClient;
+        }
 
-      Reflect.set(client, name, RemixResource);
-    });
+        Reflect.defineProperty(RemixResource, "name", {
+          value: name,
+        });
 
-    return client as RemixRestClient & Resources;
+        Reflect.set(client.resources, name, RemixResource);
+      });
+    }
+
+    return client;
   }
 
   private createBillingContext(
