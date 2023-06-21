@@ -2,13 +2,14 @@ import {
   ConfigParams as ApiConfigArg,
   ConfigInterface as ApiConfig,
   ShopifyRestResources,
-  Shopify,
   Session,
   ApiVersion,
   WebhookHandler,
 } from "@shopify/shopify-api";
 import { SessionStorage } from "@shopify/shopify-app-session-storage";
+
 import { GraphqlQueryFunction } from "./auth/admin/graphql-client";
+import { RemixRestClient } from "./auth/admin/rest-client";
 
 export interface AppConfigArg<
   Resources extends ShopifyRestResources = ShopifyRestResources,
@@ -255,7 +256,7 @@ export interface AfterAuthOptions<
 }
 
 export interface AdminApiContext<
-  R extends ShopifyRestResources = ShopifyRestResources
+  Resources extends ShopifyRestResources = ShopifyRestResources
 > {
   /**
    * Methods for interacting with the Shopify Admin REST API
@@ -282,7 +283,7 @@ export interface AdminApiContext<
    *
    * export const loader = async ({ request }: LoaderArgs) => {
    *   const { admin, session } = await shopify.authenticate.admin(request);
-   *   return json(admin.rest.Order.count({ session }));
+   *   return json(admin.rest.resources.Order.count({ session }));
    * };
    * ```
    *
@@ -303,14 +304,13 @@ export interface AdminApiContext<
    * import { shopify } from "../shopify.server";
    *
    * export const loader = async ({ request }: LoaderArgs) => {
-   *   const customers = await admin.rest.get({ path: "/customers/count.json" });
+   *   const response = await admin.rest.get({ path: "/customers/count.json" });
+   *   const customers = await response.json();
    *   return json({ customers });
    * };
    * ```
    */
-  rest: InstanceType<Shopify["clients"]["Rest"]> & R;
-  // TODO: Improve the public API in @shopify/shopify-api GraphQL client
-  // https://github.com/orgs/Shopify/projects/6899/views/1?pane=issue&itemId=28352645
+  rest: RemixRestClient<Resources>;
 
   /**
    * Methods for interacting with the Shopify Admin GraphQL API
@@ -327,7 +327,7 @@ export interface AdminApiContext<
    * export async function action({ request }: ActionArgs) {
    *   const { admin } = await shopify.authenticate.admin(request);
    *
-   *   await admin.graphql(
+   *   const response = await admin.graphql(
    *     `#graphql
    *     mutation populateProduct($input: ProductInput!) {
    *       productCreate(input: $input) {
@@ -338,6 +338,9 @@ export interface AdminApiContext<
    *     }`,
    *     { variables: { input: { title: "Product Name" } } }
    *   );
+   *
+   *   const productData = await response.json();
+   *   return json({ data: productData.data });
    * }
    * ```
    */

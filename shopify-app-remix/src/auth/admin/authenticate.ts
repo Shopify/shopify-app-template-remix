@@ -6,7 +6,6 @@ import {
   InvalidHmacError,
   InvalidOAuthError,
   JwtPayload,
-  RequestParams,
   Session,
   Shopify,
   ShopifyRestResources,
@@ -32,6 +31,7 @@ import {
 
 import { graphqlClientFactory } from "./graphql-client";
 import { AdminContext } from "./types";
+import { RemixRestClient, restResourceClientFactory } from "./rest-client";
 
 interface SessionContext {
   session: Session;
@@ -528,53 +528,34 @@ export class AuthStrategy<
   private overriddenRestClient(request: Request, session: Session) {
     const { api, config, logger } = this;
 
-    const RestClient = api.clients.Rest;
-    const originalClient = new api.clients.Rest({ session });
-    const originalRequest = Reflect.get(originalClient, "request");
-
-    class RemixRestClient extends RestClient {
-      protected async request(params: RequestParams): Promise<any> {
-        try {
-          return await originalRequest.call(this, params);
-        } catch (error) {
-          if (error instanceof HttpResponseError) {
-            if (error.response.code === 401) {
-              await redirectToAuthPage(
-                { api, config, logger },
-                request,
-                session.shop
-              );
-            } else {
-              // forward a minimal copy of the upstream HTTP response instead of an Error:
-              throw new Response(JSON.stringify(error.response.body), {
-                status: error.response.code,
-                headers: {
-                  'Content-Type': error.response.headers!['Content-Type'] as string,
-                },
-              });
-            }
-          } else {
-            throw error;
-          }
-        }
-      }
-    }
-
-    const client = new RemixRestClient({ session });
-
-    Object.entries(api.rest).forEach(([name, resource]) => {
-      class RemixResource extends resource {
-        public static Client = RemixRestClient;
-      }
-
-      Reflect.defineProperty(RemixResource, "name", {
-        value: name,
-      });
-
-      Reflect.set(client, name, RemixResource);
+    const client = new RemixRestClient<Resources>({
+      params: { api, config, logger },
+      request,
+      session
     });
 
-    return client as typeof client & Resources;
+    if (api.rest) {
+      client.resources = {} as Resources;
+
+      const RestResourceClient = restResourceClientFactory({
+        params: { api, config, logger },
+        request,
+        session
+      });
+      Object.entries(api.rest).forEach(([name, resource]) => {
+        class RemixResource extends resource {
+          public static Client = RestResourceClient;
+        }
+
+        Reflect.defineProperty(RemixResource, "name", {
+          value: name,
+        });
+
+        Reflect.set(client.resources, name, RemixResource);
+      });
+    }
+
+    return client;
   }
 
   private createBillingContext(

@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next";
 export const loader = async ({ request }: LoaderArgs) => {
   const { admin, session } = await shopify.authenticate.admin(request);
 
-  return json(await admin.rest.Product.count({ session }));
+  return json(await admin.rest.resources.Product.count({ session }));
 };
 
 export async function action({ request }: ActionArgs) {
@@ -50,7 +50,7 @@ export async function action({ request }: ActionArgs) {
     })
   );
 
-  return json(await admin.rest.Product.count({ session }));
+  return json(await admin.rest.resources.Product.count({ session }));
 }
 
 export default function Index() {

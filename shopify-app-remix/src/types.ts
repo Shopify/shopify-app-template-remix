@@ -200,7 +200,7 @@ export interface ShopifyApp<Config extends AppConfigArg> {
      * export async function loader({ request }: LoaderArgs) {
      *   const {admin, session, sessionToken, billing} = shopify.authenticate.admin(request);
      *
-     *   return json(await admin.rest.Product.count({ session }));
+     *   return json(await admin.rest.resources.Product.count({ session }));
      * }
      * ```
      */
