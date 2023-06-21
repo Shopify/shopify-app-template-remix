@@ -3,7 +3,7 @@ import { shopifyApp } from "../../..";
 import {
   BASE64_HOST,
   TEST_SHOP,
-  expectResponseHeaders,
+  expectSecurityHeaders,
   getThrownResponse,
   signRequestCookie,
   testConfig,
@@ -62,7 +62,7 @@ describe("authorize.admin auth callback path", () => {
       );
 
       expect(response.status).toBe(302);
-      expectResponseHeaders(response);
+      expectSecurityHeaders(response);
       expect(hostname).toBe(TEST_SHOP);
       expect(searchParams.get("client_id")).toBe(config.apiKey);
       expect(searchParams.get("scope")).toBe(config.scopes!.toString());
@@ -94,7 +94,7 @@ describe("authorize.admin auth callback path", () => {
 
       // THEN
       expect(response.status).toBe(400);
-      expectResponseHeaders(response);
+      expectSecurityHeaders(response);
       expect(response.statusText).toBe("Invalid OAuth Request");
     });
 
@@ -124,7 +124,7 @@ describe("authorize.admin auth callback path", () => {
 
       // THEN
       expect(response.status).toBe(400);
-      expectResponseHeaders(response);
+      expectSecurityHeaders(response);
     });
 
     test("throws a 500 if any other errors are thrown", async () => {
@@ -148,7 +148,7 @@ describe("authorize.admin auth callback path", () => {
 
       // THEN
       expect(response.status).toBe(500);
-      expectResponseHeaders(response);
+      expectSecurityHeaders(response);
     });
   });
 
@@ -178,7 +178,7 @@ describe("authorize.admin auth callback path", () => {
         shop: TEST_SHOP,
         state: "nonce",
       });
-      expectResponseHeaders(response);
+      expectSecurityHeaders(response);
     });
 
     test("throws an 302 Response to begin auth if token was offline and useOnlineTokens is true", async () => {
@@ -199,7 +199,7 @@ describe("authorize.admin auth callback path", () => {
       );
 
       expect(response.status).toBe(302);
-      expectResponseHeaders(response);
+      expectSecurityHeaders(response);
       expect(hostname).toBe(TEST_SHOP);
       expect(searchParams.get("client_id")).toBe(config.apiKey);
       expect(searchParams.get("scope")).toBe(config.scopes!.toString());
@@ -222,7 +222,7 @@ describe("authorize.admin auth callback path", () => {
       // THEN
       const { hostname } = new URL(response.headers.get("location")!);
       expect(hostname).not.toBe(TEST_SHOP);
-      expectResponseHeaders(response);
+      expectSecurityHeaders(response);
     });
 
     test("Runs the afterAuth hooks passing", async () => {
@@ -244,7 +244,7 @@ describe("authorize.admin auth callback path", () => {
 
       // THEN
       expect(afterAuthMock).toHaveBeenCalledTimes(1);
-      expectResponseHeaders(response);
+      expectSecurityHeaders(response);
     });
 
     test("throws a 302 response to the emebdded app URL if isEmbeddedApp is true", async () => {
@@ -261,7 +261,7 @@ describe("authorize.admin auth callback path", () => {
 
       // THEN
       expect(response.status).toBe(302);
-      expectResponseHeaders(response);
+      expectSecurityHeaders(response);
       expect(response.headers.get("location")).toBe(
         "https://totally-real-host.myshopify.io/apps/testApiKey"
       );
@@ -286,7 +286,7 @@ describe("authorize.admin auth callback path", () => {
       const url = new URL(request.url);
       const host = url.searchParams.get("host");
       expect(response.status).toBe(302);
-      expectResponseHeaders(response, false);
+      expectSecurityHeaders(response, false);
       expect(response.headers.get("location")).toBe(
         `/?shop=${TEST_SHOP}&host=${host}`
       );

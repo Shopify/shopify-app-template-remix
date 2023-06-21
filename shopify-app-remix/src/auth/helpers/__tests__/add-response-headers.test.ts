@@ -1,5 +1,5 @@
 import { shopifyApp } from "../../..";
-import { APP_URL, TEST_SHOP, expectResponseHeaders, testConfig } from "../../../__tests__/test-helper";
+import { APP_URL, TEST_SHOP, expectSecurityHeaders, testConfig } from "../../../__tests__/test-helper";
 
 describe("addResponseHeaders", () => {
   it.each([true, false])('adds CORS and frame-ancestors CSP headers when embedded = %s', (isEmbeddedApp) => {
@@ -13,6 +13,6 @@ describe("addResponseHeaders", () => {
     shopify.addResponseHeaders(request, response.headers);
 
     // THEN
-    expectResponseHeaders(response, isEmbeddedApp);
+    expectSecurityHeaders(response, isEmbeddedApp);
   });
 });

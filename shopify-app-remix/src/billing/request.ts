@@ -60,7 +60,7 @@ function redirectOutOfApp(
   request: Request,
   url: string,
   shop: string
-): Response {
+): never {
   const { config, logger } = params;
 
   logger.debug("Redirecting out of app", { url });
@@ -85,9 +85,9 @@ function redirectOutOfApp(
       exitIframe: url,
     });
 
-    return redirect(`${config.auth.exitIframePath}?${params.toString()}`);
+    throw redirect(`${config.auth.exitIframePath}?${params.toString()}`);
   } else {
     // This will only ever happen for non-embedded apps, because the authenticator will stop before reaching this point
-    return redirect(url);
+    throw redirect(url);
   }
 }

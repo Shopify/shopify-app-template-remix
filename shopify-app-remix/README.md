@@ -131,7 +131,7 @@ Now that your app is ready to respond to requests, it will also need to add the 
 To do that, this package provides the `shopify.addResponseHeaders` method.
 
 You should return these headers from any endpoint that renders HTML in your app.
-You can do that by using that method in individual loaders when returning a `Response`, or globally by adding it to your `entry.server.tsx` file:
+Most likely you'll want to add this to every HTML response by updating the entry.server.tsx file:
 
 ```ts
 // entry.server.tsx
@@ -156,6 +156,8 @@ export default function handleRequest(
   });
 }
 ```
+
+If you don't want to add this to every HTML request, you can call it in individual loaders, but you should only do this if you have a good reason not to include the headers in every HTML request.
 
 ## Setting up for your runtime
 

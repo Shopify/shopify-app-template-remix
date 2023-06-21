@@ -181,7 +181,7 @@ interface ExpectExitIframeRedirectOptions {
   destination?: string;
 }
 
-export function expectResponseHeaders(response: Response, isEmbeddedApp = true) {
+export function expectSecurityHeaders(response: Response, isEmbeddedApp = true) {
   if ((response.status < 200 || response.status >= 300) && response.status !== 401) {
     return;
   }

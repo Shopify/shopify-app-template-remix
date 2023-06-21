@@ -2,7 +2,7 @@ import { shopifyApp } from "../../..";
 import {
   APP_URL,
   TEST_SHOP,
-  expectResponseHeaders,
+  expectSecurityHeaders,
   getThrownResponse,
   testConfig,
 } from "../../../__tests__/test-helper";
@@ -24,7 +24,7 @@ describe("authorize.admin exit iframe path", () => {
     // THEN
     const responseText = await response.text();
     expect(response.status).toBe(200);
-    expectResponseHeaders(response);
+    expectSecurityHeaders(response);
     expect(response.headers.get("content-type")).toBe(
       "text/html;charset=utf-8"
     );
@@ -53,7 +53,7 @@ describe("authorize.admin exit iframe path", () => {
     // THEN
     const responseText = await response.text();
     expect(response.status).toBe(200);
-    expectResponseHeaders(response);
+    expectSecurityHeaders(response);
     expect(response.headers.get("content-type")).toBe(
       "text/html;charset=utf-8"
     );
@@ -79,6 +79,6 @@ describe("authorize.admin exit iframe path", () => {
 
     // THEN
     expect(response.status).toBe(200);
-    expectResponseHeaders(response);
+    expectSecurityHeaders(response);
   });
 });
