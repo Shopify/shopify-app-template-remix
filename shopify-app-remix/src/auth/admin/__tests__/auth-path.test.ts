@@ -4,6 +4,7 @@ import {
   TEST_SHOP,
   expectBeginAuthRedirect,
   expectExitIframeRedirect,
+  expectSecurityHeaders,
   getThrownResponse,
   testConfig,
 } from "../../../__tests__/test-helper";
@@ -55,6 +56,7 @@ describe("authorize.admin auth path", () => {
 
     // THEN
     expectBeginAuthRedirect(config, response);
+    expectSecurityHeaders(response);
   });
 
   test('redirects to exit-iframe when loading the auth path while in a fetch request', async () => {

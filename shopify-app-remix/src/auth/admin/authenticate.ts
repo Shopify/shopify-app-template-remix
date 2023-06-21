@@ -20,8 +20,7 @@ import {
   requestBillingFactory,
   requireBillingFactory,
 } from "../../billing";
-
-import { AdminContext } from "./types";
+import { addResponseHeaders } from "../helpers/add-response-headers";
 import {
   beginAuth,
   getSessionTokenHeader,
@@ -30,7 +29,9 @@ import {
   validateSessionToken,
   rejectBotRequest,
 } from "../helpers";
+
 import { graphqlClientFactory } from "./graphql-client";
+import { AdminContext } from "./types";
 
 interface SessionContext {
   session: Session;
@@ -59,6 +60,37 @@ export class AuthStrategy<
     const { api, logger, config } = this;
 
     rejectBotRequest({ api, logger, config }, request);
+    this.respondToOptionsRequest(request);
+
+    let sessionContext: SessionContext;
+    try {
+      sessionContext = await this.authenticateAndGetSessionContext(request);
+    } catch (errorOrResponse) {
+      if (errorOrResponse instanceof Response) {
+        this.ensureResponseHeaders(request, errorOrResponse);
+      }
+
+      throw errorOrResponse;
+    }
+
+    const context = {
+      admin: this.createAdminApiContext(request, sessionContext.session),
+      billing: this.createBillingContext(request, sessionContext.session),
+      session: sessionContext.session,
+    };
+
+    if (config.isEmbeddedApp) {
+      return {
+        ...context,
+        sessionToken: sessionContext!.token!,
+      } as AdminContext<Config, Resources>;
+    } else {
+      return context as AdminContext<Config, Resources>;
+    }
+  }
+
+  private async authenticateAndGetSessionContext(request: Request): Promise<SessionContext> {
+    const { api, logger, config } = this;
 
     const url = new URL(request.url);
 
@@ -71,7 +103,6 @@ export class AuthStrategy<
 
     logger.info("Authenticating admin request");
 
-    let sessionContext: SessionContext;
     if (isPatchSessionToken) {
       logger.debug("Rendering bounce page");
       this.renderAppBridge();
@@ -90,7 +121,7 @@ export class AuthStrategy<
         sessionTokenHeader
       );
 
-      sessionContext = await this.validateAuthenticatedSession(
+      return await this.validateAuthenticatedSession(
         request,
         sessionToken
       );
@@ -100,22 +131,7 @@ export class AuthStrategy<
       await this.ensureAppIsEmbeddedIfRequired(request);
       await this.ensureSessionTokenSearchParamIfRequired(request);
 
-      sessionContext = await this.ensureSessionExists(request);
-    }
-
-    const context = {
-      admin: this.createAdminApiContext(request, sessionContext.session),
-      billing: this.createBillingContext(request, sessionContext.session),
-      session: sessionContext.session,
-    };
-
-    if (config.isEmbeddedApp) {
-      return {
-        ...context,
-        sessionToken: sessionContext!.token!,
-      } as AdminContext<Config, Resources>;
-    } else {
-      return context as AdminContext<Config, Resources>;
+      return await this.ensureSessionExists(request);
     }
   }
 
@@ -489,6 +505,26 @@ export class AuthStrategy<
     );
   }
 
+  private respondToOptionsRequest(request: Request) {
+    if (request.method === "OPTIONS") {
+      throw new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Max-Age': '7200',
+        }
+      });
+    }
+  }
+
+  private ensureResponseHeaders(request: Request, response: Response): void {
+    const { config } = this;
+
+    const shop = new URL(request.url).searchParams.get("shop")!;
+
+    // We want the headers to be present on all responses:
+    addResponseHeaders(response.headers, config.isEmbeddedApp, shop);
+  }
+
   private overriddenRestClient(request: Request, session: Session) {
     const { api, config, logger } = this;
 
@@ -501,15 +537,22 @@ export class AuthStrategy<
         try {
           return await originalRequest.call(this, params);
         } catch (error) {
-          if (
-            error instanceof HttpResponseError &&
-            error.response.code === 401
-          ) {
-            await redirectToAuthPage(
-              { api, config, logger },
-              request,
-              session.shop
-            );
+          if (error instanceof HttpResponseError) {
+            if (error.response.code === 401) {
+              await redirectToAuthPage(
+                { api, config, logger },
+                request,
+                session.shop
+              );
+            } else {
+              // forward a minimal copy of the upstream HTTP response instead of an Error:
+              throw new Response(JSON.stringify(error.response.body), {
+                status: error.response.code,
+                headers: {
+                  'Content-Type': error.response.headers!['Content-Type'] as string,
+                },
+              });
+            }
           } else {
             throw error;
           }

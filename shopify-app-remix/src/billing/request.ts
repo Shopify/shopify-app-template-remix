@@ -51,15 +51,16 @@ export function requestBillingFactory<Config extends AppConfigArg>(
       }
     }
 
-    throw redirectOutOfApp(params, request, result.confirmationUrl);
+    throw redirectOutOfApp(params, request, result.confirmationUrl, session.shop);
   };
 }
 
 function redirectOutOfApp(
   params: BasicParams,
   request: Request,
-  url: string
-): Response {
+  url: string,
+  shop: string
+): never {
   const { config, logger } = params;
 
   logger.debug("Redirecting out of app", { url });
@@ -75,18 +76,18 @@ function redirectOutOfApp(
     throw new Response(undefined, {
       status: 302,
       statusText: "Redirect",
-      headers: getAppBridgeHeaders(url),
+      headers: getAppBridgeHeaders(params, url, shop),
     });
   } else if (isEmbeddedRequest) {
     const params = new URLSearchParams({
-      shop: requestUrl.searchParams.get("shop")!,
+      shop,
       host: requestUrl.searchParams.get("host")!,
       exitIframe: url,
     });
 
-    return redirect(`${config.auth.exitIframePath}?${params.toString()}`);
+    throw redirect(`${config.auth.exitIframePath}?${params.toString()}`);
   } else {
     // This will only ever happen for non-embedded apps, because the authenticator will stop before reaching this point
-    return redirect(url);
+    throw redirect(url);
   }
 }

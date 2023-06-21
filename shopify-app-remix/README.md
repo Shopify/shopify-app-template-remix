@@ -91,7 +91,7 @@ export async function loader({ request }: LoaderArgs) {
 }
 ```
 
-Finally if you app is embedded (this is the default) we need to setup [App Bridge](https://shopify.dev/docs/apps/tools/app-bridge) in `root.tsx.`.  To do this pass the `process.env.SHOPIFY_API_KEY` to the frontend via the loader and load App Bridge from the CDN in the document head.
+Finally if your app is embedded (this is the default) we need to setup [App Bridge](https://shopify.dev/docs/apps/tools/app-bridge) in `root.tsx.`.  To do this pass the `process.env.SHOPIFY_API_KEY` to the frontend via the loader and load App Bridge from the CDN in the document head.
 
 Here is an example:
 
@@ -126,6 +126,38 @@ export default function App() {
 ```
 
 > **Note**: This version of App Bridge must be loaded from the CDN, in the document head.
+
+Now that your app is ready to respond to requests, it will also need to add the required `Content-Security-Policy` header directives, as per [our documentation](https://shopify.dev/docs/apps/store/security/iframe-protection).
+To do that, this package provides the `shopify.addResponseHeaders` method.
+
+You should return these headers from any endpoint that renders HTML in your app.
+Most likely you'll want to add this to every HTML response by updating the entry.server.tsx file:
+
+```ts
+// entry.server.tsx
+import { shopify } from "~/shopify.server";
+
+export default function handleRequest(
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  remixContext: EntryContext
+) {
+  const markup = renderToString(
+    <RemixServer context={remixContext} url={request.url} />
+  );
+
+  responseHeaders.set("Content-Type", "text/html");
+  shopify.addResponseHeaders(request, responseHeaders);
+
+  return new Response("<!DOCTYPE html>" + markup, {
+    status: responseStatusCode,
+    headers: responseHeaders,
+  });
+}
+```
+
+If you don't want to add this to every HTML request, you can call it in individual loaders, but you should only do this if you have a good reason not to include the headers in every HTML request.
 
 ## Setting up for your runtime
 

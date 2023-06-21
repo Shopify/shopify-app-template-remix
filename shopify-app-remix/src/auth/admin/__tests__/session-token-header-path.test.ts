@@ -5,13 +5,14 @@ import {
   APP_URL,
   BASE64_HOST,
   TEST_SHOP,
+  expectSecurityHeaders,
   getJwt,
   getThrownResponse,
   setUpValidSession,
   signRequestCookie,
   testConfig,
 } from "../../../__tests__/test-helper";
-import { REAUTH_URL_HEADER } from "../../../auth/helpers/redirect-with-app-bridge-headers";
+import { REAUTH_URL_HEADER } from "../../../auth/helpers/add-response-headers";
 
 describe("authorize.session token header path", () => {
   describe("errors", () => {
@@ -29,6 +30,7 @@ describe("authorize.session token header path", () => {
 
       // THEN
       expect(response.status).toBe(401);
+      expectSecurityHeaders(response);
     });
 
     describe.each([true, false])("when isOnline: %s", (isOnline) => {
@@ -47,6 +49,7 @@ describe("authorize.session token header path", () => {
 
         // THEN
         expect(response.status).toBe(401);
+        expectSecurityHeaders(response);
         expect(response.headers.get("Access-Control-Expose-Headers")).toBe(REAUTH_URL_HEADER)
 
         const { origin, pathname, searchParams } = new URL(
@@ -63,6 +66,7 @@ describe("authorize.session token header path", () => {
         const shopify = shopifyApp(
           testConfig({ useOnlineTokens: isOnline, scopes: ["otherTestScope"] })
         );
+        // The session scopes don't match the configured scopes, so it needs to be reset
         await setUpValidSession(shopify.sessionStorage, isOnline);
 
         // WHEN
@@ -76,6 +80,7 @@ describe("authorize.session token header path", () => {
 
         // THEN
         expect(response.status).toBe(401);
+        expectSecurityHeaders(response);
         expect(response.headers.get("Access-Control-Expose-Headers")).toBe(REAUTH_URL_HEADER)
 
         const { origin, pathname, searchParams } = new URL(

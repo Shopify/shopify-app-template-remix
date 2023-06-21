@@ -35,6 +35,8 @@ type RegisterWebhooks = (
   options: RegisterWebhooksOptions
 ) => Promise<RegisterReturn>;
 
+type AddResponseHeaders = (request: Request, headers: Headers) => void;
+
 type AuthenticateAdmin<
   Config extends AppConfigArg,
   Resources extends ShopifyRestResources = ShopifyRestResources
@@ -97,6 +99,47 @@ export interface ShopifyApp<Config extends AppConfigArg> {
    * ```
    */
   sessionStorage: SessionStorageType<Config>;
+
+  /**
+   * Adds the required Content Security Policy headers for Shopify apps to the given Headers object.
+   *
+   * {@link https://shopify.dev/docs/apps/store/security/iframe-protection}
+   *
+   * @example
+   * Globally adding CSP headers to entry.server.tsx.
+   * ```ts
+   * // ~/shopify.server.ts
+   * import { shopifyApp } from "@shopify/shopify-app-remix";
+   *
+   * export const shopify = shopifyApp({
+   *   // ...etc
+   * });
+   *
+   * // entry.server.tsx
+   * import { shopify } from "~/shopify.server";
+   *
+   * export default function handleRequest(
+   *   request: Request,
+   *   responseStatusCode: number,
+   *   responseHeaders: Headers,
+   *   remixContext: EntryContext
+   * ) {
+   *   const markup = renderToString(
+   *     <RemixServer context={remixContext} url={request.url} />
+   *   );
+   *
+   *   responseHeaders.set("Content-Type", "text/html");
+   *   shopify.addResponseHeaders(request, responseHeaders);
+   *
+   *   return new Response("<!DOCTYPE html>" + markup, {
+   *     status: responseStatusCode,
+   *     headers: responseHeaders,
+   *   });
+   * }
+   * ```
+   */
+  addResponseHeaders: AddResponseHeaders;
+
   /**
    * Register webhook topics for a store using the given session. Most likely you want to use this in combination with the afterAuth hook.
    *

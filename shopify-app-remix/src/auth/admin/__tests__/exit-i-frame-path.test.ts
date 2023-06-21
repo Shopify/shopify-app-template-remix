@@ -1,6 +1,8 @@
 import { shopifyApp } from "../../..";
 import {
   APP_URL,
+  TEST_SHOP,
+  expectSecurityHeaders,
   getThrownResponse,
   testConfig,
 } from "../../../__tests__/test-helper";
@@ -13,7 +15,7 @@ describe("authorize.admin exit iframe path", () => {
 
     // WHEN
     const exitTo = encodeURIComponent(config.appUrl);
-    const url = `${APP_URL}/auth/exit-iframe?exitIframe=${exitTo}`;
+    const url = `${APP_URL}/auth/exit-iframe?exitIframe=${exitTo}&shop=${TEST_SHOP}`;
     const response = await getThrownResponse(
       shopify.authenticate.admin,
       new Request(url)
@@ -22,6 +24,7 @@ describe("authorize.admin exit iframe path", () => {
     // THEN
     const responseText = await response.text();
     expect(response.status).toBe(200);
+    expectSecurityHeaders(response);
     expect(response.headers.get("content-type")).toBe(
       "text/html;charset=utf-8"
     );
@@ -41,7 +44,7 @@ describe("authorize.admin exit iframe path", () => {
 
     // WHEN
     const exitTo = encodeURIComponent(config.appUrl);
-    const url = `${APP_URL}${authPathPrefix}/exit-iframe?exitIframe=${exitTo}`;
+    const url = `${APP_URL}${authPathPrefix}/exit-iframe?exitIframe=${exitTo}&shop=${TEST_SHOP}`;
     const response = await getThrownResponse(
       shopify.authenticate.admin,
       new Request(url)
@@ -50,6 +53,7 @@ describe("authorize.admin exit iframe path", () => {
     // THEN
     const responseText = await response.text();
     expect(response.status).toBe(200);
+    expectSecurityHeaders(response);
     expect(response.headers.get("content-type")).toBe(
       "text/html;charset=utf-8"
     );
@@ -67,7 +71,7 @@ describe("authorize.admin exit iframe path", () => {
 
     // WHEN
     const exitTo = encodeURIComponent("/my-path");
-    const url = `${APP_URL}/auth/exit-iframe?exitIframe=${exitTo}`;
+    const url = `${APP_URL}/auth/exit-iframe?exitIframe=${exitTo}&shop=${TEST_SHOP}`;
     const response = await getThrownResponse(
       shopify.authenticate.admin,
       new Request(url)
@@ -75,5 +79,6 @@ describe("authorize.admin exit iframe path", () => {
 
     // THEN
     expect(response.status).toBe(200);
+    expectSecurityHeaders(response);
   });
 });
