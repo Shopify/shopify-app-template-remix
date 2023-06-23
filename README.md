@@ -5,15 +5,6 @@ This is a template for building a [Shopify app](https://shopify.dev/docs/apps/ge
 <!-- TODO: Uncomment this after we've started using the template in the CLI -->
 <!-- Rather than cloning this repo, you can use your preferred package manager and the Shopify CLI with [these steps](#installing-the-template). -->
 
-## [WIP] Temporary set up steps
-
-1. In `package.json`, remove the line that reads `"@shopify/shopify-app-remix": "file:shopify-app-remix/shopify-shopify-app-remix-1.0.0.tgz"`.
-1. Install dependencies: `npm install`.
-1. Run `npm run setup`
-1. Run `(cd shopify-app-remix && npm install && npm run build && npm pack) && npm add ./shopify-app-remix/shopify-shopify-app-remix-1.0.0.tgz && npm run dev`.
-
-> **Note**: You must use `npm` to build the `shopify-app-remix` package while it is internal, because `yarn pack` does not work properly.
-
 ## Benefits
 
 Shopify apps are built on a variety of Shopify tools to create a great merchant experience.
