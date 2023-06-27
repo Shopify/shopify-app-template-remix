@@ -1,8 +1,10 @@
 import "@shopify/shopify-app-remix/adapters/node";
+import type { LoginError } from "@shopify/shopify-app-remix";
 import {
   BillingInterval,
   DeliveryMethod,
   LogSeverity,
+  LoginErrorType,
   shopifyApp,
 } from "@shopify/shopify-app-remix";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
@@ -11,10 +13,10 @@ import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
 import prisma from "./db.server";
 
 export const shopify = shopifyApp({
-  apiKey: process.env.SHOPIFY_API_KEY!,
-  apiSecretKey: process.env.SHOPIFY_API_SECRET!,
-  scopes: process.env.SCOPES?.split(",")!,
-  appUrl: process.env.SHOPIFY_APP_URL!,
+  apiKey: process.env.SHOPIFY_API_KEY,
+  apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
+  scopes: process.env.SCOPES?.split(","),
+  appUrl: process.env.SHOPIFY_APP_URL || "",
   authPathPrefix: "/app/auth",
   sessionStorage: new PrismaSessionStorage(prisma),
   restResources,
@@ -43,3 +45,25 @@ export const shopify = shopifyApp({
     ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
     : {}),
 });
+
+export function loginErrorMessages(loginErrors: LoginError): {
+  shop: string;
+} {
+  const errors = { shop: "" };
+
+  if (loginErrors) {
+    switch (loginErrors.shop) {
+      case LoginErrorType.MissingShop:
+        errors.shop = "App.Login.errors.missingShop";
+        break;
+      case LoginErrorType.InvalidShop:
+        errors.shop = "App.Login.errors.invalidShop";
+        break;
+      case LoginErrorType.InvalidProtocol:
+        errors.shop = "App.Login.errors.invalidProtocol";
+        break;
+    }
+  }
+
+  return errors;
+}

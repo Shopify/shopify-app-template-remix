@@ -1,7 +1,7 @@
 {
   "App": {
     "Index": {
-      "title": "New Remix App",
+      "title": "App template for Remix",
       "intro": "The links in the sidebar are defined in the layout for your app, in app/routes/app.tsx. They're an App Bridge component that you can set up to embed links into Shopify Admin.",
       "main": {
         "title": "Get started querying data",
@@ -31,6 +31,18 @@
         "exploreLink": "GraphiQL app",
         "mutation": "View the {{link}} in our API references",
         "mutationLink": "productCreate mutation"
+      }
+    },
+    "Login": {
+      "title": "Log in",
+      "label": "Shop domain",
+      "placeholder": "example.myshopify.com",
+      "help": "Exclude https:// from your shop URL",
+      "submit": "Log in",
+      "errors": {
+        "missingShop": "Please enter your shop domain to log in",
+        "invalidShop": "Please enter a valid shop domain to log in",
+        "invalidProtocol": "Remove https:// from your URL to continue to log in"
       }
     }
   }

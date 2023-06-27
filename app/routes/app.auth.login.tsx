@@ -12,14 +12,15 @@ import {
 } from "@shopify/polaris";
 import { Form, useActionData } from "@remix-run/react";
 
-import { shopify } from "../shopify.server";
+import { loginErrorMessages, shopify } from "../shopify.server";
+import { useTranslation } from "react-i18next";
 
 export async function loader({ request }: LoaderArgs) {
   const shop = new URL(request.url).searchParams.get("shop");
   if (shop) {
     const errors = await shopify.login(request);
 
-    return json(errors);
+    return json({ errors: loginErrorMessages(errors) });
   }
 
   return null;
@@ -28,12 +29,13 @@ export async function loader({ request }: LoaderArgs) {
 export async function action({ request }: ActionArgs) {
   const errors = await shopify.login(request);
 
-  return json(errors);
+  return json({ errors: loginErrorMessages(errors) });
 }
 
 export default function Auth() {
   const actionData = useActionData<typeof action>();
   const [shop, setShop] = useState("");
+  const { t } = useTranslation();
 
   return (
     <Page>
@@ -41,20 +43,21 @@ export default function Auth() {
         <Form method="post">
           <FormLayout>
             <Text variant="headingMd" as="h2">
-              Login
+              {t("App.Login.title")}
             </Text>
             <TextField
               type="text"
               name="shop"
-              label="Shop domain"
-              helpText="e.g: my-shop-domain.myshopify.com"
+              label={t("App.Login.label")}
+              placeholder={t("App.Login.placeholder")}
+              helpText={t("App.Login.help")}
               value={shop}
               onChange={setShop}
               autoComplete="on"
-              error={actionData?.errors.shop}
+              error={actionData ? t(actionData.errors.shop) : undefined}
             />
             <Button submit primary>
-              Submit
+              {t("App.Login.submit")}
             </Button>
           </FormLayout>
         </Form>
