@@ -1,21 +1,19 @@
 import React from "react";
 import { json } from "@remix-run/node";
 import type { ActionArgs, LoaderArgs, HeadersFunction } from "@remix-run/node";
-import { useLoaderData, useNavigation } from "@remix-run/react";
+import { useNavigation } from "@remix-run/react";
 import {
   Page,
   Layout,
-  Image,
-  Link,
   Text,
   VerticalStack,
   Card,
-  Grid,
+  Button,
+  HorizontalStack,
+  Box,
 } from "@shopify/polaris";
 
 import { shopify } from "../shopify.server";
-import { ProductsCard } from "../components/ProductsCard.js";
-import trophyImage from "../assets/home-trophy.png";
 import { useTranslation } from "react-i18next";
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -54,7 +52,6 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function Index() {
-  const { count } = useLoaderData();
   const { state, formData } = useNavigation();
   const { t } = useTranslation();
 
@@ -62,79 +59,41 @@ export default function Index() {
     state === "loading" || formData?.get("action") === "create-products";
 
   return (
-    <Page narrowWidth>
-      <Layout>
-        <Layout.Section>
-          <Card>
-            <VerticalStack gap="5">
-              <Text variant="headingMd" as="h2">
-                {t("Index.heading")}
-              </Text>
-              <Grid columns={{ sm: 3 }}>
-                <Grid.Cell columnSpan={{ xs: 4, sm: 4, md: 4, lg: 9, xl: 9 }}>
-                  <VerticalStack gap="5">
-                    <Text variant="bodyMd" as="p">
-                      {t("Index.yourAppIsReadyToExplore", {
-                        polarisLink: (
-                          <Link
-                            url="https://polaris.shopify.com/"
-                            target="_blank"
-                          >
-                            {t("Index.polarisLinkText")}
-                          </Link>
-                        ),
-                        adminApiLink: (
-                          <Link
-                            url="https://shopify.dev/api/admin-graphql"
-                            target="_blank"
-                          >
-                            {t("Index.adminApiLinkText")}
-                          </Link>
-                        ),
-                        appBridgeLink: (
-                          <Link
-                            url="https://shopify.dev/apps/tools/app-bridge"
-                            target="_blank"
-                          >
-                            {t("Index.appBridgeLinkText")}
-                          </Link>
-                        ),
-                      })}
-                    </Text>
-
-                    <Text variant="bodyMd" as="p">
-                      {t("Index.startPopulatingYourApp")}
-                    </Text>
-
-                    <Text variant="bodyMd" as="p">
-                      {t("Index.learnMore", {
-                        shopifyTutorialLink: (
-                          <Link
-                            url="https://shopify.dev/apps/getting-started/add-functionality"
-                            target="_blank"
-                          >
-                            {t("Index.shopifyTutorialLinkText")}
-                          </Link>
-                        ),
-                      })}
-                    </Text>
-                  </VerticalStack>
-                </Grid.Cell>
-                <Grid.Cell columnSpan={{ xs: 2, sm: 2, md: 2, lg: 3, xl: 3 }}>
-                  <Image
-                    source={trophyImage}
-                    alt={t("Index.trophyAltText")}
-                    width={120}
-                  />
-                </Grid.Cell>
-              </Grid>
-            </VerticalStack>
-          </Card>
-        </Layout.Section>
-        <Layout.Section>
-          <ProductsCard count={count} loading={isLoading} />
-        </Layout.Section>
-      </Layout>
+    <Page title={t("App.Index.title")}>
+      <VerticalStack gap="5">
+        <Text variant="bodyMd" as="p">
+          {t("App.Index.intro")}
+        </Text>
+        <Layout>
+          <Layout.Section>
+            <Card>
+              <VerticalStack gap="5">
+                <Text as="h2" variant="headingLg">
+                  {t("App.Index.main.title")}
+                </Text>
+                <Text as="p" variant="bodyMd">
+                  {t("App.Index.main.intro")}
+                </Text>
+                <HorizontalStack>
+                  <Button fullWidth={false} loading={isLoading}>
+                    {t("App.Index.main.cta")}
+                  </Button>
+                </HorizontalStack>
+                <Box
+                  padding="4"
+                  background="bg-subdued"
+                  borderColor="border"
+                  borderWidth="1"
+                  borderRadius="2"
+                ></Box>
+              </VerticalStack>
+            </Card>
+          </Layout.Section>
+          <Layout.Section secondary>
+            <Card></Card>
+          </Layout.Section>
+        </Layout>
+      </VerticalStack>
     </Page>
   );
 }
