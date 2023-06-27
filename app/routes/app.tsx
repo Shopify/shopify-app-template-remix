@@ -19,7 +19,6 @@ export async function loader({ request }) {
 
   return json({
     polarisTranslations: require(`@shopify/polaris/locales/${locale}.json`),
-    apiKey: process.env.SHOPIFY_API_KEY,
   });
 }
 

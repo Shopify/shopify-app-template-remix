@@ -5,33 +5,33 @@
       "intro": "The links in the sidebar are defined in the layout for your app, in app/routes/app.tsx. They're an App Bridge component that you can set up to embed links into Shopify Admin.",
       "main": {
         "title": "Get started querying data",
-        "intro": "Use a GraphQL query to generate 5 products.",
-        "cta": "Create product"
+        "intro": "Use a GraphQL query to generate products.",
+        "cta": {
+          "create": "Create product",
+          "view": "Go to products list"
+        }
       },
       "secondary": {
-        "title": "App starter specs"
+        "title": "App starter specs",
+        "links": {
+          "framework": { "text": "Framework", "link": "Remix" },
+          "database": { "text": "Database", "link": "Prisma" },
+          "interface": {
+            "text": "Interface",
+            "link1": "Polaris",
+            "link2": "App Bridge"
+          },
+          "api": { "text": "API", "link": "GraphQL API" },
+          "i18n": { "text": "Internationalization", "link": "i18n-next" }
+        }
+      },
+      "other": {
+        "title": "Learn more about GraphQL",
+        "explore": "Explore GraphQL with our {{link}}",
+        "exploreLink": "GraphiQL app",
+        "mutation": "View the {{link}} in our API references",
+        "mutationLink": "productCreate mutation"
       }
     }
-  },
-  "Index": {
-    "title": "New Remix App",
-    "heading": "App template for Remix",
-    "learnMore": "Learn more about building out your app in {{shopifyTutorialLink}} 📚",
-    "shopifyTutorialLinkText": "this Shopify tutorial",
-    "startPopulatingYourApp": "Ready to go? Start populating your app with some sample products to view and test in your store.",
-    "trophyAltText": "Nice work on building a Shopify app",
-    "yourAppIsReadyToExplore": "Your app is ready to explore! It contains everything you need to get started including the {{polarisLink}}, {{adminApiLink}}, and {{appBridgeLink}} UI library and components.",
-    "polarisLinkText": "Polaris design system",
-    "adminApiLinkText": "Shopify Admin API",
-    "appBridgeLinkText": "App Bridge"
-  },
-  "ProductsCard": {
-    "description": "Sample products are created with a default title and price. You can remove them at any time.",
-    "populateProductsButton": {
-      "one": "Populate {{count}} product",
-      "other": "Populate {{count}} products"
-    },
-    "title": "Product Counter",
-    "totalProductsHeading": "TOTAL PRODUCTS"
   }
 }
