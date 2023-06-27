@@ -26,17 +26,12 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderArgs) {
-  const shop = new URL(request.url).searchParams.get("shop");
   const locale = await remixI18n.getLocale(request);
-  const polarisTranslations = require(`@shopify/polaris/locales/${locale}.json`);
-
-  if (shop) {
-    const errors = await shopify.login(request);
-
-    return json({ errors: loginErrorMessage(errors), polarisTranslations });
-  }
+  const shop = new URL(request.url).searchParams.get("shop");
+  const errors = shop ? loginErrorMessage(await shopify.login(request)) : {};
 
   return json({
+    errors,
     polarisTranslations: require(`@shopify/polaris/locales/${locale}.json`),
   });
 }

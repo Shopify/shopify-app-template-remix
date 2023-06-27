@@ -15,7 +15,7 @@ export const shopify = shopifyApp({
   apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
   scopes: process.env.SCOPES?.split(","),
   appUrl: process.env.SHOPIFY_APP_URL || "",
-  authPathPrefix: "/app/auth",
+  authPathPrefix: "/auth",
   sessionStorage: new PrismaSessionStorage(prisma),
   restResources,
   logger: {
