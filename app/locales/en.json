@@ -1,7 +1,21 @@
 {
+  "App": {
+    "Index": {
+      "title": "New Remix App",
+      "intro": "The links in the sidebar are defined in the layout for your app, in app/routes/app.tsx. They're an App Bridge component that you can set up to embed links into Shopify Admin.",
+      "main": {
+        "title": "Get started querying data",
+        "intro": "Use a GraphQL query to generate 5 products.",
+        "cta": "Create product"
+      },
+      "secondary": {
+        "title": "App starter specs"
+      }
+    }
+  },
   "Index": {
     "title": "New Remix App",
-    "heading": "Nice work on building a Shopify app 🎉",
+    "heading": "App template for Remix",
     "learnMore": "Learn more about building out your app in {{shopifyTutorialLink}} 📚",
     "shopifyTutorialLinkText": "this Shopify tutorial",
     "startPopulatingYourApp": "Ready to go? Start populating your app with some sample products to view and test in your store.",
