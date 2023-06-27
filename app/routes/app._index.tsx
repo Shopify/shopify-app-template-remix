@@ -1,7 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { json } from "@remix-run/node";
 import type { ActionArgs, LoaderArgs, HeadersFunction } from "@remix-run/node";
-import { useNavigation } from "@remix-run/react";
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useNavigation,
+} from "@remix-run/react";
 import {
   Page,
   Layout,
@@ -11,52 +17,73 @@ import {
   Button,
   HorizontalStack,
   Box,
+  Divider,
+  Link,
+  List,
 } from "@shopify/polaris";
+import { faker } from "@faker-js/faker";
 
 import { shopify } from "../shopify.server";
-import { useTranslation } from "react-i18next";
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const { admin, session } = await shopify.authenticate.admin(request);
+  const { session } = await shopify.authenticate.admin(request);
 
-  return json(await admin.rest.resources.Product.count({ session }));
+  return json({ shop: session.shop });
 };
 
 export async function action({ request }: ActionArgs) {
-  const { admin, session } = await shopify.authenticate.admin(request);
+  const { admin } = await shopify.authenticate.admin(request);
 
-  await Promise.all(
-    [...Array(5).keys()].map(async (i) => {
-      await admin.graphql(
-        `#graphql
-        mutation populateProduct($input: ProductInput!) {
-          productCreate(input: $input) {
-            product {
-              id
+  const response = await admin.graphql(
+    `#graphql
+    mutation populateProduct($input: ProductInput!) {
+      productCreate(input: $input) {
+        product {
+          id
+          title
+          handle
+          status
+          options {
+            id
+            name
+            position
+          }
+          variants(first: 10) {
+            edges {
+              node {
+                id
+                price
+                barcode
+                createdAt
+              }
             }
           }
-        }`,
-        {
-          variables: {
-            input: {
-              title: `${randomTitle()}`,
-              variants: [{ price: randomPrice() }],
-            },
-          },
         }
-      );
-    })
+      }
+    }`,
+    {
+      variables: {
+        input: {
+          title: faker.commerce.productName(),
+          options: [faker.commerce.productName()],
+          variants: [{ price: Math.random() * 100 }],
+        },
+      },
+    }
   );
 
-  return json(await admin.rest.resources.Product.count({ session }));
+  const responseJson = await response.json();
+
+  return json({ product: responseJson.data.productCreate });
 }
 
 export default function Index() {
-  const { state, formData } = useNavigation();
+  const { state } = useNavigation();
   const { t } = useTranslation();
+  const { shop } = useLoaderData<typeof loader>();
+  const actionData = useActionData<typeof action>();
 
-  const isLoading =
-    state === "loading" || formData?.get("action") === "create-products";
+  const isLoading = ["submitting", "loading"].includes(state);
 
   return (
     <Page title={t("App.Index.title")}>
@@ -74,107 +101,181 @@ export default function Index() {
                 <Text as="p" variant="bodyMd">
                   {t("App.Index.main.intro")}
                 </Text>
-                <HorizontalStack>
-                  <Button fullWidth={false} loading={isLoading}>
-                    {t("App.Index.main.cta")}
-                  </Button>
+                <HorizontalStack align="space-between">
+                  <Form method="post">
+                    <Button loading={isLoading} submit primary>
+                      {t("App.Index.main.cta.create")}
+                    </Button>
+                  </Form>
+                  {actionData?.product && (
+                    <Button
+                      onClick={() =>
+                        window.open(`https://${shop}/admin/products`, "_blank")
+                      }
+                    >
+                      {t("App.Index.main.cta.view")}
+                    </Button>
+                  )}
                 </HorizontalStack>
-                <Box
-                  padding="4"
-                  background="bg-subdued"
-                  borderColor="border"
-                  borderWidth="1"
-                  borderRadius="2"
-                ></Box>
+                {actionData?.product && (
+                  <Box
+                    padding="4"
+                    background="bg-subdued"
+                    borderColor="border"
+                    borderWidth="1"
+                    borderRadius="2"
+                    overflowX="scroll"
+                  >
+                    <code>
+                      <pre>{JSON.stringify(actionData.product, null, 2)}</pre>
+                    </code>
+                  </Box>
+                )}
               </VerticalStack>
             </Card>
           </Layout.Section>
           <Layout.Section secondary>
-            <Card></Card>
+            <VerticalStack gap="5">
+              <Card>
+                <VerticalStack gap="5">
+                  <Text as="h2" variant="headingMd">
+                    {t("App.Index.secondary.title")}
+                  </Text>
+                  <VerticalStack gap="2">
+                    <HorizontalStack align="space-between">
+                      <Text as="span" variant="bodyMd">
+                        {t("App.Index.secondary.links.framework.text")}
+                      </Text>
+                      <Link
+                        onClick={() =>
+                          window.open("https://remix.run", "_blank")
+                        }
+                      >
+                        {t("App.Index.secondary.links.framework.link")}
+                      </Link>
+                    </HorizontalStack>
+                    <Divider />
+                    <HorizontalStack align="space-between">
+                      <Text as="span" variant="bodyMd">
+                        {t("App.Index.secondary.links.database.text")}
+                      </Text>
+                      <Link
+                        onClick={() =>
+                          window.open("https://www.prisma.io/", "_blank")
+                        }
+                      >
+                        {t("App.Index.secondary.links.database.link")}
+                      </Link>
+                    </HorizontalStack>
+                    <Divider />
+                    <HorizontalStack align="space-between">
+                      <Text as="span" variant="bodyMd">
+                        {t("App.Index.secondary.links.interface.text")}
+                      </Text>
+                      <span>
+                        <Link
+                          onClick={() =>
+                            window.open(
+                              "https://polaris.shopify.com/",
+                              "_blank"
+                            )
+                          }
+                        >
+                          {t("App.Index.secondary.links.interface.link1")}
+                        </Link>
+                        {", "}
+                        <Link
+                          onClick={() =>
+                            window.open(
+                              "https://shopify.dev/docs/apps/tools/app-bridge",
+                              "_blank"
+                            )
+                          }
+                        >
+                          {t("App.Index.secondary.links.interface.link2")}
+                        </Link>
+                      </span>
+                    </HorizontalStack>
+                    <Divider />
+                    <HorizontalStack align="space-between">
+                      <Text as="span" variant="bodyMd">
+                        {t("App.Index.secondary.links.api.text")}
+                      </Text>
+                      <Link
+                        onClick={() =>
+                          window.open(
+                            "https://shopify.dev/docs/api/admin-graphql",
+                            "_blank"
+                          )
+                        }
+                      >
+                        {t("App.Index.secondary.links.api.link")}
+                      </Link>
+                    </HorizontalStack>
+                    <Divider />
+                    <HorizontalStack align="space-between">
+                      <Text as="span" variant="bodyMd">
+                        {t("App.Index.secondary.links.i18n.text")}
+                      </Text>
+                      <Link
+                        onClick={() =>
+                          window.open("https://www.i18next.com", "_blank")
+                        }
+                      >
+                        {t("App.Index.secondary.links.i18n.link")}
+                      </Link>
+                    </HorizontalStack>
+                  </VerticalStack>
+                </VerticalStack>
+              </Card>
+              <Card>
+                <VerticalStack gap="5">
+                  <Text as="h2" variant="headingMd">
+                    {t("App.Index.other.title")}
+                  </Text>
+                  <List>
+                    <List.Item>
+                      {t("App.Index.other.explore", {
+                        link: (
+                          <Link
+                            onClick={() =>
+                              window.open(
+                                "https://shopify.dev/docs/apps/tools/graphiql-admin-api",
+                                "_blank"
+                              )
+                            }
+                          >
+                            {t("App.Index.other.exploreLink")}
+                          </Link>
+                        ),
+                      })}
+                    </List.Item>
+                    <List.Item>
+                      {t("App.Index.other.mutation", {
+                        link: (
+                          <Link
+                            onClick={() =>
+                              window.open(
+                                "https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate",
+                                "_blank"
+                              )
+                            }
+                          >
+                            {t("App.Index.other.mutationLink")}
+                          </Link>
+                        ),
+                      })}
+                    </List.Item>
+                  </List>
+                </VerticalStack>
+              </Card>
+            </VerticalStack>
           </Layout.Section>
         </Layout>
       </VerticalStack>
     </Page>
   );
 }
-
-function randomTitle() {
-  const adjective = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
-  const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
-  return `${adjective} ${noun}`;
-}
-
-function randomPrice() {
-  return Math.round((Math.random() * 10 + Number.EPSILON) * 100) / 100;
-}
-
-const ADJECTIVES = [
-  "autumn",
-  "hidden",
-  "bitter",
-  "misty",
-  "silent",
-  "empty",
-  "dry",
-  "dark",
-  "summer",
-  "icy",
-  "delicate",
-  "quiet",
-  "white",
-  "cool",
-  "spring",
-  "winter",
-  "patient",
-  "twilight",
-  "dawn",
-  "crimson",
-  "wispy",
-  "weathered",
-  "blue",
-  "billowing",
-  "broken",
-  "cold",
-  "damp",
-  "falling",
-  "frosty",
-  "green",
-  "long",
-];
-
-const NOUNS = [
-  "waterfall",
-  "river",
-  "breeze",
-  "moon",
-  "rain",
-  "wind",
-  "sea",
-  "morning",
-  "snow",
-  "lake",
-  "sunset",
-  "pine",
-  "shadow",
-  "leaf",
-  "dawn",
-  "glitter",
-  "forest",
-  "hill",
-  "cloud",
-  "meadow",
-  "sun",
-  "glade",
-  "bird",
-  "brook",
-  "butterfly",
-  "bush",
-  "dew",
-  "dust",
-  "field",
-  "fire",
-  "flower",
-];
 
 export function CatchBoundary() {
   return <h1>Error occurred.</h1>;
