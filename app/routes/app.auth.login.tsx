@@ -12,15 +12,17 @@ import {
 } from "@shopify/polaris";
 import { Form, useActionData } from "@remix-run/react";
 
-import { loginErrorMessages, shopify } from "../shopify.server";
 import { useTranslation } from "react-i18next";
+
+import { shopify } from "../shopify.server";
+import { loginErrorMessage } from "../i18n/helpers.server";
 
 export async function loader({ request }: LoaderArgs) {
   const shop = new URL(request.url).searchParams.get("shop");
   if (shop) {
     const errors = await shopify.login(request);
 
-    return json({ errors: loginErrorMessages(errors) });
+    return json({ errors: loginErrorMessage(errors) });
   }
 
   return null;
@@ -29,7 +31,7 @@ export async function loader({ request }: LoaderArgs) {
 export async function action({ request }: ActionArgs) {
   const errors = await shopify.login(request);
 
-  return json({ errors: loginErrorMessages(errors) });
+  return json({ errors: loginErrorMessage(errors) });
 }
 
 export default function Auth() {
@@ -49,7 +51,6 @@ export default function Auth() {
               type="text"
               name="shop"
               label={t("App.Login.label")}
-              placeholder={t("App.Login.placeholder")}
               helpText={t("App.Login.help")}
               value={shop}
               onChange={setShop}

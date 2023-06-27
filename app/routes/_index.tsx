@@ -7,7 +7,9 @@ import {
   json,
 } from "@remix-run/node";
 import { Form } from "@remix-run/react";
-import { loginErrorMessages, shopify } from "../shopify.server";
+
+import { shopify } from "../shopify.server";
+import { loginErrorMessage } from "../i18n/helpers.server";
 
 export async function loader({ request }: LoaderArgs) {
   const url = new URL(request.url);
@@ -22,7 +24,7 @@ export async function loader({ request }: LoaderArgs) {
 export async function action({ request }: ActionArgs) {
   const loginErrors = await shopify.login(request);
 
-  return json({ errors: loginErrorMessages(loginErrors) });
+  return json({ errors: loginErrorMessage(loginErrors) });
 }
 
 export default function App() {
