@@ -1,7 +1,13 @@
 import React from "react";
 
-import { type LoaderArgs, redirect } from "@remix-run/node";
-import { Link } from "@remix-run/react";
+import {
+  type LoaderArgs,
+  type ActionArgs,
+  redirect,
+  json,
+} from "@remix-run/node";
+import { Form } from "@remix-run/react";
+import { shopify } from "../shopify.server";
 
 export async function loader({ request }: LoaderArgs) {
   const url = new URL(request.url);
@@ -11,6 +17,12 @@ export async function loader({ request }: LoaderArgs) {
   }
 
   return null;
+}
+
+export async function action({ request }: ActionArgs) {
+  const errors = await shopify.login(request);
+
+  return json(errors);
 }
 
 export default function App() {
@@ -23,7 +35,14 @@ export default function App() {
         <li>Marketing bullet point 1</li>
         <li>Marketing bullet point 1</li>
       </ul>
-      <Link to="/app">Go to the app</Link>
+      <Form method="post">
+        <label>
+          Shop domain
+          <input type="text" name="shop" />
+          <span>e.g: my-shop-domain.myshopify.com</span>
+        </label>
+        <button type="submit">Login</button>
+      </Form>
     </>
   );
 }
