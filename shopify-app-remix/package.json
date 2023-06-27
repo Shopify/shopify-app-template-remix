@@ -33,7 +33,7 @@
     "@shopify/shopify-app-session-storage": "^1.1.2",
     "@shopify/shopify-app-session-storage-sqlite": "^1.2.2",
     "isbot": "^3.6.5",
-    "semver": "^7.5.0",
+    "semver": "^7.5.2",
     "tslib": "^2.5.0"
   },
   "files": [
