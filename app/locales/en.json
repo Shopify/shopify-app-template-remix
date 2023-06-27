@@ -36,13 +36,11 @@
     "Login": {
       "title": "Log in",
       "label": "Shop domain",
-      "placeholder": "example.myshopify.com",
-      "help": "Exclude https:// from your shop URL",
+      "help": "e.g. example.myshopify.com",
       "submit": "Log in",
       "errors": {
         "missingShop": "Please enter your shop domain to log in",
-        "invalidShop": "Please enter a valid shop domain to log in",
-        "invalidProtocol": "Remove https:// from your URL to continue to log in"
+        "invalidShop": "Please enter a valid shop domain to log in"
       }
     }
   }

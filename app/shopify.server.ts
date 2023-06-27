@@ -1,10 +1,8 @@
 import "@shopify/shopify-app-remix/adapters/node";
-import type { LoginError } from "@shopify/shopify-app-remix";
 import {
   BillingInterval,
   DeliveryMethod,
   LogSeverity,
-  LoginErrorType,
   shopifyApp,
 } from "@shopify/shopify-app-remix";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
@@ -45,25 +43,3 @@ export const shopify = shopifyApp({
     ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
     : {}),
 });
-
-export function loginErrorMessages(loginErrors: LoginError): {
-  shop: string;
-} {
-  const errors = { shop: "" };
-
-  if (loginErrors) {
-    switch (loginErrors.shop) {
-      case LoginErrorType.MissingShop:
-        errors.shop = "App.Login.errors.missingShop";
-        break;
-      case LoginErrorType.InvalidShop:
-        errors.shop = "App.Login.errors.invalidShop";
-        break;
-      case LoginErrorType.InvalidProtocol:
-        errors.shop = "App.Login.errors.invalidProtocol";
-        break;
-    }
-  }
-
-  return errors;
-}
