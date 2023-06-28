@@ -5,11 +5,18 @@ import {
   type ActionArgs,
   redirect,
   json,
+  type LinksFunction,
 } from "@remix-run/node";
 import { Form } from "@remix-run/react";
 
 import { shopify } from "../shopify.server";
 import { loginErrorMessage } from "../i18n/helpers.server";
+
+import indexStyles from "../_index.css";
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: indexStyles },
+];
 
 export async function loader({ request }: LoaderArgs) {
   const url = new URL(request.url);
@@ -29,22 +36,33 @@ export async function action({ request }: ActionArgs) {
 
 export default function App() {
   return (
-    <>
-      <h1>Hello world!</h1>
-      <p>Welcome to my app. You should use it because:</p>
-      <ul>
-        <li>Marketing bullet point 1</li>
-        <li>Marketing bullet point 1</li>
-        <li>Marketing bullet point 1</li>
-      </ul>
-      <Form method="post">
-        <label>
-          Shop domain
-          <input type="text" name="shop" />
-          <span>e.g: my-shop-domain.myshopify.com</span>
-        </label>
-        <button type="submit">Login</button>
-      </Form>
-    </>
+    <div className="index">
+      <div className="content">
+        <h1>A short tagline about [your app]</h1>
+        <p>A tagline about [your app] to convert your customers.</p>
+        <Form method="post" action="app/auth/login">
+          <label>
+            <span>shop domain</span>
+            <input type="text" name="shop" />
+            <span>e.g: my-shop-domain.myshopify.com</span>
+          </label>
+          <button type="submit">Try it</button>
+        </Form>
+        <ul>
+          <li>
+            <strong>Value prop</strong>. Some detail about your value prop that
+            convinces your customer.
+          </li>
+          <li>
+            <strong>Value prop</strong>. Some detail about your value prop that
+            convinces your customer.
+          </li>
+          <li>
+            <strong>Value prop</strong>. Some detail about your value prop that
+            convinces your customer.
+          </li>
+        </ul>
+      </div>
+    </div>
   );
 }
