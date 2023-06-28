@@ -93,9 +93,24 @@ export default function Index() {
     <Page title="App template for Remix">
       <VerticalStack gap="5">
         <Text variant="bodyMd" as="p">
-          The links in the sidebar are defined in the layout for your app, in
-          app/routes/app.tsx. They're an App Bridge component that you can set
-          up to embed links into Shopify Admin.
+          Congratulations on creating a new Shopify app! This page gives you a
+          quick tour of some of the things you can do while embedded in the
+          Shopify Admin.
+        </Text>
+        <Text variant="bodyMd" as="p">
+          For example, you can add links to your app's pages in the Admin
+          sidebar using the <b>ui-nav-menu</b> component from{" "}
+          <Link
+            onClick={() =>
+              window.open(
+                "https://shopify.dev/docs/apps/tools/app-bridge",
+                "_blank"
+              )
+            }
+          >
+            App Bridge
+          </Link>{" "}
+          in the <b>/app/routes/app.tsx</b> layout file.
         </Text>
         <Layout>
           <Layout.Section>
@@ -137,7 +152,9 @@ export default function Index() {
                     overflowX="scroll"
                   >
                     <code>
-                      <pre>{JSON.stringify(actionData.product, null, 2)}</pre>
+                      <pre style={{ margin: 0 }}>
+                        {JSON.stringify(actionData.product, null, 2)}
+                      </pre>
                     </code>
                   </Box>
                 )}
