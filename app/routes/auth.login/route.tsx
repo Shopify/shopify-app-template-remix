@@ -12,14 +12,11 @@ import {
   TextField,
 } from "@shopify/polaris";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
-
-import { useTranslation } from "react-i18next";
-import remixI18n from "../i18n/i18next.server";
-
-import { shopify } from "../shopify.server";
-import { loginErrorMessage } from "../i18n/helpers.server";
-
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
+
+import remixI18n from "../../i18n/i18next.server";
+import { shopify } from "../../shopify.server";
+import { loginErrorMessage } from "./error.server";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: polarisStyles },
@@ -48,7 +45,6 @@ export default function Auth() {
   const { polarisTranslations } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const [shop, setShop] = useState("");
-  const { t } = useTranslation();
 
   return (
     <PolarisAppProvider i18n={polarisTranslations}>
@@ -57,20 +53,20 @@ export default function Auth() {
           <Form method="post">
             <FormLayout>
               <Text variant="headingMd" as="h2">
-                {t("App.Login.title")}
+                Log in
               </Text>
               <TextField
                 type="text"
                 name="shop"
-                label={t("App.Login.label")}
-                helpText={t("App.Login.help")}
+                label="Shop domain"
+                helpText="e.g. example.myshopify.com"
                 value={shop}
                 onChange={setShop}
                 autoComplete="on"
-                error={actionData ? t(actionData.errors.shop) : undefined}
+                error={actionData?.errors.shop}
               />
               <Button submit primary>
-                {t("App.Login.submit")}
+                Log in
               </Button>
             </FormLayout>
           </Form>

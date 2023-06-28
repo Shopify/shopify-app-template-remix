@@ -1,47 +1,17 @@
 {
-  "App": {
-    "Index": {
-      "title": "App template for Remix",
-      "intro": "The links in the sidebar are defined in the layout for your app, in app/routes/app.tsx. They're an App Bridge component that you can set up to embed links into Shopify Admin.",
-      "main": {
-        "title": "Get started querying data",
-        "intro": "Use a GraphQL query to generate products.",
-        "cta": {
-          "create": "Create product",
-          "view": "Go to products list"
-        }
-      },
-      "secondary": {
-        "title": "App starter specs",
-        "links": {
-          "framework": { "text": "Framework", "link": "Remix" },
-          "database": { "text": "Database", "link": "Prisma" },
-          "interface": {
-            "text": "Interface",
-            "link1": "Polaris",
-            "link2": "App Bridge"
-          },
-          "api": { "text": "API", "link": "GraphQL API" },
-          "i18n": { "text": "Internationalization", "link": "i18n-next" }
-        }
-      },
-      "other": {
-        "title": "Learn more about GraphQL",
-        "explore": "Explore GraphQL with our {{link}}",
-        "exploreLink": "GraphiQL app",
-        "mutation": "View the {{link}} in our API references",
-        "mutationLink": "productCreate mutation"
-      }
+  "Localization": {
+    "title": "Localization",
+    "intro": "The Remix template comes with built-in internationalization support, so you can translate your app to multiple languages. This page shows examples of how to localize your app.",
+    "translating": {
+      "title": "Translating your app",
+      "intro": "It's important to localize your application to ensure you can reach as many merchants as you can. This template makes it possible for you to support multiple languages simply by creating JSON files with translations.",
+      "example": "You can create new translations by adding them to your {{localePath}} files, and using the {{hookName}} React hook to render them in your components.",
+      "file": "This page is fully localized in your template, please see the {{filePath}} file."
     },
-    "Login": {
-      "title": "Log in",
-      "label": "Shop domain",
-      "help": "e.g. example.myshopify.com",
-      "submit": "Log in",
-      "errors": {
-        "missingShop": "Please enter your shop domain to log in",
-        "invalidShop": "Please enter a valid shop domain to log in"
-      }
+    "resources": {
+      "title": "Resources",
+      "i18next": "Translating with i18next",
+      "remix-i18next": "remix-i18next documentation"
     }
   }
 }

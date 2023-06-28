@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { type LinksFunction, json } from "@remix-run/node";
-import { Outlet, useLoaderData } from "@remix-run/react";
+import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import { Provider as AppBridgeReactProvider } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
@@ -32,10 +32,19 @@ export default function App() {
   const [config] = useState({ host, apiKey });
 
   return (
-    <PolarisAppProvider i18n={polarisTranslations}>
-      <AppBridgeReactProvider config={config}>
-        <Outlet />
-      </AppBridgeReactProvider>
-    </PolarisAppProvider>
+    <>
+      <script
+        src="https://cdn.shopify.com/shopifycloud/app-bridge-next/app-bridge.js"
+        data-api-key={apiKey}
+      />
+      <ui-nav-menu>
+        <Link to="/app/localization">Localization</Link>
+      </ui-nav-menu>
+      <PolarisAppProvider i18n={polarisTranslations}>
+        <AppBridgeReactProvider config={config}>
+          <Outlet />
+        </AppBridgeReactProvider>
+      </PolarisAppProvider>
+    </>
   );
 }

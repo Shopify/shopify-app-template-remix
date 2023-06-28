@@ -7,10 +7,10 @@ export function loginErrorMessage(loginErrors: LoginError) {
   if (loginErrors) {
     switch (loginErrors.shop) {
       case LoginErrorType.MissingShop:
-        errors.shop = "App.Login.errors.missingShop";
+        errors.shop = "Please enter your shop domain to log in";
         break;
       case LoginErrorType.InvalidShop:
-        errors.shop = "App.Login.errors.invalidShop";
+        errors.shop = "Please enter a valid shop domain to log in";
         break;
     }
   }

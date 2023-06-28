@@ -1,5 +1,4 @@
-import React from "react";
-import { useTranslation } from "react-i18next";
+import React, { useEffect } from "react";
 import { json } from "@remix-run/node";
 import type { ActionArgs, LoaderArgs, HeadersFunction } from "@remix-run/node";
 import {
@@ -36,36 +35,30 @@ export async function action({ request }: ActionArgs) {
 
   const response = await admin.graphql(
     `#graphql
-    mutation populateProduct($input: ProductInput!) {
-      productCreate(input: $input) {
-        product {
-          id
-          title
-          handle
-          status
-          options {
+      mutation populateProduct($input: ProductInput!) {
+        productCreate(input: $input) {
+          product {
             id
-            name
-            position
-          }
-          variants(first: 10) {
-            edges {
-              node {
-                id
-                price
-                barcode
-                createdAt
+            title
+            handle
+            status
+            variants(first: 10) {
+              edges {
+                node {
+                  id
+                  price
+                  barcode
+                  createdAt
+                }
               }
             }
           }
         }
-      }
-    }`,
+      }`,
     {
       variables: {
         input: {
           title: faker.commerce.productName(),
-          options: [faker.commerce.productName()],
           variants: [{ price: Math.random() * 100 }],
         },
       },
@@ -74,46 +67,78 @@ export async function action({ request }: ActionArgs) {
 
   const responseJson = await response.json();
 
-  return json({ product: responseJson.data.productCreate });
+  return json({
+    product: responseJson.data.productCreate.product,
+  });
 }
 
 export default function Index() {
   const { state } = useNavigation();
-  const { t } = useTranslation();
   const { shop } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
 
   const isLoading = ["submitting", "loading"].includes(state);
 
+  const productId = actionData?.product?.id.replace(
+    "gid://shopify/Product/",
+    ""
+  );
+  useEffect(() => {
+    if (productId) {
+      (window as unknown as any)?.shopify.toast.show("Product created");
+    }
+  }, [productId]);
+
   return (
-    <Page title={t("App.Index.title")}>
+    <Page title="App template for Remix">
       <VerticalStack gap="5">
         <Text variant="bodyMd" as="p">
-          {t("App.Index.intro")}
+          Congratulations on creating a new Shopify app! This page gives you a
+          quick tour of some of the things you can do while embedded in the
+          Shopify Admin.
+        </Text>
+        <Text variant="bodyMd" as="p">
+          For example, you can add links to your app's pages in the Admin
+          sidebar using the <b>ui-nav-menu</b> component from{" "}
+          <Link
+            onClick={() =>
+              window.open(
+                "https://shopify.dev/docs/apps/tools/app-bridge",
+                "_blank"
+              )
+            }
+          >
+            App Bridge
+          </Link>{" "}
+          in the <b>/app/routes/app.tsx</b> layout file.
         </Text>
         <Layout>
           <Layout.Section>
             <Card>
               <VerticalStack gap="5">
                 <Text as="h2" variant="headingLg">
-                  {t("App.Index.main.title")}
+                  Get started querying data
                 </Text>
                 <Text as="p" variant="bodyMd">
-                  {t("App.Index.main.intro")}
+                  Use a GraphQL mutation to generate products.
                 </Text>
-                <HorizontalStack align="space-between">
+                <HorizontalStack gap="5">
                   <Form method="post">
                     <Button loading={isLoading} submit primary>
-                      {t("App.Index.main.cta.create")}
+                      Create product
                     </Button>
                   </Form>
                   {actionData?.product && (
                     <Button
-                      onClick={() =>
-                        window.open(`https://${shop}/admin/products`, "_blank")
-                      }
+                      plain
+                      onClick={() => {
+                        window.open(
+                          `https://${shop}/admin/products/${productId}`,
+                          "_blank"
+                        );
+                      }}
                     >
-                      {t("App.Index.main.cta.view")}
+                      Go to product
                     </Button>
                   )}
                 </HorizontalStack>
@@ -127,7 +152,9 @@ export default function Index() {
                     overflowX="scroll"
                   >
                     <code>
-                      <pre>{JSON.stringify(actionData.product, null, 2)}</pre>
+                      <pre style={{ margin: 0 }}>
+                        {JSON.stringify(actionData.product, null, 2)}
+                      </pre>
                     </code>
                   </Box>
                 )}
@@ -139,38 +166,38 @@ export default function Index() {
               <Card>
                 <VerticalStack gap="5">
                   <Text as="h2" variant="headingMd">
-                    {t("App.Index.secondary.title")}
+                    Resources
                   </Text>
                   <VerticalStack gap="2">
                     <HorizontalStack align="space-between">
                       <Text as="span" variant="bodyMd">
-                        {t("App.Index.secondary.links.framework.text")}
+                        Framework
                       </Text>
                       <Link
                         onClick={() =>
                           window.open("https://remix.run", "_blank")
                         }
                       >
-                        {t("App.Index.secondary.links.framework.link")}
+                        Remix
                       </Link>
                     </HorizontalStack>
                     <Divider />
                     <HorizontalStack align="space-between">
                       <Text as="span" variant="bodyMd">
-                        {t("App.Index.secondary.links.database.text")}
+                        Database
                       </Text>
                       <Link
                         onClick={() =>
                           window.open("https://www.prisma.io/", "_blank")
                         }
                       >
-                        {t("App.Index.secondary.links.database.link")}
+                        Prisma
                       </Link>
                     </HorizontalStack>
                     <Divider />
                     <HorizontalStack align="space-between">
                       <Text as="span" variant="bodyMd">
-                        {t("App.Index.secondary.links.interface.text")}
+                        Interface
                       </Text>
                       <span>
                         <Link
@@ -181,7 +208,7 @@ export default function Index() {
                             )
                           }
                         >
-                          {t("App.Index.secondary.links.interface.link1")}
+                          Polaris
                         </Link>
                         {", "}
                         <Link
@@ -192,14 +219,14 @@ export default function Index() {
                             )
                           }
                         >
-                          {t("App.Index.secondary.links.interface.link2")}
+                          App Bridge
                         </Link>
                       </span>
                     </HorizontalStack>
                     <Divider />
                     <HorizontalStack align="space-between">
                       <Text as="span" variant="bodyMd">
-                        {t("App.Index.secondary.links.api.text")}
+                        API
                       </Text>
                       <Link
                         onClick={() =>
@@ -209,20 +236,23 @@ export default function Index() {
                           )
                         }
                       >
-                        {t("App.Index.secondary.links.api.link")}
+                        GraphQL API
                       </Link>
                     </HorizontalStack>
                     <Divider />
                     <HorizontalStack align="space-between">
                       <Text as="span" variant="bodyMd">
-                        {t("App.Index.secondary.links.i18n.text")}
+                        Internationalization
                       </Text>
                       <Link
                         onClick={() =>
-                          window.open("https://www.i18next.com", "_blank")
+                          window.open(
+                            "https://github.com/sergiodxa/remix-i18next",
+                            "_blank"
+                          )
                         }
                       >
-                        {t("App.Index.secondary.links.i18n.link")}
+                        remix-i18next
                       </Link>
                     </HorizontalStack>
                   </VerticalStack>
@@ -231,40 +261,35 @@ export default function Index() {
               <Card>
                 <VerticalStack gap="5">
                   <Text as="h2" variant="headingMd">
-                    {t("App.Index.other.title")}
+                    Learn more about GraphQL
                   </Text>
                   <List>
                     <List.Item>
-                      {t("App.Index.other.explore", {
-                        link: (
-                          <Link
-                            onClick={() =>
-                              window.open(
-                                "https://shopify.dev/docs/apps/tools/graphiql-admin-api",
-                                "_blank"
-                              )
-                            }
-                          >
-                            {t("App.Index.other.exploreLink")}
-                          </Link>
-                        ),
-                      })}
+                      Explore GraphQL with our{" "}
+                      <Link
+                        onClick={() =>
+                          window.open(
+                            "https://shopify.dev/docs/apps/tools/graphiql-admin-api",
+                            "_blank"
+                          )
+                        }
+                      >
+                        GraphiQL app
+                      </Link>
                     </List.Item>
                     <List.Item>
-                      {t("App.Index.other.mutation", {
-                        link: (
-                          <Link
-                            onClick={() =>
-                              window.open(
-                                "https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate",
-                                "_blank"
-                              )
-                            }
-                          >
-                            {t("App.Index.other.mutationLink")}
-                          </Link>
-                        ),
-                      })}
+                      View the{" "}
+                      <Link
+                        onClick={() =>
+                          window.open(
+                            "https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate",
+                            "_blank"
+                          )
+                        }
+                      >
+                        productCreate mutation
+                      </Link>{" "}
+                      in our API references
                     </List.Item>
                   </List>
                 </VerticalStack>
