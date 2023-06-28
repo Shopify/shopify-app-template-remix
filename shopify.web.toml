@@ -1,6 +1,5 @@
 type = "frontend"
 webhooks_path = "/webhooks"
-auth_callback_path = "/app/auth/callback"
 
 [commands]
 dev = "npm exec remix dev"

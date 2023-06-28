@@ -3,8 +3,8 @@ import { type LinksFunction, json } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import { Provider as AppBridgeReactProvider } from "@shopify/app-bridge-react";
-
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
+
 import remixI18n from "../i18n/i18next.server";
 
 export const links: LinksFunction = () => [
