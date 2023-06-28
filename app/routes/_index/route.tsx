@@ -9,10 +9,10 @@ import {
 } from "@remix-run/node";
 import { Form } from "@remix-run/react";
 
-import { shopify } from "../shopify.server";
-import { loginErrorMessage } from "../i18n/helpers.server";
+import { shopify } from "../../shopify.server";
+import { loginErrorMessage } from "../../i18n/helpers.server";
 
-import indexStyles from "../_index.css";
+import indexStyles from "./style.css";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: indexStyles },
