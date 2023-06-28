@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Links,
   LiveReload,
@@ -6,9 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
-  useMatches,
 } from "@remix-run/react";
-import React from "react";
 import type { MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useTranslation } from "react-i18next";
@@ -21,29 +20,18 @@ export const meta: MetaFunction = ({ data }) => ({
 });
 
 export async function loader({ request }) {
-  const locale = await remixI18n.getLocale(request);
-  return json({
-    locale,
-    apiKey: process.env.SHOPIFY_API_KEY,
-  });
+  return json({ locale: await remixI18n.getLocale(request) });
 }
 
 export default function App() {
-  const { locale, apiKey } = useLoaderData<typeof loader>();
+  const { locale } = useLoaderData<typeof loader>();
   const { i18n } = useTranslation();
-  const useAppBridge = useMatches().some((match) => match.handle?.useAppBridge);
 
   return (
     <html lang={locale} dir={i18n.dir()}>
       <head>
         <Meta />
         <Links />
-        {useAppBridge && (
-          <script
-            src="https://cdn.shopify.com/shopifycloud/app-bridge-next/app-bridge.js"
-            data-api-key={apiKey}
-          />
-        )}
       </head>
       <body>
         <Outlet />
