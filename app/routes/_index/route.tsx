@@ -1,16 +1,7 @@
 import React from "react";
 
-import {
-  type LoaderArgs,
-  type ActionArgs,
-  redirect,
-  json,
-  type LinksFunction,
-} from "@remix-run/node";
+import { type LoaderArgs, redirect, type LinksFunction } from "@remix-run/node";
 import { Form } from "@remix-run/react";
-
-import { shopify } from "../../shopify.server";
-import { loginErrorMessage } from "../../i18n/helpers.server";
 
 import indexStyles from "./style.css";
 
@@ -26,12 +17,6 @@ export async function loader({ request }: LoaderArgs) {
   }
 
   return null;
-}
-
-export async function action({ request }: ActionArgs) {
-  const loginErrors = await shopify.login(request);
-
-  return json({ errors: loginErrorMessage(loginErrors) });
 }
 
 export default function App() {

@@ -1,5 +1,4 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 import { json } from "@remix-run/node";
 import type { ActionArgs, LoaderArgs, HeadersFunction } from "@remix-run/node";
 import {
@@ -79,32 +78,33 @@ export async function action({ request }: ActionArgs) {
 
 export default function Index() {
   const { state } = useNavigation();
-  const { t } = useTranslation();
   const { shop } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
 
   const isLoading = ["submitting", "loading"].includes(state);
 
   return (
-    <Page title={t("App.Index.title")}>
+    <Page title="App template for Remix">
       <VerticalStack gap="5">
         <Text variant="bodyMd" as="p">
-          {t("App.Index.intro")}
+          The links in the sidebar are defined in the layout for your app, in
+          app/routes/app.tsx. They're an App Bridge component that you can set
+          up to embed links into Shopify Admin.
         </Text>
         <Layout>
           <Layout.Section>
             <Card>
               <VerticalStack gap="5">
                 <Text as="h2" variant="headingLg">
-                  {t("App.Index.main.title")}
+                  Get started querying data
                 </Text>
                 <Text as="p" variant="bodyMd">
-                  {t("App.Index.main.intro")}
+                  Use a GraphQL query to generate products.
                 </Text>
                 <HorizontalStack align="space-between">
                   <Form method="post">
                     <Button loading={isLoading} submit primary>
-                      {t("App.Index.main.cta.create")}
+                      Create product
                     </Button>
                   </Form>
                   {actionData?.product && (
@@ -113,7 +113,7 @@ export default function Index() {
                         window.open(`https://${shop}/admin/products`, "_blank")
                       }
                     >
-                      {t("App.Index.main.cta.view")}
+                      Go to products list
                     </Button>
                   )}
                 </HorizontalStack>
@@ -139,38 +139,38 @@ export default function Index() {
               <Card>
                 <VerticalStack gap="5">
                   <Text as="h2" variant="headingMd">
-                    {t("App.Index.secondary.title")}
+                    Resources
                   </Text>
                   <VerticalStack gap="2">
                     <HorizontalStack align="space-between">
                       <Text as="span" variant="bodyMd">
-                        {t("App.Index.secondary.links.framework.text")}
+                        Framework
                       </Text>
                       <Link
                         onClick={() =>
                           window.open("https://remix.run", "_blank")
                         }
                       >
-                        {t("App.Index.secondary.links.framework.link")}
+                        Remix
                       </Link>
                     </HorizontalStack>
                     <Divider />
                     <HorizontalStack align="space-between">
                       <Text as="span" variant="bodyMd">
-                        {t("App.Index.secondary.links.database.text")}
+                        Database
                       </Text>
                       <Link
                         onClick={() =>
                           window.open("https://www.prisma.io/", "_blank")
                         }
                       >
-                        {t("App.Index.secondary.links.database.link")}
+                        Prisma
                       </Link>
                     </HorizontalStack>
                     <Divider />
                     <HorizontalStack align="space-between">
                       <Text as="span" variant="bodyMd">
-                        {t("App.Index.secondary.links.interface.text")}
+                        Interface
                       </Text>
                       <span>
                         <Link
@@ -181,7 +181,7 @@ export default function Index() {
                             )
                           }
                         >
-                          {t("App.Index.secondary.links.interface.link1")}
+                          Polaris
                         </Link>
                         {", "}
                         <Link
@@ -192,14 +192,14 @@ export default function Index() {
                             )
                           }
                         >
-                          {t("App.Index.secondary.links.interface.link2")}
+                          App Bridge
                         </Link>
                       </span>
                     </HorizontalStack>
                     <Divider />
                     <HorizontalStack align="space-between">
                       <Text as="span" variant="bodyMd">
-                        {t("App.Index.secondary.links.api.text")}
+                        API
                       </Text>
                       <Link
                         onClick={() =>
@@ -209,20 +209,23 @@ export default function Index() {
                           )
                         }
                       >
-                        {t("App.Index.secondary.links.api.link")}
+                        GraphQL API
                       </Link>
                     </HorizontalStack>
                     <Divider />
                     <HorizontalStack align="space-between">
                       <Text as="span" variant="bodyMd">
-                        {t("App.Index.secondary.links.i18n.text")}
+                        Internationalization
                       </Text>
                       <Link
                         onClick={() =>
-                          window.open("https://www.i18next.com", "_blank")
+                          window.open(
+                            "https://github.com/sergiodxa/remix-i18next",
+                            "_blank"
+                          )
                         }
                       >
-                        {t("App.Index.secondary.links.i18n.link")}
+                        remix-i18next
                       </Link>
                     </HorizontalStack>
                   </VerticalStack>
@@ -231,40 +234,35 @@ export default function Index() {
               <Card>
                 <VerticalStack gap="5">
                   <Text as="h2" variant="headingMd">
-                    {t("App.Index.other.title")}
+                    Learn more about GraphQL
                   </Text>
                   <List>
                     <List.Item>
-                      {t("App.Index.other.explore", {
-                        link: (
-                          <Link
-                            onClick={() =>
-                              window.open(
-                                "https://shopify.dev/docs/apps/tools/graphiql-admin-api",
-                                "_blank"
-                              )
-                            }
-                          >
-                            {t("App.Index.other.exploreLink")}
-                          </Link>
-                        ),
-                      })}
+                      Explore GraphQL with our{" "}
+                      <Link
+                        onClick={() =>
+                          window.open(
+                            "https://shopify.dev/docs/apps/tools/graphiql-admin-api",
+                            "_blank"
+                          )
+                        }
+                      >
+                        GraphiQL app
+                      </Link>
                     </List.Item>
                     <List.Item>
-                      {t("App.Index.other.mutation", {
-                        link: (
-                          <Link
-                            onClick={() =>
-                              window.open(
-                                "https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate",
-                                "_blank"
-                              )
-                            }
-                          >
-                            {t("App.Index.other.mutationLink")}
-                          </Link>
-                        ),
-                      })}
+                      View the{" "}
+                      <Link
+                        onClick={() =>
+                          window.open(
+                            "https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate",
+                            "_blank"
+                          )
+                        }
+                      >
+                        productCreate mutation
+                      </Link>{" "}
+                      in our API references
                     </List.Item>
                   </List>
                 </VerticalStack>
