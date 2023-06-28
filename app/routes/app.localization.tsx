@@ -10,6 +10,15 @@ import {
   VerticalStack,
 } from "@shopify/polaris";
 import { useTranslation } from "react-i18next";
+import type { HeadersFunction, LoaderArgs } from "@remix-run/node";
+
+import { shopify } from "../shopify.server";
+
+export const loader = async ({ request }: LoaderArgs) => {
+  await shopify.authenticate.admin(request);
+
+  return null;
+};
 
 export default function Localization() {
   const { t } = useTranslation();
@@ -92,3 +101,11 @@ export default function Localization() {
     </Page>
   );
 }
+
+export function CatchBoundary() {
+  return <h1>Error occurred.</h1>;
+}
+
+export const headers: HeadersFunction = ({ loaderHeaders }) => {
+  return loaderHeaders;
+};

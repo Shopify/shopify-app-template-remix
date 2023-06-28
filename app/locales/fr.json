@@ -1,24 +1,17 @@
 {
-  "Index": {
-    "title": "Nouvelle application Remix",
-    "heading": "Bravo pour l’application Shopify que vous avez créée 🎉",
-    "learnMore": "Découvrez comment concevoir votre application dans {{shopifyTutorialLink}} 📚",
-    "shopifyTutorialLinkText": "ce tutoriel Shopify",
-    "startPopulatingYourApp": "Vous souhaitez vous lancer ? Commencez à remplir votre application d’exemples de produits à afficher et tester dans votre boutique.",
-    "trophyAltText": "Bravo pour l’application Shopify que vous avez créée",
-    "yourAppIsReadyToExplore": "Votre application est prête à être explorée ! Elle contient tout ce dont vous avez besoin pour vous lancer, y compris le {{polarisLink}}, l’{{adminApiLink}}, ainsi que la bibliothèque et les composants d’IU {{appBridgeLink}}.",
-    "polarisLinkText": "système de design Polaris",
-    "adminApiLinkText": "API Shopify Admin",
-    "appBridgeLinkText": "App Bridge"
-  },
-  "ProductsCard": {
-    "description": "Les exemples de produits sont créés avec un titre et un prix par défaut. Vous pouvez les supprimer à tout moment.",
-    "populateProductsButton": {
-      "one": "Remplir {{count}} produit",
-      "other": "Remplir {{count}} produits",
-      "many": "Remplir {{count}} produits"
+  "Localization": {
+    "title": "Localization",
+    "intro": "The Remix template comes with built-in internationalization support, so you can translate your app to multiple languages. This page shows examples of how to localize your app.",
+    "translating": {
+      "title": "Translating your app",
+      "intro": "It's important to localize your application to ensure you can reach as many merchants as you can. This template makes it possible for you to support multiple languages simply by creating JSON files with translations.",
+      "example": "You can create new translations by adding them to your {{localePath}} files, and using the {{hookName}} React hook to render them in your components.",
+      "file": "This page is fully localized in your template, please see the {{filePath}} file."
     },
-    "title": "Compteur de produits",
-    "totalProductsHeading": "TOTAL DES PRODUITS"
+    "resources": {
+      "title": "Resources",
+      "i18next": "Translating with i18next",
+      "remix-i18next": "remix-i18next documentation"
+    }
   }
 }

@@ -1,6 +1,6 @@
 {
   "Localization": {
-    "title": "Localization examples",
+    "title": "Localization",
     "intro": "The Remix template comes with built-in internationalization support, so you can translate your app to multiple languages. This page shows examples of how to localize your app.",
     "translating": {
       "title": "Translating your app",
@@ -9,7 +9,7 @@
       "file": "This page is fully localized in your template, please see the {{filePath}} file."
     },
     "resources": {
-      "title": "Localization resources",
+      "title": "Resources",
       "i18next": "Translating with i18next",
       "remix-i18next": "remix-i18next documentation"
     }
