@@ -1,23 +1,17 @@
 {
-  "Index": {
-    "title": "Neue Remix-App",
-    "heading": "Gute Arbeit beim Erstellen einer Shopify-App 🎉",
-    "learnMore": "Erhalte mehr Informationen zum Ausbau deiner App in {{shopifyTutorialLink}} 📚",
-    "shopifyTutorialLinkText": "diesem Shopify-Tutorial",
-    "startPopulatingYourApp": "Bist du bereit? Stelle in deiner App einige Beispielprodukte bereit, um sie in deinem Shop anzuzeigen und zu testen.",
-    "trophyAltText": "Gute Arbeit beim Erstellen einer Shopify-App",
-    "yourAppIsReadyToExplore": "Deine App kann nun erkundet werden! Sie enthält alles, was du brauchst, um loszulegen: das {{polarisLink}}, die {{adminApiLink}} und die {{appBridgeLink}}-UI-Bibliothek sowie entsprechende Komponenten.",
-    "polarisLinkText": "Polaris Designsystem",
-    "adminApiLinkText": "Shopify Admin API",
-    "appBridgeLinkText": "App Bridge"
-  },
-  "ProductsCard": {
-    "description": "Beispielprodukte werden mit einem Standardtitel und -preis erstellt. Du kannst sie jederzeit entfernen.",
-    "populateProductsButton": {
-      "one": "{{count}} Produkt bereitstellen",
-      "other": "{{count}} Produkte bereitstellen"
+  "Localization": {
+    "title": "Localization",
+    "intro": "The Remix template comes with built-in internationalization support, so you can translate your app to multiple languages. This page shows examples of how to localize your app.",
+    "translating": {
+      "title": "Translating your app",
+      "intro": "It's important to localize your application to ensure you can reach as many merchants as you can. This template makes it possible for you to support multiple languages simply by creating JSON files with translations.",
+      "example": "You can create new translations by adding them to your {{localePath}} files, and using the {{hookName}} React hook to render them in your components.",
+      "file": "This page is fully localized in your template, please see the {{filePath}} file."
     },
-    "title": "Produktzähler",
-    "totalProductsHeading": "PRODUKTE INSGESAMT"
+    "resources": {
+      "title": "Resources",
+      "i18next": "Translating with i18next",
+      "remix-i18next": "remix-i18next documentation"
+    }
   }
 }
