@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { json } from "@remix-run/node";
 import type { ActionArgs, LoaderArgs, HeadersFunction } from "@remix-run/node";
 import {
@@ -35,36 +35,30 @@ export async function action({ request }: ActionArgs) {
 
   const response = await admin.graphql(
     `#graphql
-    mutation populateProduct($input: ProductInput!) {
-      productCreate(input: $input) {
-        product {
-          id
-          title
-          handle
-          status
-          options {
+      mutation populateProduct($input: ProductInput!) {
+        productCreate(input: $input) {
+          product {
             id
-            name
-            position
-          }
-          variants(first: 10) {
-            edges {
-              node {
-                id
-                price
-                barcode
-                createdAt
+            title
+            handle
+            status
+            variants(first: 10) {
+              edges {
+                node {
+                  id
+                  price
+                  barcode
+                  createdAt
+                }
               }
             }
           }
         }
-      }
-    }`,
+      }`,
     {
       variables: {
         input: {
           title: faker.commerce.productName(),
-          options: [faker.commerce.productName()],
           variants: [{ price: Math.random() * 100 }],
         },
       },
@@ -73,7 +67,9 @@ export async function action({ request }: ActionArgs) {
 
   const responseJson = await response.json();
 
-  return json({ product: responseJson.data.productCreate });
+  return json({
+    product: responseJson.data.productCreate.product,
+  });
 }
 
 export default function Index() {
@@ -82,6 +78,16 @@ export default function Index() {
   const actionData = useActionData<typeof action>();
 
   const isLoading = ["submitting", "loading"].includes(state);
+
+  const productId = actionData?.product?.id.replace(
+    "gid://shopify/Product/",
+    ""
+  );
+  useEffect(() => {
+    if (productId) {
+      (window as unknown as any)?.shopify.toast.show("Product created");
+    }
+  }, [productId]);
 
   return (
     <Page title="App template for Remix">
@@ -99,9 +105,9 @@ export default function Index() {
                   Get started querying data
                 </Text>
                 <Text as="p" variant="bodyMd">
-                  Use a GraphQL query to generate products.
+                  Use a GraphQL mutation to generate products.
                 </Text>
-                <HorizontalStack align="space-between">
+                <HorizontalStack gap="5">
                   <Form method="post">
                     <Button loading={isLoading} submit primary>
                       Create product
@@ -109,11 +115,15 @@ export default function Index() {
                   </Form>
                   {actionData?.product && (
                     <Button
-                      onClick={() =>
-                        window.open(`https://${shop}/admin/products`, "_blank")
-                      }
+                      plain
+                      onClick={() => {
+                        window.open(
+                          `https://${shop}/admin/products/${productId}`,
+                          "_blank"
+                        );
+                      }}
                     >
-                      Go to products list
+                      Go to product
                     </Button>
                   )}
                 </HorizontalStack>
