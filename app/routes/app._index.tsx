@@ -277,10 +277,16 @@ export default function Index() {
   );
 }
 
+// TODO: We need to explicitly catch errors with a boundary here because some embedded app features rely on non-200
+// thrown responses (such as re-authentication requests or billing).
+// See https://github.com/remix-run/remix/pull/6425
 export function CatchBoundary() {
   return <h1>Error occurred.</h1>;
 }
 
-export const headers: HeadersFunction = ({ loaderHeaders }) => {
-  return loaderHeaders;
+export const headers: HeadersFunction = ({ loaderHeaders, actionHeaders }) => {
+  return new Headers([
+    ...(actionHeaders ? Array.from(actionHeaders.entries()) : []),
+    ...(loaderHeaders ? Array.from(loaderHeaders.entries()) : []),
+  ]);
 };
