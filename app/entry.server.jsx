@@ -4,16 +4,12 @@ import { renderToPipeableStream } from "react-dom/server";
 import { Response } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import { I18nextProvider, initReactI18next } from "react-i18next";
-import ShopifyFormat from "@shopify/i18next-shopify";
 import isbot from "isbot";
 import Backend from "i18next-fs-backend";
 import i18next from "i18next";
-import i18nextOptions from "./i18n/i18nextOptions";
-import i18nextServer from "./i18n/i18next.server";
-import {
-  loadLocalePolyfills,
-  loadPluralRulesPolyfills,
-} from "./i18n/intlPolyfills";
+import { serverMiddlewares } from "@shopify/shopify-app-remix/i18n";
+
+import i18nextOptions from "./i18nextOptions";
 import { shopify } from "./shopify.server";
 
 const ABORT_DELAY = 5_000;
@@ -25,22 +21,18 @@ export default async function handleRequest(
   remixContext,
   _loadContext
 ) {
-  await loadLocalePolyfills();
-
-  const lng = await i18nextServer.getLocale(request);
-  await Promise.all([
-    loadPluralRulesPolyfills(i18nextOptions.fallbackLng, lng),
-    i18next
-      .use(initReactI18next)
-      .use(ShopifyFormat)
-      .use(Backend)
-      .init({
-        ...i18nextOptions,
-        lng,
-      }),
-  ]);
-
   shopify.addResponseHeaders(request, responseHeaders);
+
+  await [
+    initReactI18next,
+    ...(await serverMiddlewares({
+      request,
+      options: i18nextOptions,
+      backend: Backend,
+    })),
+  ]
+    .reduce((acc, middleware) => acc.use(middleware), i18next)
+    .init(i18nextOptions);
 
   const callbackName = isbot(request.headers.get("user-agent"))
     ? "onAllReady"

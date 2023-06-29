@@ -25,4 +25,8 @@ export default {
    * https://help.shopify.com/en/manual/your-account/languages#available-languages
    */
   supportedLngs: ["de", "en", "fr"],
+  detection: {
+    order: ["htmlTag"],
+    caches: [],
+  },
 };

@@ -5,8 +5,7 @@ import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import { Provider as AppBridgeReactProvider } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
 
-import { shopify } from "../shopify.server";
-import remixI18n from "../i18n/i18next.server";
+import { shopify, i18nServer } from "../shopify.server";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
@@ -34,7 +33,7 @@ export const headers = ({
 export async function loader({ request }) {
   await shopify.authenticate.admin(request);
 
-  const locale = await remixI18n.getLocale(request);
+  const locale = await i18nServer.getLocale(request);
   const url = new URL(request.url);
 
   return json({
