@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { type LinksFunction, json } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import type { HeadersFunction, LinksFunction } from "@remix-run/node";
 import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import { Provider as AppBridgeReactProvider } from "@shopify/app-bridge-react";
@@ -11,8 +12,25 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: polarisStyles },
 ];
 
-export const handle = {
-  useAppBridge: true,
+// We need to catch errors at this point so we can ensure the headers are included in the response. This should never be
+// rendered.
+export function CatchBoundary() {
+  return <h1>Error occurred.</h1>;
+}
+
+export const headers: HeadersFunction = ({
+  loaderHeaders,
+  actionHeaders,
+  errorHeaders,
+  parentHeaders,
+}) => {
+  // Ensure all of the headers Shopify needs are set for embedded app requests
+  return new Headers([
+    ...(actionHeaders ? Array.from(actionHeaders.entries()) : []),
+    ...(loaderHeaders ? Array.from(loaderHeaders.entries()) : []),
+    ...(errorHeaders ? Array.from(errorHeaders.entries()) : []),
+    ...(parentHeaders ? Array.from(parentHeaders.entries()) : []),
+  ]);
 };
 
 export async function loader({ request }) {
