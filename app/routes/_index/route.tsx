@@ -23,15 +23,15 @@ export default function App() {
   return (
     <div className="index">
       <div className="content">
-        <h1>A short tagline about [your app]</h1>
+        <h1>A short heading about [your app]</h1>
         <p>A tagline about [your app] to convert your customers.</p>
         <Form method="post" action="/auth/login">
           <label>
-            <span>shop domain</span>
+            <span>Shop domain</span>
             <input type="text" name="shop" />
             <span>e.g: my-shop-domain.myshopify.com</span>
           </label>
-          <button type="submit">Try it</button>
+          <button type="submit">Log in</button>
         </Form>
         <ul>
           <li>
