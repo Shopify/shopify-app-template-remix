@@ -18,5 +18,6 @@ module.exports = {
   appDirectory: "app",
   future: {
     v2_routeConvention: true,
+    v2_headers: true,
   },
 };
