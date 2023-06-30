@@ -25,7 +25,7 @@ export default function App() {
       <div className="content">
         <h1>A short tagline about [your app]</h1>
         <p>A tagline about [your app] to convert your customers.</p>
-        <Form method="post" action="app/auth/login">
+        <Form method="post" action="/auth/login">
           <label>
             <span>shop domain</span>
             <input type="text" name="shop" />
