@@ -93,50 +93,50 @@ export default function Index() {
     <Page title="App template for Remix">
       <VerticalStack gap="5">
         <Text variant="bodyMd" as="p">
-          Congratulations on creating a new Shopify app! This page gives you a
-          quick tour of some of the things you can do while embedded in the
-          Shopify Admin.
-        </Text>
-        <Text variant="bodyMd" as="p">
-          For example, you can add links to your app's pages in the Admin
-          sidebar using the <b>ui-nav-menu</b> component from{" "}
+          This page shows interface options while embedded in the Shopify Admin.
+          For example, you can add links to your app's pages in the Admin side
+          navigation using the <b>ui-nav-menu</b> component from{" "}
           <Link
-            onClick={() =>
-              window.open(
-                "https://shopify.dev/docs/apps/tools/app-bridge",
-                "_blank"
-              )
-            }
+            url="https://shopify.dev/docs/apps/tools/app-bridge"
+            target="_blank"
           >
             App Bridge
           </Link>{" "}
-          in the <b>/app/routes/app.tsx</b> layout file.
+          in the
+          <b>/app/routes/app.tsx</b> layout file.
         </Text>
         <Layout>
           <Layout.Section>
             <Card>
               <VerticalStack gap="5">
                 <Text as="h2" variant="headingLg">
-                  Get started querying data
+                  Congrats on creating a new Shopify app 🎉
+                </Text>
+                <Text as="h2" variant="headingMd">
+                  Get started with products
                 </Text>
                 <Text as="p" variant="bodyMd">
-                  Use a GraphQL mutation to generate products.
+                  Use a GraphQL query to generate a product, and get JSON
+                  output. To learn more about this mutation in the developer
+                  documentation, refer to the{" "}
+                  <Link
+                    url="https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate"
+                    target="_blank"
+                  >
+                    productCreate mutation.
+                  </Link>
                 </Text>
                 <HorizontalStack gap="5">
                   <Form method="post">
-                    <Button loading={isLoading} submit primary>
-                      Create product
+                    <Button loading={isLoading} submit>
+                      Generate a product
                     </Button>
                   </Form>
                   {actionData?.product && (
                     <Button
                       plain
-                      onClick={() => {
-                        window.open(
-                          `https://${shop}/admin/products/${productId}`,
-                          "_blank"
-                        );
-                      }}
+                      url={`https://${shop}/admin/products/${productId}`}
+                      target="_blank"
                     >
                       Go to product
                     </Button>
@@ -173,11 +173,7 @@ export default function Index() {
                       <Text as="span" variant="bodyMd">
                         Framework
                       </Text>
-                      <Link
-                        onClick={() =>
-                          window.open("https://remix.run", "_blank")
-                        }
-                      >
+                      <Link url="https://remix.run" target="_blank">
                         Remix
                       </Link>
                     </HorizontalStack>
@@ -186,11 +182,7 @@ export default function Index() {
                       <Text as="span" variant="bodyMd">
                         Database
                       </Text>
-                      <Link
-                        onClick={() =>
-                          window.open("https://www.prisma.io/", "_blank")
-                        }
-                      >
+                      <Link url="https://www.prisma.io/" target="_blank">
                         Prisma
                       </Link>
                     </HorizontalStack>
@@ -200,24 +192,13 @@ export default function Index() {
                         Interface
                       </Text>
                       <span>
-                        <Link
-                          onClick={() =>
-                            window.open(
-                              "https://polaris.shopify.com/",
-                              "_blank"
-                            )
-                          }
-                        >
+                        <Link url="https://polaris.shopify.com" target="_blank">
                           Polaris
                         </Link>
                         {", "}
                         <Link
-                          onClick={() =>
-                            window.open(
-                              "https://shopify.dev/docs/apps/tools/app-bridge",
-                              "_blank"
-                            )
-                          }
+                          url="https://shopify.dev/docs/apps/tools/app-bridge"
+                          target="_blank"
                         >
                           App Bridge
                         </Link>
@@ -229,12 +210,8 @@ export default function Index() {
                         API
                       </Text>
                       <Link
-                        onClick={() =>
-                          window.open(
-                            "https://shopify.dev/docs/api/admin-graphql",
-                            "_blank"
-                          )
-                        }
+                        url="https://shopify.dev/docs/api/admin-graphql"
+                        target="_blank"
                       >
                         GraphQL API
                       </Link>
@@ -245,12 +222,8 @@ export default function Index() {
                         Internationalization
                       </Text>
                       <Link
-                        onClick={() =>
-                          window.open(
-                            "https://github.com/sergiodxa/remix-i18next",
-                            "_blank"
-                          )
-                        }
+                        url="https://github.com/sergiodxa/remix-i18next"
+                        target="_blank"
                       >
                         remix-i18next
                       </Link>
@@ -261,35 +234,26 @@ export default function Index() {
               <Card>
                 <VerticalStack gap="5">
                   <Text as="h2" variant="headingMd">
-                    Learn more about GraphQL
+                    Next steps
                   </Text>
                   <List>
                     <List.Item>
-                      Explore GraphQL with our{" "}
+                      Try building our{" "}
                       <Link
-                        onClick={() =>
-                          window.open(
-                            "https://shopify.dev/docs/apps/tools/graphiql-admin-api",
-                            "_blank"
-                          )
-                        }
+                        url="https://shopify.dev/docs/apps/getting-started/build-app-example"
+                        target="_blank"
                       >
-                        GraphiQL app
+                        QR code app
                       </Link>
                     </List.Item>
                     <List.Item>
-                      View the{" "}
+                      Explore GraphQL with our{" "}
                       <Link
-                        onClick={() =>
-                          window.open(
-                            "https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate",
-                            "_blank"
-                          )
-                        }
+                        url="https://shopify.dev/docs/apps/tools/graphiql-admin-api"
+                        target="_blank"
                       >
-                        productCreate mutation
-                      </Link>{" "}
-                      in our API references
+                        GraphiQL app
+                      </Link>
                     </List.Item>
                   </List>
                 </VerticalStack>

@@ -69,11 +69,8 @@ export default function Localization() {
                   <List.Item>
                     <Text as="p" variant="bodyMd">
                       <Link
-                        onClick={() =>
-                          window.open(
-                            "https://www.i18next.com/translation-function/essentials"
-                          )
-                        }
+                        url="https://www.i18next.com/translation-function/essentials"
+                        target="_blank"
                       >
                         {t("Localization.resources.i18next")}
                       </Link>
@@ -82,11 +79,8 @@ export default function Localization() {
                   <List.Item>
                     <Text as="p" variant="bodyMd">
                       <Link
-                        onClick={() =>
-                          window.open(
-                            "https://github.com/sergiodxa/remix-i18next"
-                          )
-                        }
+                        url="https://github.com/sergiodxa/remix-i18next"
+                        target="_blank"
                       >
                         {t("Localization.resources.remix-i18next")}
                       </Link>
