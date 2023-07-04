@@ -34,6 +34,8 @@ export const headers: HeadersFunction = ({
 };
 
 export async function loader({ request }) {
+  await shopify.authenticate.admin(request);
+
   const locale = await remixI18n.getLocale(request);
   const url = new URL(request.url);
 
