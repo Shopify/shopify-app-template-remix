@@ -10,9 +10,25 @@ import {
   VerticalStack,
 } from "@shopify/polaris";
 import { useTranslation } from "react-i18next";
+import remixI18n from "../i18n/i18next.server";
+import { useLoaderData } from "@remix-run/react";
+
+export async function loader({ request }) {
+  const t = await remixI18n.getFixedT(request);
+
+  const serverMessage = t("Localization.translating.example_loader", {
+    remixI18nUtility: "remixI18n.getFixedT()",
+    useLoaderDataHook: "useLoaderData()",
+  });
+
+  return {
+    serverMessage,
+  };
+}
 
 export default function Localization() {
   const { t } = useTranslation();
+  const { serverMessage } = useLoaderData();
 
   return (
     <Page title={t("Localization.title")}>
@@ -40,6 +56,9 @@ export default function Localization() {
                       ),
                       hookName: <b>useTranslation</b>,
                     })}
+                  </Text>
+                  <Text as="p" variant="bodyMd">
+                    {serverMessage}
                   </Text>
                   <Text as="p" variant="bodyMd">
                     {t("Localization.translating.file", {
