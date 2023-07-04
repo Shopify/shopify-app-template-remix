@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { json } from "@remix-run/node";
-import type { HeadersFunction, LinksFunction } from "@remix-run/node";
 import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import { Provider as AppBridgeReactProvider } from "@shopify/app-bridge-react";
@@ -9,9 +8,7 @@ import polarisStyles from "@shopify/polaris/build/esm/styles.css";
 import { shopify } from "../shopify.server";
 import remixI18n from "../i18n/i18next.server";
 
-export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: polarisStyles },
-];
+export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 // We need to catch errors at this point so we can ensure the headers are included in the response. This should never be
 // rendered.
@@ -19,7 +16,7 @@ export function CatchBoundary() {
   return <h1>Error occurred.</h1>;
 }
 
-export const headers: HeadersFunction = ({
+export const headers = ({
   loaderHeaders,
   actionHeaders,
   errorHeaders,
@@ -42,14 +39,14 @@ export async function loader({ request }) {
 
   return json({
     polarisTranslations: require(`@shopify/polaris/locales/${locale}.json`),
-    apiKey: process.env.SHOPIFY_API_KEY as string,
-    host: url.searchParams.get("host") as string,
+    apiKey: process.env.SHOPIFY_API_KEY,
+    host: url.searchParams.get("host"),
   });
 }
 
 export default function App() {
-  const { polarisTranslations } = useLoaderData<typeof loader>();
-  const { apiKey, host } = useLoaderData<typeof loader>();
+  const { polarisTranslations } = useLoaderData();
+  const { apiKey, host } = useLoaderData();
   const [config] = useState({ host, apiKey });
 
   return (

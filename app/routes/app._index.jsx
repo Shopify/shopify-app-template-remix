@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { json } from "@remix-run/node";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import {
   Form,
   useActionData,
@@ -24,13 +23,13 @@ import { faker } from "@faker-js/faker";
 
 import { shopify } from "../shopify.server";
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }) => {
   const { session } = await shopify.authenticate.admin(request);
 
   return json({ shop: session.shop });
 };
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }) {
   const { admin } = await shopify.authenticate.admin(request);
 
   const response = await admin.graphql(
@@ -74,8 +73,8 @@ export async function action({ request }: ActionArgs) {
 
 export default function Index() {
   const { state } = useNavigation();
-  const { shop } = useLoaderData<typeof loader>();
-  const actionData = useActionData<typeof action>();
+  const { shop } = useLoaderData();
+  const actionData = useActionData();
 
   const isLoading = ["submitting", "loading"].includes(state);
 
@@ -85,7 +84,7 @@ export default function Index() {
   );
   useEffect(() => {
     if (productId) {
-      (window as unknown as any)?.shopify.toast.show("Product created");
+      window?.shopify.toast.show("Product created");
     }
   }, [productId]);
 
