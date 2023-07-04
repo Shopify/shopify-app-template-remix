@@ -15,11 +15,8 @@ export async function loadLocalePolyfills() {
  * @async
  * Asynchronously loads Intl.PluralRules polyfills for the default locale and current user locale.
  */
-export async function loadPluralRulesPolyfills(
-  defaultLocale: string,
-  locale: string
-) {
-  const promises: Promise<any>[] = [];
+export async function loadPluralRulesPolyfills(defaultLocale, locale) {
+  const promises = [];
   if (shouldPolyfillPluralRules(defaultLocale)) {
     await import("@formatjs/intl-pluralrules/polyfill-force.js");
     promises.push(loadIntlPluralRulesLocaleData(defaultLocale));

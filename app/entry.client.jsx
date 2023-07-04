@@ -1,5 +1,4 @@
-import React from "react";
-import { startTransition, StrictMode } from "react";
+import React, { startTransition, StrictMode } from "react";
 import { RemixBrowser } from "@remix-run/react";
 import { hydrateRoot } from "react-dom/client";
 import i18nextOptions from "./i18n/i18nextOptions";
@@ -33,7 +32,7 @@ async function initI18n() {
     .use(ShopifyFormat)
     .use(LanguageDetector)
     .use(
-      resourcesToBackend(async (locale: string, _namespace: string) => {
+      resourcesToBackend(async (locale, _namespace) => {
         switch (locale) {
           case "en":
             return (await import("./locales/en.json")).default;

@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import type { LinksFunction, LoaderArgs } from "@remix-run/node";
-import { json, type ActionArgs } from "@remix-run/node";
-import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
+import { json } from "@remix-run/node";
 
 import {
   Button,
@@ -10,6 +8,7 @@ import {
   Page,
   Text,
   TextField,
+  AppProvider as PolarisAppProvider,
 } from "@shopify/polaris";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
@@ -18,11 +17,9 @@ import remixI18n from "../../i18n/i18next.server";
 import { shopify } from "../../shopify.server";
 import { loginErrorMessage } from "./error.server";
 
-export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: polarisStyles },
-];
+export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }) {
   const locale = await remixI18n.getLocale(request);
   const shop = new URL(request.url).searchParams.get("shop");
   const errors = shop ? loginErrorMessage(await shopify.login(request)) : {};
@@ -33,7 +30,7 @@ export async function loader({ request }: LoaderArgs) {
   });
 }
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }) {
   const errors = await shopify.login(request);
 
   return json({
@@ -42,8 +39,8 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function Auth() {
-  const { polarisTranslations } = useLoaderData<typeof loader>();
-  const actionData = useActionData<typeof action>();
+  const { polarisTranslations } = useLoaderData();
+  const actionData = useActionData();
   const [shop, setShop] = useState("");
 
   return (

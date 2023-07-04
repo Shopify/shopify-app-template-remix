@@ -8,12 +8,11 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import type { MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useTranslation } from "react-i18next";
 import remixI18n from "./i18n/i18next.server";
 
-export const meta: MetaFunction = ({ data }) => ({
+export const meta = ({ data }) => ({
   charset: "utf-8",
   title: data.title,
   viewport: "width=device-width,initial-scale=1",
@@ -24,7 +23,7 @@ export async function loader({ request }) {
 }
 
 export default function App() {
-  const { locale } = useLoaderData<typeof loader>();
+  const { locale } = useLoaderData();
   const { i18n } = useTranslation();
 
   return (

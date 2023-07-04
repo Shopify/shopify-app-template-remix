@@ -1,7 +1,6 @@
-import type { LoginError } from "@shopify/shopify-app-remix";
 import { LoginErrorType } from "@shopify/shopify-app-remix";
 
-export function loginErrorMessage(loginErrors: LoginError) {
+export function loginErrorMessage(loginErrors) {
   const errors = { shop: "" };
 
   if (loginErrors) {

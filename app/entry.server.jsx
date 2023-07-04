@@ -1,7 +1,6 @@
 import React from "react";
 import { PassThrough } from "stream";
 import { renderToPipeableStream } from "react-dom/server";
-import type { AppLoadContext, EntryContext } from "@remix-run/node";
 import { Response } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import { I18nextProvider, initReactI18next } from "react-i18next";
@@ -20,11 +19,11 @@ import { shopify } from "./shopify.server";
 const ABORT_DELAY = 5_000;
 
 export default async function handleRequest(
-  request: Request,
-  responseStatusCode: number,
-  responseHeaders: Headers,
-  remixContext: EntryContext,
-  _loadContext: AppLoadContext
+  request,
+  responseStatusCode,
+  responseHeaders,
+  remixContext,
+  _loadContext
 ) {
   await loadLocalePolyfills();
 
@@ -70,10 +69,10 @@ export default async function handleRequest(
 
           pipe(body);
         },
-        onShellError(error: unknown) {
+        onShellError(error) {
           reject(error);
         },
-        onError(error: unknown) {
+        onError(error) {
           responseStatusCode = 500;
           console.error(error);
         },
