@@ -33,14 +33,13 @@ import { getQRCode } from "../models/QRCode";
 
 export async function loader({ request, params }) {
   const { admin, sessionToken } = await shopify.authenticate.admin(request);
-  const { body } = await admin.graphql.query({
-    data: {
-      query: DISCOUNT_QUERY,
-      variables: {
-        first: 10,
-      },
+  const response = await admin.graphql(DISCOUNT_QUERY, {
+    variables: {
+      first: 10,
     },
   });
+
+  const body = await response.json();
 
   const discounts = body.data.codeDiscountNodes.nodes.map(
     ({ id, codeDiscount }) => ({
