@@ -56,7 +56,7 @@ export default function App() {
         data-api-key={apiKey}
       />
       <ui-nav-menu>
-        <Link to="/app/localization">Localization</Link>
+        <Link to="/app/internationalization">Internationalization</Link>
       </ui-nav-menu>
       <PolarisAppProvider i18n={polarisTranslations}>
         <AppBridgeReactProvider config={config}>

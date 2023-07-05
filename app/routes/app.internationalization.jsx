@@ -16,7 +16,7 @@ import { useLoaderData } from "@remix-run/react";
 export async function loader({ request }) {
   const t = await remixI18n.getFixedT(request);
 
-  const serverMessage = t("Localization.translating.example_loader", {
+  const serverMessage = t("Internationalization.translating.example_loader", {
     remixI18nUtility: "remixI18n.getFixedT()",
     useLoaderDataHook: "useLoaderData()",
   });
@@ -26,15 +26,15 @@ export async function loader({ request }) {
   };
 }
 
-export default function Localization() {
+export default function Internationalization() {
   const { t } = useTranslation();
   const { serverMessage } = useLoaderData();
 
   return (
-    <Page title={t("Localization.title")}>
+    <Page title={t("Internationalization.title")}>
       <VerticalStack gap="5">
         <Text as="p" variant="bodyMd">
-          {t("Localization.intro")}
+          {t("Internationalization.intro")}
         </Text>
         <Layout>
           <Layout.Section>
@@ -42,13 +42,13 @@ export default function Localization() {
               <Card>
                 <VerticalStack gap="5">
                   <Text as="h3" variant="headingMd">
-                    {t("Localization.translating.title")}
+                    {t("Internationalization.translating.title")}
                   </Text>
                   <Text as="p" variant="bodyMd">
-                    {t("Localization.translating.intro")}
+                    {t("Internationalization.translating.intro")}
                   </Text>
                   <Text as="p" variant="bodyMd">
-                    {t("Localization.translating.example", {
+                    {t("Internationalization.translating.example", {
                       localePath: (
                         <b>
                           /app/locales/{"{"}locale{"}"}.json
@@ -61,8 +61,8 @@ export default function Localization() {
                     {serverMessage}
                   </Text>
                   <Text as="p" variant="bodyMd">
-                    {t("Localization.translating.file", {
-                      filePath: <b>/app/routes/app.localization.tsx</b>,
+                    {t("Internationalization.translating.file", {
+                      filePath: <b>/app/routes/app.internationalization.tsx</b>,
                     })}
                   </Text>
                 </VerticalStack>
@@ -73,7 +73,7 @@ export default function Localization() {
             <Card>
               <VerticalStack gap="5">
                 <Text as="h3" variant="headingMd">
-                  {t("Localization.resources.title")}
+                  {t("Internationalization.resources.title")}
                 </Text>
                 <List>
                   <List.Item>
@@ -82,7 +82,7 @@ export default function Localization() {
                         url="https://www.i18next.com/translation-function/essentials"
                         target="_blank"
                       >
-                        {t("Localization.resources.i18next")}
+                        {t("Internationalization.resources.i18next")}
                       </Link>
                     </Text>
                   </List.Item>
@@ -92,7 +92,7 @@ export default function Localization() {
                         url="https://github.com/sergiodxa/remix-i18next"
                         target="_blank"
                       >
-                        {t("Localization.resources.remix-i18next")}
+                        {t("Internationalization.resources.remix-i18next")}
                       </Link>
                     </Text>
                   </List.Item>

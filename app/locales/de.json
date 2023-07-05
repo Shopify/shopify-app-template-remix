@@ -1,12 +1,12 @@
 {
-  "Localization": {
-    "title": "Localization",
-    "intro": "The Remix template comes with built-in internationalization support, so you can translate your app to multiple languages. This page shows examples of how to localize your app.",
+  "Internationalization": {
+    "title": "Internationalization",
+    "intro": "The Remix template comes with built-in internationalization support, so you can translate your app to multiple languages. This page shows examples of how to internationalize your app.",
     "translating": {
       "title": "Translating your app",
-      "intro": "It's important to localize your application to ensure you can reach as many merchants as you can. This template makes it possible for you to support multiple languages simply by creating JSON files with translations.",
+      "intro": "It's important to internationalize your application to ensure you can reach as many merchants as you can. This template makes it possible for you to support multiple languages simply by creating JSON files with translations.",
       "example": "You can create new translations by adding them to your {{localePath}} files, and using the {{hookName}} React hook to render them in your components.",
-      "file": "This page is fully localized in your template, please see the {{filePath}} file."
+      "file": "This page is fully internationalized, please see the {{filePath}} file."
     },
     "resources": {
       "title": "Resources",
