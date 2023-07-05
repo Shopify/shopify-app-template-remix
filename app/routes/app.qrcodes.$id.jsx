@@ -8,7 +8,7 @@ import {
 } from "@remix-run/react";
 import { shopify } from "../shopify.server";
 import {
-  AlphaCard,
+  Card,
   Bleed,
   Button,
   ChoiceList,
@@ -208,7 +208,7 @@ export default function Index() {
       <Layout>
         <Layout.Section>
           <VerticalStack gap="5">
-            <AlphaCard>
+            <Card>
               <VerticalStack gap="5">
                 <Text as={"h2"} variant="headingLg">
                   Title
@@ -224,8 +224,8 @@ export default function Index() {
                   error={errors.title}
                 />
               </VerticalStack>
-            </AlphaCard>
-            <AlphaCard>
+            </Card>
+            <Card>
               <VerticalStack gap="5">
                 <HorizontalStack align="space-between">
                   <Text as={"h2"} variant="headingLg">
@@ -293,8 +293,8 @@ export default function Index() {
                   error={errors.destination}
                 />
               </VerticalStack>
-            </AlphaCard>
-            <AlphaCard>
+            </Card>
+            <Card>
               <VerticalStack gap="5">
                 <HorizontalStack align="space-between">
                   <Text as={"h2"} variant="headingLg">
@@ -318,11 +318,11 @@ export default function Index() {
                   value={discount}
                 />
               </VerticalStack>
-            </AlphaCard>
+            </Card>
           </VerticalStack>
         </Layout.Section>
         <Layout.Section secondary>
-          <AlphaCard>
+          <Card>
             <Text as={"h2"} variant="headingLg">
               Qr code
             </Text>
@@ -341,7 +341,7 @@ export default function Index() {
                 Go to destination
               </Button>
             </VerticalStack>
-          </AlphaCard>
+          </Card>
         </Layout.Section>
       </Layout>
       <ContextualSaveBar

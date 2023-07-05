@@ -9,7 +9,7 @@ import { restResources } from "@shopify/shopify-api/rest/admin/2023-07";
 
 import prisma from "./db.server";
 
-export const APP_URL = new URL(process.env.SHOPIFY_APP_URL!);
+export const APP_URL = new URL(process.env.SHOPIFY_APP_URL);
 
 // TODO: Evaluate if we can remove this once the new CLI env vars are exported
 if (APP_URL.hostname === "localhost" && !APP_URL.port && process.env.PORT) {
