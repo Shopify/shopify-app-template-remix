@@ -17,7 +17,8 @@ module.exports = {
   ignoredRouteFiles: ["**/.*"],
   appDirectory: "app",
   future: {
-    v2_routeConvention: true,
     v2_headers: true,
+    v2_routeConvention: true,
+    v2_normalizeFormMethod: true,
   },
 };
