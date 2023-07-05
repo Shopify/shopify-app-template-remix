@@ -16,6 +16,7 @@ if (
 module.exports = {
   ignoredRouteFiles: ["**/.*"],
   appDirectory: "app",
+  serverModuleFormat: "cjs",
   future: {
     v2_headers: true,
     v2_meta: true,
