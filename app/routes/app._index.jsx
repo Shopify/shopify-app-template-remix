@@ -26,7 +26,7 @@ import { shopify } from "../shopify.server";
 export const loader = async ({ request }) => {
   const { session } = await shopify.authenticate.admin(request);
 
-  return json({ shop: session.shop });
+  return json({ shop: session.shop.replace(".myshopify.com", "") });
 };
 
 export async function action({ request }) {
@@ -135,7 +135,7 @@ export default function Index() {
                   {actionData?.product && (
                     <Button
                       plain
-                      url={`https://${shop}/admin/products/${productId}`}
+                      url={`https://admin.shopify.com/store/${shop}/admin/products/${productId}`}
                       target="_blank"
                     >
                       View product
