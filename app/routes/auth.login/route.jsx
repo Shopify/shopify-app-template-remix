@@ -13,8 +13,9 @@ import {
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
 
-import { i18nServer, shopify } from "../../shopify.server";
+import { shopify } from "../../shopify.server";
 import { loginErrorMessage } from "./error.server";
+import { i18nServer } from "../../i18n/config";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 

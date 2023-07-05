@@ -9,7 +9,7 @@ import {
 } from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { useTranslation } from "react-i18next";
-import { i18nServer } from "./shopify.server";
+import { i18nServer } from "./i18n/config";
 
 export const meta = ({ data }) => ({
   charset: "utf-8",

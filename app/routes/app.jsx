@@ -5,7 +5,8 @@ import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import { Provider as AppBridgeReactProvider } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
 
-import { shopify, i18nServer } from "../shopify.server";
+import { shopify } from "../shopify.server";
+import { i18nServer } from "../i18n/config";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 

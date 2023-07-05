@@ -8,11 +8,12 @@ import {
   VerticalStack,
 } from "@shopify/polaris";
 import { useTranslation } from "react-i18next";
-import remixI18n from "../i18n/i18next.server";
 import { useLoaderData } from "@remix-run/react";
 
+import { i18nServer } from "../i18n/config";
+
 export async function loader({ request }) {
-  const t = await remixI18n.getFixedT(request);
+  const t = await i18nServer.getFixedT(request);
 
   const serverMessage = t("Internationalization.translating.example_loader", {
     remixI18nUtility: "remixI18n.getFixedT()",
@@ -49,7 +50,7 @@ export default function Internationalization() {
                     {t("Internationalization.translating.example", {
                       localePath: (
                         <b>
-                          /app/locales/{"{"}locale{"}"}.json
+                          /app/i18n/locales/{"{"}locale{"}"}.json
                         </b>
                       ),
                       hookName: <b>useTranslation</b>,

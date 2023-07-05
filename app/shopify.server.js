@@ -6,13 +6,10 @@ import {
   LogSeverity,
   shopifyApp,
 } from "@shopify/shopify-app-remix";
-import { i18nextServer } from "@shopify/shopify-app-remix/i18n";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
-import Backend from "i18next-fs-backend";
 
 import prisma from "./db.server";
-import i18nextOptions from "./i18next.config";
 
 export const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -47,9 +44,4 @@ export const shopify = shopifyApp({
   ...(process.env.SHOP_CUSTOM_DOMAIN
     ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
     : {}),
-});
-
-export const i18nServer = i18nextServer({
-  options: i18nextOptions,
-  backend: Backend,
 });

@@ -2,10 +2,9 @@ import { startTransition, StrictMode } from "react";
 import { RemixBrowser } from "@remix-run/react";
 import { hydrateRoot } from "react-dom/client";
 import { I18nextProvider, initReactI18next } from "react-i18next";
-import resourcesToBackend from "i18next-resources-to-backend";
 import { initI18nextClient } from "@shopify/shopify-app-remix/i18n";
 
-import i18nextOptions from "./i18next.config";
+import { i18nextClientOptions, backend } from "./i18n/config";
 
 function hydrate(i18next) {
   startTransition(() => {
@@ -21,22 +20,8 @@ function hydrate(i18next) {
 }
 
 async function initI18n() {
-  const i18next = await initI18nextClient(i18nextOptions);
-  await i18next
-    .use(initReactI18next)
-    .use(
-      resourcesToBackend(async (locale, _namespace) => {
-        switch (locale) {
-          case "en":
-            return (await import("./locales/en.json")).default;
-          case "de":
-            return (await import("./locales/de.json")).default;
-          case "fr":
-            return (await import("./locales/fr.json")).default;
-        }
-      })
-    )
-    .init(i18nextOptions);
+  const i18next = await initI18nextClient(i18nextClientOptions);
+  await i18next.use(initReactI18next).use(backend).init(i18nextClientOptions);
 
   return i18next;
 }

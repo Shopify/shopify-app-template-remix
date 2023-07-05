@@ -3,11 +3,10 @@ import { renderToPipeableStream } from "react-dom/server";
 import { Response } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import { I18nextProvider, initReactI18next } from "react-i18next";
-import isbot from "isbot";
-import Backend from "i18next-fs-backend";
 import { initI18nextServer } from "@shopify/shopify-app-remix/i18n";
+import isbot from "isbot";
 
-import i18nextOptions from "./i18next.config";
+import { backend, i18nextServerOptions } from "./i18n/config";
 import { shopify } from "./shopify.server";
 
 const ABORT_DELAY = 5_000;
@@ -23,10 +22,11 @@ export default async function handleRequest(
 
   const i18next = await initI18nextServer({
     request,
-    backend: Backend,
-    options: i18nextOptions,
+    backend,
+    options: i18nextServerOptions,
   });
-  await i18next.use(initReactI18next).init(i18nextOptions);
+
+  await i18next.use(initReactI18next).init(i18nextServerOptions);
 
   const callbackName = isbot(request.headers.get("user-agent"))
     ? "onAllReady"
