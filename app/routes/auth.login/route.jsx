@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { json } from "@remix-run/node";
 import {
   AppProvider as PolarisAppProvider,

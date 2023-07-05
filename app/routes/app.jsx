@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { json } from "@remix-run/node";
 import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
