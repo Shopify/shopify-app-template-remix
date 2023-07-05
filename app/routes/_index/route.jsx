@@ -22,7 +22,7 @@ export default function App() {
     <div className="index">
       <div className="content">
         <h1>A short heading about [your app]</h1>
-        <p>A tagline about [your app] to convert your customers.</p>
+        <p>A tagline about [your app] that describes your value proposition.</p>
         <Form method="post" action="/auth/login">
           <label>
             <span>Shop domain</span>
@@ -33,16 +33,16 @@ export default function App() {
         </Form>
         <ul>
           <li>
-            <strong>Value prop</strong>. Some detail about your value prop that
-            convinces your customer.
+            <strong>Product feature</strong>. Some detail about your feature and
+            it's benefit to your customer.
           </li>
           <li>
-            <strong>Value prop</strong>. Some detail about your value prop that
-            convinces your customer.
+            <strong>Product feature</strong>. Some detail about your feature and
+            it's benefit to your customer.
           </li>
           <li>
-            <strong>Value prop</strong>. Some detail about your value prop that
-            convinces your customer.
+            <strong>Product feature</strong>. Some detail about your feature and
+            it's benefit to your customer.
           </li>
         </ul>
       </div>
