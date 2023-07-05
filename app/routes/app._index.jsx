@@ -92,9 +92,9 @@ export default function Index() {
     <Page title="App template for Remix">
       <VerticalStack gap="5">
         <Text variant="bodyMd" as="p">
-          This page shows interface options while embedded in the Shopify Admin.
-          For example, you can add links to your app's pages in the Admin side
-          navigation using the <b>ui-nav-menu</b> component from{" "}
+          This page shows interface examples while creating an embedded app in
+          the Shopify Admin. For example, you can add links to your app's pages
+          in the App nav using the <code>ui-nav-menu</code> component from{" "}
           <Link
             url="https://shopify.dev/docs/apps/tools/app-bridge"
             target="_blank"
@@ -115,15 +115,16 @@ export default function Index() {
                   Get started with products
                 </Text>
                 <Text as="p" variant="bodyMd">
-                  Use a GraphQL query to generate a product, and get JSON
-                  output. To learn more about this mutation in the developer
-                  documentation, refer to the{" "}
+                  The following example uses GraphQL to generate a product and
+                  get the JSON output for that product. Visit our API references
+                  to learn more about the{" "}
                   <Link
                     url="https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate"
                     target="_blank"
                   >
-                    productCreate mutation.
+                    productCreate mutation
                   </Link>
+                  .
                 </Text>
                 <HorizontalStack gap="5">
                   <Form method="post">
@@ -137,7 +138,7 @@ export default function Index() {
                       url={`https://${shop}/admin/products/${productId}`}
                       target="_blank"
                     >
-                      Go to product
+                      View product
                     </Button>
                   )}
                 </HorizontalStack>
@@ -150,11 +151,9 @@ export default function Index() {
                     borderRadius="2"
                     overflowX="scroll"
                   >
-                    <code>
-                      <pre style={{ margin: 0 }}>
-                        {JSON.stringify(actionData.product, null, 2)}
-                      </pre>
-                    </code>
+                    <pre style={{ margin: 0 }}>
+                      <code>{JSON.stringify(actionData.product, null, 2)}</code>
+                    </pre>
                   </Box>
                 )}
               </VerticalStack>
@@ -237,21 +236,23 @@ export default function Index() {
                   </Text>
                   <List>
                     <List.Item>
-                      Try building our{" "}
+                      Build an{" "}
                       <Link
                         url="https://shopify.dev/docs/apps/getting-started/build-app-example"
                         target="_blank"
                       >
-                        QR code app
-                      </Link>
+                        {" "}
+                        example app
+                      </Link>{" "}
+                      to get started
                     </List.Item>
                     <List.Item>
-                      Explore GraphQL with our{" "}
+                      Explore Shopify’s API with{" "}
                       <Link
                         url="https://shopify.dev/docs/apps/tools/graphiql-admin-api"
                         target="_blank"
                       >
-                        GraphiQL app
+                        GraphiQL
                       </Link>
                     </List.Item>
                   </List>
