@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from "react";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import {
   useActionData,
@@ -32,9 +31,9 @@ import { ImageMajor } from "@shopify/polaris-icons";
 import db from "../db.server";
 import { getQRCode } from "../models/QRCode";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }) {
   const { admin, sessionToken } = await shopify.authenticate.admin(request);
-  const { body } = await admin.graphql.query<any>({
+  const { body } = await admin.graphql.query({
     data: {
       query: DISCOUNT_QUERY,
       variables: {
@@ -43,11 +42,12 @@ export async function loader({ request, params }: LoaderArgs) {
     },
   });
 
-  const discounts: { label: string; value: string }[] =
-    body.data.codeDiscountNodes.nodes.map(({ id, codeDiscount }) => ({
+  const discounts = body.data.codeDiscountNodes.nodes.map(
+    ({ id, codeDiscount }) => ({
       label: codeDiscount.codes.nodes[0].code,
       value: id,
-    }));
+    })
+  );
 
   const qrCodeId = params.id === "new" || !params.id ? null : Number(params.id);
 
@@ -58,20 +58,20 @@ export async function loader({ request, params }: LoaderArgs) {
   });
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }) {
   const { session } = await shopify.authenticate.admin(request);
   const formData = await request.formData();
   const data = {
-    title: formData.get("title") as string,
+    title: formData.get("title"),
     shop: session.shop,
-    productId: formData.get("productId") as string,
-    productHandle: formData.get("productHandle") as string,
-    productVariantId: formData.get("productVariantId") as string,
-    productAlt: formData.get("productAlt") as string | null,
-    productImage: formData.get("productImage") as string | null,
-    discountId: formData.get("discountId") as string | null,
-    discountCode: formData.get("discountCode") as string | null,
-    destination: formData.get("destination") as string,
+    productId: formData.get("productId"),
+    productHandle: formData.get("productHandle"),
+    productVariantId: formData.get("productVariantId"),
+    productAlt: formData.get("productAlt"),
+    productImage: formData.get("productImage"),
+    discountId: formData.get("discountId"),
+    discountCode: formData.get("discountCode"),
+    destination: formData.get("destination"),
   };
 
   const requiredFieldMessages = {
@@ -88,7 +88,7 @@ export async function action({ request, params }: ActionArgs) {
 
       return errors;
     },
-    {} as Partial<typeof requiredFieldMessages>
+    {}
   );
 
   if (Object.keys(errors).length) {
@@ -105,9 +105,8 @@ export async function action({ request, params }: ActionArgs) {
 }
 
 export default function Index() {
-  const { discounts, createDiscountUrl, qrCode } =
-    useLoaderData<typeof loader>();
-  const errors = useActionData<typeof action>()?.errors || {};
+  const { discounts, createDiscountUrl, qrCode } = useLoaderData();
+  const errors = useActionData()?.errors || {};
 
   const [title, setTitle] = useState(qrCode?.title || "");
   const [destination, setDestination] = useState([
@@ -170,7 +169,7 @@ export default function Index() {
 
   const submit = useSubmit();
   const handleSubmit = () => {
-    const data: Record<string, any> = {
+    const data = {
       title,
       destination: destination[0],
       productId: product.id,
@@ -302,11 +301,7 @@ export default function Index() {
                     Discount
                   </Text>
                   <Link
-                    onClick={() =>
-                      ((window as any).shopify as any).redirectTo(
-                        createDiscountUrl
-                      )
-                    }
+                    onClick={() => window.shopify.redirectTo(createDiscountUrl)}
                   >
                     Create discount
                   </Link>

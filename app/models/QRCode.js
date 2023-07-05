@@ -1,12 +1,9 @@
-import type { QRCode } from "@prisma/client";
 import qrcode from "qrcode";
 
 import db from "../db.server";
 import { APP_URL } from "../shopify.server";
 
-type QRCodeModel = QRCode & { image: string; destinationUrl: string };
-
-export async function getQRCode(id: QRCode["id"]): Promise<QRCodeModel | null> {
+export async function getQRCode(id) {
   const qrCode = await db.qRCode.findFirst({ where: { id } });
 
   if (!qrCode) return null;
@@ -23,14 +20,14 @@ export async function getQRCode(id: QRCode["id"]): Promise<QRCodeModel | null> {
   };
 }
 
-export async function incrementScanCount(id: QRCode["id"]) {
+export async function incrementScanCount(id) {
   await db.qRCode.update({
     where: { id },
     data: { scans: { increment: 1 } },
   });
 }
 
-async function getQRCodeDestinationUrl(qrCode: QRCode): Promise<string> {
+async function getQRCodeDestinationUrl(qrCode) {
   const url = new URL(`https://${qrCode.shop}`);
   switch (qrCode.destination) {
     case "product":
@@ -50,15 +47,7 @@ async function getQRCodeDestinationUrl(qrCode: QRCode): Promise<string> {
   }
 }
 
-function productViewURL({
-  host,
-  productHandle,
-  discountCode,
-}: {
-  host: string;
-  productHandle: string;
-  discountCode: string | null;
-}) {
+function productViewURL({ host, productHandle, discountCode }) {
   const url = new URL(host);
   const productPath = `/products/${productHandle}`;
 
@@ -72,15 +61,7 @@ function productViewURL({
   return url.toString();
 }
 
-function productCheckoutURL({
-  host,
-  variantId,
-  discountCode,
-}: {
-  host: string;
-  variantId: string;
-  discountCode: string | null;
-}) {
+function productCheckoutURL({ host, variantId, discountCode }) {
   const url = new URL(host);
   const id = variantId.replace(
     /gid:\/\/shopify\/ProductVariant\/([0-9]+)/,
