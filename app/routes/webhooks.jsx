@@ -12,6 +12,7 @@ export const action = async ({ request }) => {
       await db.qRCode.updateMany({
         where: { productId: payload.admin_graphql_api_id },
         data: {
+          productTitle: payload.title,
           productHandle: payload.handle,
           productVariantId: payload.variants[0].admin_graphql_api_id,
           productImage: payload.image?.src,
