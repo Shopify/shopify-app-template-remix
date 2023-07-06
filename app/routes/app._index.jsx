@@ -39,7 +39,7 @@ export default function Index() {
       /* This button will take the user to a Create a QR code page */
       action={{
         content: "Create QR code",
-        url: "/app/qrcodes/new",
+        onAction: () => navigate("/app/qrcodes/new"),
       }}
       image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
     >

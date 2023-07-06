@@ -24,6 +24,7 @@ import {
   TextField,
   Thumbnail,
   VerticalStack,
+  PageActions,
 } from "@shopify/polaris";
 import {
   ResourcePicker,
@@ -33,7 +34,7 @@ import {
 import { ImageMajor } from "@shopify/polaris-icons";
 
 import db from "../db.server";
-import { getQRCode } from "../models/QRCode";
+import { deleteQRCode, getQRCode } from "../models/QRCode";
 
 export async function loader({ request, params }) {
   const { admin, sessionToken } = await shopify.authenticate.admin(request);
@@ -52,17 +53,25 @@ export async function loader({ request, params }) {
     })
   );
 
-  const qrCodeId = params.id === "new" || !params.id ? null : Number(params.id);
+  const QRCodeId = params.id === "new" || !params.id ? null : Number(params.id);
 
   return json({
     discounts,
     createDiscountUrl: `${sessionToken.iss}/discounts/new`,
-    qrCode: qrCodeId ? await getQRCode(qrCodeId) : null,
+    QRCode: QRCodeId ? await getQRCode(QRCodeId) : null,
   });
 }
 
 export async function action({ request, params }) {
   const { session } = await shopify.authenticate.admin(request);
+  const id = params.id === "new" || !params.id ? undefined : Number(params.id);
+
+  if (request.method === "DELETE") {
+    await deleteQRCode(id, session.shop);
+
+    return redirect("/app");
+  }
+
   const formData = await request.formData();
   const data = {
     title: formData.get("title"),
@@ -98,32 +107,30 @@ export async function action({ request, params }) {
     return json({ errors }, { status: 422 });
   }
 
-  const id = params.id === "new" || !params.id ? undefined : Number(params.id);
-
-  const qrCode = id
+  const QRCode = id
     ? await db.qRCode.update({ where: { id }, data })
     : await db.qRCode.create({ data });
 
-  return redirect(`/app/qrcodes/${qrCode.id}`);
+  return redirect(`/app/qrcodes/${QRCode.id}`);
 }
 
 export default function Index() {
-  const { discounts, createDiscountUrl, qrCode } = useLoaderData();
+  const { discounts, createDiscountUrl, QRCode } = useLoaderData();
   const errors = useActionData()?.errors || {};
 
-  const [title, setTitle] = useState(qrCode?.title || "");
+  const [title, setTitle] = useState(QRCode?.title || "");
   const [destination, setDestination] = useState([
-    qrCode?.destination || "product",
+    QRCode?.destination || "product",
   ]);
-  const [discount, setDiscount] = useState(qrCode?.discountId || "none");
+  const [discount, setDiscount] = useState(QRCode?.discountId || "none");
   const [product, setProduct] = useState({
     image: {
-      alt: qrCode?.productAlt || "",
-      src: qrCode?.productImage || "",
+      alt: QRCode?.productAlt || "",
+      src: QRCode?.productImage || "",
     },
-    handle: qrCode?.productHandle || "",
-    id: qrCode?.productId || "",
-    variantId: qrCode?.productVariantId || "",
+    handle: QRCode?.productHandle || "",
+    id: QRCode?.productId || "",
+    variantId: QRCode?.productVariantId || "",
   });
 
   const [showResourcePicker, setShowResourcePicker] = useState(false);
@@ -171,7 +178,7 @@ export default function Index() {
   }, [cleanState]);
 
   const submit = useSubmit();
-  const handleSubmit = () => {
+  const handleSave = () => {
     const data = {
       title,
       destination: destination[0],
@@ -203,13 +210,18 @@ export default function Index() {
     });
   };
 
-  const { state } = useNavigation();
-  const isSubmitting = state === "submitting";
+  const handleDelete = () => {
+    submit({}, { method: "delete" });
+  };
+
+  const { state, formMethod } = useNavigation();
+  const isSaving = state === "submitting" && formMethod === "post";
+  const isDeleting = state === "submitting" && formMethod === "delete";
 
   return (
     <Page>
       <TitleBar
-        title={qrCode ? "Edit QR code" : "Create new QR code"}
+        title={QRCode ? "Edit QR code" : "Create new QR code"}
         breadcrumbs={[{ content: "QR codes", url: "/app" }]}
         primaryAction={null}
       />
@@ -332,40 +344,59 @@ export default function Index() {
         <Layout.Section secondary>
           <Card>
             <Text as={"h2"} variant="headingLg">
-              Qr code
+              QR code
             </Text>
-            {qrCode ? (
-              <EmptyState image={qrCode.image} imageContained={true} />
+            {QRCode ? (
+              <EmptyState image={QRCode.image} imageContained={true} />
             ) : (
               <EmptyState image="">
                 Your QR code will appear here after you save
               </EmptyState>
             )}
             <VerticalStack gap="5">
-              <Button disabled={!qrCode} url={qrCode?.image} download primary>
+              <Button disabled={!QRCode} url={QRCode?.image} download primary>
                 Download
               </Button>
-              <Button url={qrCode?.destinationUrl} external>
+              <Button url={QRCode?.destinationUrl} external>
                 Go to destination
               </Button>
             </VerticalStack>
           </Card>
         </Layout.Section>
+        <Layout.Section>
+          <PageActions
+            secondaryActions={[
+              {
+                content: "Delete",
+                loading: isDeleting,
+                disabled: !QRCode || isSaving || isDeleting,
+                destructive: true,
+                outline: true,
+                onClick: handleDelete,
+              },
+            ]}
+            primaryAction={{
+              content: "Save",
+              disabled: !isDirty || isSaving || isDeleting,
+              onClick: handleSave,
+            }}
+          />
+        </Layout.Section>
       </Layout>
       <ContextualSaveBar
         saveAction={{
           label: "Save",
-          onAction: handleSubmit,
-          loading: isSubmitting,
-          disabled: isSubmitting,
+          onAction: handleSave,
+          loading: isSaving,
+          disabled: isSaving,
         }}
         discardAction={{
           label: "Discard",
           onAction: resetForm,
-          loading: isSubmitting,
-          disabled: !isDirty || isSubmitting,
+          loading: isSaving,
+          disabled: !isDirty || isSaving,
         }}
-        visible={isDirty || isSubmitting}
+        visible={isDirty || isSaving}
         fullWidth
       />
     </Page>
