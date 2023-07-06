@@ -20,6 +20,13 @@ export const action = async ({ request }) => {
         },
       });
       break;
+    case "PRODUCTS_DELETE":
+      await db.qRCode.updateMany({
+        where: { productId: payload.admin_graphql_api_id },
+        data: {
+          productDeleted: true,
+        },
+      });
     case "CUSTOMERS_DATA_REQUEST":
     case "CUSTOMERS_REDACT":
     case "SHOP_REDACT":
