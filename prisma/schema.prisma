@@ -26,12 +26,7 @@ model QRCode {
   title            String
   shop             String
   productId        String
-  productTitle     String
-  productHandle    String
   productVariantId String
-  productImage     String?
-  productAlt       String?
-  productDeleted   Boolean  @default(false)
   discountId       String?
   discountCode     String?
   destination      String

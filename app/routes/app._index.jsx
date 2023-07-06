@@ -21,7 +21,7 @@ import { DiamondAlertMajor, ImageMajor } from "@shopify/polaris-icons";
 
 export async function loader({ request }) {
   const { admin } = await shopify.authenticate.admin(request);
-  const QRCodes = await getQRCodes(admin.shop);
+  const QRCodes = await getQRCodes(admin.shop, admin.graphql);
 
   return json({
     QRCodes,
