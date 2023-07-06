@@ -62,6 +62,7 @@ export default function Index() {
         { title: "Title" },
         { title: "Product" },
         { title: "Discount" },
+        { title: "Date created" },
         { title: "Scans" },
       ]}
       selectable={false}
@@ -74,6 +75,7 @@ export default function Index() {
           productTitle,
           productDeleted,
           discountCode,
+          createdAt,
           scans,
         }) => {
           return (
@@ -108,6 +110,9 @@ export default function Index() {
                 )}
               </IndexTable.Cell>
               <IndexTable.Cell>{discountCode}</IndexTable.Cell>
+              <IndexTable.Cell>
+                {new Date(createdAt).toDateString()}
+              </IndexTable.Cell>
               <IndexTable.Cell>{scans}</IndexTable.Cell>
             </IndexTable.Row>
           );
