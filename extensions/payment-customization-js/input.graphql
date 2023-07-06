@@ -1,0 +1,21 @@
+query Input {
+  cart {
+    cost {
+      totalAmount {
+        amount
+      }
+    }
+  }
+  paymentMethods {
+    id
+    name
+  }
+  paymentCustomization {
+    metafield(
+      namespace: "$app:payment-customization"
+      key: "function-configuration"
+    ) {
+      value
+    }
+  }
+}

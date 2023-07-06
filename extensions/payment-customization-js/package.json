@@ -1,0 +1,31 @@
+{
+  "name": "payment-customization-js",
+  "version": "0.0.1",
+  "license": "UNLICENSED",
+  "scripts": {
+    "shopify": "npm exec -- shopify",
+    "typegen": "npm exec -- shopify app function typegen",
+    "build": "npm exec -- shopify app function build",
+    "preview": "npm exec -- shopify app function run",
+    "test": "vitest"
+  },
+  "codegen": {
+    "schema": "schema.graphql",
+    "documents": "input.graphql",
+    "generates": {
+      "./generated/api.ts": {
+        "plugins": [
+          "typescript",
+          "typescript-operations"
+        ]
+      }
+    }
+  },
+  "devDependencies": {
+    "vitest": "^0.29.8"
+  },
+  "dependencies": {
+    "@shopify/shopify_function": "0.0.3",
+    "javy": "0.1.0"
+  }
+}
