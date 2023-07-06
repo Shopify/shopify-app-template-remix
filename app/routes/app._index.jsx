@@ -10,11 +10,14 @@ import {
   IndexTable,
   Thumbnail,
   Text,
+  Icon,
+  HorizontalStack,
+  Tooltip,
 } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
 
 import { getQRCodes } from "../models/QRCode";
-import { ImageMajor } from "@shopify/polaris-icons";
+import { DiamondAlertMajor, ImageMajor } from "@shopify/polaris-icons";
 
 export async function loader({ request }) {
   const { admin } = await shopify.authenticate.admin(request);
@@ -64,7 +67,15 @@ export default function Index() {
       selectable={false}
     >
       {QRCodes.map(
-        ({ id, title, productImage, productTitle, discountCode, scans }) => {
+        ({
+          id,
+          title,
+          productImage,
+          productTitle,
+          productDeleted,
+          discountCode,
+          scans,
+        }) => {
           return (
             <IndexTable.Row id={id} key={id} position={id}>
               <IndexTable.Cell>
@@ -81,7 +92,20 @@ export default function Index() {
                 </Link>
               </IndexTable.Cell>
               <IndexTable.Cell>
-                <Text>{truncate(productTitle, 25)}</Text>
+                {productDeleted ? (
+                  <HorizontalStack align="start" gap={"2"}>
+                    <Tooltip content="product has been deleted">
+                      <span style={{ width: "20px" }}>
+                        <Icon source={DiamondAlertMajor} color="critical" />
+                      </span>
+                    </Tooltip>
+                    <Text color={productDeleted ? "critical" : null}>
+                      {truncate(productTitle, 25)}
+                    </Text>
+                  </HorizontalStack>
+                ) : (
+                  truncate(productTitle, 25)
+                )}
               </IndexTable.Cell>
               <IndexTable.Cell>{discountCode}</IndexTable.Cell>
               <IndexTable.Cell>{scans}</IndexTable.Cell>
