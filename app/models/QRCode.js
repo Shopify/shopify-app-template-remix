@@ -34,6 +34,10 @@ export async function getQRCode(id) {
   };
 }
 
+export async function deleteQRCode(id, shop) {
+  await db.qRCode.deleteMany({ where: { id, shop } });
+}
+
 export async function incrementScanCount(id) {
   await db.qRCode.update({
     where: { id },
