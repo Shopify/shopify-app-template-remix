@@ -22,7 +22,7 @@ model Session {
 }
 
 model QRCode {
-  id               Int     @id @default(autoincrement())
+  id               Int      @id @default(autoincrement())
   title            String
   shop             String
   productId        String
@@ -31,9 +31,10 @@ model QRCode {
   productVariantId String
   productImage     String?
   productAlt       String?
-  productDeleted   Boolean @default(false)
+  productDeleted   Boolean  @default(false)
   discountId       String?
   discountCode     String?
   destination      String
-  scans            Int     @default(0)
+  scans            Int      @default(0)
+  createdAt        DateTime @default(now())
 }
