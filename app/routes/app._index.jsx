@@ -16,7 +16,7 @@ import {
 } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
 
-import { getQRCodes } from "../models/QRCode";
+import { getQRCodes } from "../models/QRCode.server";
 import { DiamondAlertMajor, ImageMajor } from "@shopify/polaris-icons";
 
 export async function loader({ request }) {

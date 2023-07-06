@@ -34,31 +34,19 @@ import {
 import { ImageMajor } from "@shopify/polaris-icons";
 
 import db from "../db.server";
-import { deleteQRCode, getQRCode } from "../models/QRCode";
+import { deleteQRCode, getQRCode } from "../models/QRCode.server";
+import { getDiscountCodes } from "~/models/discountCodes.server";
 
 export async function loader({ request, params }) {
   const { admin, sessionToken } = await shopify.authenticate.admin(request);
-  const response = await admin.graphql(DISCOUNT_QUERY, {
-    variables: {
-      first: 10,
-    },
-  });
-
-  const body = await response.json();
-
-  const discounts = body.data.codeDiscountNodes.nodes.map(
-    ({ id, codeDiscount }) => ({
-      label: codeDiscount.codes.nodes[0].code,
-      value: id,
-    })
-  );
-
+  const discounts = await getDiscountCodes(admin);
   const QRCodeId = params.id === "new" || !params.id ? null : Number(params.id);
+  const QRCode = QRCodeId ? await getQRCode(QRCodeId) : null;
 
   return json({
     discounts,
+    QRCode,
     createDiscountUrl: `${sessionToken.iss}/discounts/new`,
-    QRCode: QRCodeId ? await getQRCode(QRCodeId) : null,
   });
 }
 
@@ -406,36 +394,3 @@ export default function Index() {
     </Page>
   );
 }
-
-const DISCOUNT_QUERY = `
-  query shopData($first: Int!) {
-    codeDiscountNodes(first: $first) {
-      nodes {
-        id
-        codeDiscount {
-          ... on DiscountCodeBasic {
-            codes(first: 1) {
-              nodes {
-                code
-              }
-            }
-          }
-          ... on DiscountCodeBxgy {
-            codes(first: 1) {
-              nodes {
-                code
-              }
-            }
-          }
-          ... on DiscountCodeFreeShipping {
-            codes(first: 1) {
-              nodes {
-                code
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;

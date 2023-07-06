@@ -1,7 +1,7 @@
 import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
-import { getQRCode, incrementScanCount } from "../models/QRCode";
+import { getQRCode, incrementScanCount } from "../models/QRCode.server";
 
 export const loader = async ({ params }) => {
   invariant(params.id, "Could not find QR code destination");
