@@ -1,37 +1,30 @@
 import qrcode from "qrcode";
-
 import db from "../db.server";
 import { APP_URL } from "../shopify.server";
 
-export async function getQRCodes(shop) {
-  const qrcodes = await db.qRCode.findMany({
+export async function getQRCodes(shop, graphql) {
+  const QRCodes = await db.qRCode.findMany({
     where: { shop },
     orderBy: { id: "desc" },
   });
 
+  if (!QRCodes.length) {
+    return [];
+  }
+
   return Promise.all(
-    qrcodes.map(async (qrcode) => ({
-      ...qrcode,
-      destinationUrl: await getQRCodeDestinationUrl(qrcode),
-    }))
+    QRCodes.map(async (QRCode) => hydrateQRCode(QRCode, graphql))
   );
 }
 
-export async function getQRCode(id) {
-  const qrCode = await db.qRCode.findFirst({ where: { id } });
+export async function getQRCode(id, graphql) {
+  const QRCode = await db.qRCode.findFirst({ where: { id } });
 
-  if (!qrCode) return null;
+  if (!QRCode) {
+    return null;
+  }
 
-  const image = await qrcode.toBuffer(
-    `${APP_URL.origin}/qrcodes/${qrCode.id}/scan`
-  );
-  const base64Src = `data:image/jpeg;base64, ${image.toString("base64")}`;
-
-  return {
-    ...qrCode,
-    image: base64Src,
-    destinationUrl: await getQRCodeDestinationUrl(qrCode),
-  };
+  return hydrateQRCode(QRCode, graphql);
 }
 
 export async function deleteQRCode(id, shop) {
@@ -43,6 +36,54 @@ export async function incrementScanCount(id) {
     where: { id },
     data: { scans: { increment: 1 } },
   });
+}
+
+async function hydrateQRCode(QRCode, graphql) {
+  // TODO: Use GraphQL to get the product data we need
+  const response = await graphql(
+    `
+      query hydrateQrCode($id: ID!) {
+        product(id: $id) {
+          title
+          handle
+          images(first: 1) {
+            nodes {
+              altText
+              url
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        id: QRCode.productId,
+      },
+    }
+  );
+
+  const {
+    data: { product },
+  } = await response.json();
+
+  return {
+    ...QRCode,
+    productDeleted: !product.title,
+    productTitle: product.title,
+    productHandle: product.handle,
+    productImage: product.images?.nodes[0]?.url,
+    productAlt: product.images?.nodes[0]?.altText,
+    image: await getQRCodeImage(QRCode),
+    destinationUrl: await getQRCodeDestinationUrl(QRCode),
+  };
+}
+
+async function getQRCodeImage(QRCode) {
+  const image = await qrcode.toBuffer(
+    `${APP_URL.origin}/qrcodes/${QRCode.id}/scan`
+  );
+
+  return `data:image/jpeg;base64, ${image.toString("base64")}`;
 }
 
 async function getQRCodeDestinationUrl(qrCode) {

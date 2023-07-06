@@ -41,7 +41,7 @@ export async function loader({ request, params }) {
   const { admin, sessionToken } = await shopify.authenticate.admin(request);
   const discounts = await getDiscountCodes(admin);
   const QRCodeId = params.id === "new" || !params.id ? null : Number(params.id);
-  const QRCode = QRCodeId ? await getQRCode(QRCodeId) : null;
+  const QRCode = QRCodeId ? await getQRCode(QRCodeId, admin.graphql) : null;
 
   return json({
     discounts,
@@ -65,11 +65,7 @@ export async function action({ request, params }) {
     title: formData.get("title"),
     shop: session.shop,
     productId: formData.get("productId"),
-    productTitle: formData.get("productTitle"),
-    productHandle: formData.get("productHandle"),
     productVariantId: formData.get("productVariantId"),
-    productAlt: formData.get("productAlt"),
-    productImage: formData.get("productImage"),
     discountId: formData.get("discountId"),
     discountCode: formData.get("discountCode"),
     destination: formData.get("destination"),
@@ -114,8 +110,8 @@ export default function Index() {
   const [discount, setDiscount] = useState(QRCode?.discountId || "none");
   const [product, setProduct] = useState({
     id: QRCode?.productId || "",
-    handle: QRCode?.productHandle || "",
     title: QRCode?.productTitle || "",
+    handle: QRCode?.productHandle || "",
     variantId: QRCode?.productVariantId || "",
     image: {
       alt: QRCode?.productAlt || "",
@@ -126,11 +122,10 @@ export default function Index() {
   const [showResourcePicker, setShowResourcePicker] = useState(false);
 
   const handleProductChange = useCallback(({ selection }) => {
-    const { images, handle, id, variants, title } = selection[0];
+    const { images, id, variants, title } = selection[0];
 
     setProduct({
       id,
-      handle,
       title,
       variantId: variants[0].id,
       image: {
@@ -174,8 +169,6 @@ export default function Index() {
       title,
       destination: destination[0],
       productId: product.id,
-      productTitle: product.title,
-      productHandle: product.handle,
       productVariantId: product.variantId,
     };
 
@@ -183,14 +176,6 @@ export default function Index() {
       data.discountId = discount;
       data.discountCode =
         discounts.find((d) => d.value === discount)?.label || "";
-    }
-
-    if (product.image.src) {
-      data.productImage = product.image.src;
-    }
-
-    if (product.image.alt) {
-      data.productAlt = product.image.alt;
     }
 
     submit(data, { method: "post" });
@@ -262,7 +247,7 @@ export default function Index() {
                     open={showResourcePicker}
                   />
                 </HorizontalStack>
-                {product.handle ? (
+                {product.id ? (
                   <HorizontalStack blockAlign="center" gap={"5"}>
                     <Thumbnail
                       source={product.image.src || ImageMajor}
