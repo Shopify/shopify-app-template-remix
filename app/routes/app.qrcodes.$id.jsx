@@ -77,6 +77,7 @@ export async function action({ request, params }) {
     title: formData.get("title"),
     shop: session.shop,
     productId: formData.get("productId"),
+    productTitle: formData.get("productTitle"),
     productHandle: formData.get("productHandle"),
     productVariantId: formData.get("productVariantId"),
     productAlt: formData.get("productAlt"),
@@ -124,28 +125,30 @@ export default function Index() {
   ]);
   const [discount, setDiscount] = useState(QRCode?.discountId || "none");
   const [product, setProduct] = useState({
+    id: QRCode?.productId || "",
+    handle: QRCode?.productHandle || "",
+    title: QRCode?.productTitle || "",
+    variantId: QRCode?.productVariantId || "",
     image: {
       alt: QRCode?.productAlt || "",
       src: QRCode?.productImage || "",
     },
-    handle: QRCode?.productHandle || "",
-    id: QRCode?.productId || "",
-    variantId: QRCode?.productVariantId || "",
   });
 
   const [showResourcePicker, setShowResourcePicker] = useState(false);
 
   const handleProductChange = useCallback(({ selection }) => {
-    const { images, handle, id, variants } = selection[0];
+    const { images, handle, id, variants, title } = selection[0];
 
     setProduct({
+      id,
+      handle,
+      title,
+      variantId: variants[0].id,
       image: {
         alt: images[0]?.altText,
         src: images[0]?.imageSrc || images[0]?.originalSrc,
       },
-      handle,
-      id,
-      variantId: variants[0].id,
     });
 
     setShowResourcePicker(false);
@@ -183,6 +186,7 @@ export default function Index() {
       title,
       destination: destination[0],
       productId: product.id,
+      productTitle: product.title,
       productHandle: product.handle,
       productVariantId: product.variantId,
     };
@@ -277,7 +281,7 @@ export default function Index() {
                       alt={product.image.alt}
                     />
                     <Text as="span" variant="headingMd" fontWeight="semibold">
-                      {product.handle}
+                      {product.title}
                     </Text>
                   </HorizontalStack>
                 ) : (

@@ -64,7 +64,7 @@ export default function Index() {
       selectable={false}
     >
       {QRCodes.map(
-        ({ id, title, productImage, productHandle, discountCode, scans }) => {
+        ({ id, title, productImage, productTitle, discountCode, scans }) => {
           return (
             <IndexTable.Row id={id} key={id} position={id}>
               <IndexTable.Cell>
@@ -81,7 +81,7 @@ export default function Index() {
                 </Link>
               </IndexTable.Cell>
               <IndexTable.Cell>
-                <Text>{truncate(productHandle, 25)}</Text>
+                <Text>{truncate(productTitle, 25)}</Text>
               </IndexTable.Cell>
               <IndexTable.Cell>{discountCode}</IndexTable.Cell>
               <IndexTable.Cell>{scans}</IndexTable.Cell>
