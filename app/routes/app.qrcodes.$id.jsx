@@ -25,7 +25,11 @@ import {
   Thumbnail,
   VerticalStack,
 } from "@shopify/polaris";
-import { ResourcePicker, ContextualSaveBar } from "@shopify/app-bridge-react";
+import {
+  ResourcePicker,
+  ContextualSaveBar,
+  TitleBar,
+} from "@shopify/app-bridge-react";
 import { ImageMajor } from "@shopify/polaris-icons";
 
 import db from "../db.server";
@@ -100,7 +104,7 @@ export async function action({ request, params }) {
     ? await db.qRCode.update({ where: { id }, data })
     : await db.qRCode.create({ data });
 
-  return redirect(`/qrcodes/${qrCode.id}`);
+  return redirect(`/app/qrcodes/${qrCode.id}`);
 }
 
 export default function Index() {
@@ -204,6 +208,11 @@ export default function Index() {
 
   return (
     <Page>
+      <TitleBar
+        title={qrCode ? "Edit QR code" : "Create new QR code"}
+        breadcrumbs={[{ content: "QR codes", url: "/app" }]}
+        primaryAction={null}
+      />
       <Layout>
         <Layout.Section>
           <VerticalStack gap="5">

@@ -1,5 +1,5 @@
 {
-  "include": ["**/*.js", "**/*.jsx", "app/root.tsx"],
+  "include": ["**/*.js", "**/*.jsx", "app/root.tsx", "app/routes/app.qrcodes._indexjsx"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2019"],
     "isolatedModules": true,

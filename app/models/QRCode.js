@@ -3,6 +3,20 @@ import qrcode from "qrcode";
 import db from "../db.server";
 import { APP_URL } from "../shopify.server";
 
+export async function getQRCodes(shop) {
+  const qrcodes = await db.qRCode.findMany({
+    where: { shop },
+    orderBy: { id: "desc" },
+  });
+
+  return Promise.all(
+    qrcodes.map(async (qrcode) => ({
+      ...qrcode,
+      destinationUrl: await getQRCodeDestinationUrl(qrcode),
+    }))
+  );
+}
+
 export async function getQRCode(id) {
   const qrCode = await db.qRCode.findFirst({ where: { id } });
 
