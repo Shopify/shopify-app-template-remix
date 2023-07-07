@@ -1,18 +1,18 @@
 {
   "Internationalization": {
-    "title": "Internationalization",
-    "intro": "The app template comes with built-in internationalization support, so you can translate your app into multiple languages. This page shows examples of how to support multiple languages using the i18next framework.",
+    "title": "Internationalisation",
+    "intro": "Le modèle d'application est livré avec un support d'internationalisation intégré, vous permettant de traduire votre application dans plusieurs langues. Cette page montre des exemples de comment supporter plusieurs langues en utilisant le cadre i18next.",
     "translating": {
-      "title": "Translating your app",
-      "intro": "When building apps, internationalization is important to ensure you can support as many merchants as possible. This template enables support for multiple languages by simply including JSON files with the appropriate translations.",
-      "example": "You can create new translations by adding them to your {{localePath}} files, and using the {{hookName}} React hook to render them in your components.",
-      "example_loader": "If you need to translate strings in your loader, you can use the {{remixI18nUtility}} utility to return a translated string to your React component using the {{useLoaderDataHook}}. This could be useful for strings received directly from your server, such as error messages.",
-      "file": "This page is fully localized in your template, please see the {{filePath}} file."
+      "title": "Traduire votre application",
+      "intro": "Lors de la construction d'applications, l'internationalisation est importante pour garantir que vous pouvez supporter autant de commerçants que possible. Ce modèle permet le support de plusieurs langues en incluant simplement des fichiers JSON avec les traductions appropriées.",
+      "example": "Vous pouvez créer de nouvelles traductions en les ajoutant à vos fichiers {{localePath}}, et en utilisant le crochet React {{hookName}} pour les afficher dans vos composants.",
+      "example_loader": "Si vous avez besoin de traduire des chaînes dans votre chargeur, vous pouvez utiliser l'utilitaire {{remixI18nUtility}} pour renvoyer une chaîne traduite à votre composant React en utilisant le {{useLoaderDataHook}}. Cela pourrait être utile pour les chaînes reçues directement de votre serveur, comme les messages d'erreur.",
+      "file": "Cette page est entièrement localisée dans votre modèle, veuillez voir le fichier {{filePath}}."
     },
     "resources": {
-      "title": "Resources",
-      "i18next": "Translating with i18next",
-      "remix-i18next": "remix-i18next documentation"
+      "title": "Ressources",
+      "i18next": "Traduire avec i18next",
+      "remix-i18next": "Documentation de remix-i18next"
     }
   }
 }
