@@ -52,7 +52,7 @@ export default function App() {
   return (
     <>
       <script
-        src="https://cdn.shopify.com/shopifycloud/app-bridge-next/app-bridge.js"
+        src="https://cdn.shopify.com/shopifycloud/app-bridge-next.js"
         data-api-key={apiKey}
       />
       <ui-nav-menu>
