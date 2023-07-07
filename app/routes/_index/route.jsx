@@ -1,5 +1,3 @@
-import React from "react";
-
 import { json, redirect } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 

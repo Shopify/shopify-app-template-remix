@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Links,
   LiveReload,
@@ -10,7 +9,7 @@ import {
 } from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { useTranslation } from "react-i18next";
-import remixI18n from "./i18n/i18next.server";
+import { i18nServer } from "./i18n/config";
 
 export const meta = ({ data }) => ({
   charset: "utf-8",
@@ -19,7 +18,7 @@ export const meta = ({ data }) => ({
 });
 
 export async function loader({ request }) {
-  return json({ locale: await remixI18n.getLocale(request) });
+  return json({ locale: await i18nServer.getLocale(request) });
 }
 
 export default function App() {
