@@ -20,8 +20,8 @@ import { loginErrorMessage } from "./error.server";
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export async function loader({ request }) {
-  const locale = await remixI18n.getLocale(request);
   const errors = loginErrorMessage(await shopify.login(request));
+  const locale = await remixI18n.getLocale(request);
 
   return json({
     errors,
