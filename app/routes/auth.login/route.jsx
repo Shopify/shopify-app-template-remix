@@ -21,8 +21,7 @@ export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export async function loader({ request }) {
   const locale = await remixI18n.getLocale(request);
-  const shop = new URL(request.url).searchParams.get("shop");
-  const errors = shop ? loginErrorMessage(await shopify.login(request)) : {};
+  const errors = loginErrorMessage(await shopify.login(request));
 
   return json({
     errors,
@@ -31,16 +30,18 @@ export async function loader({ request }) {
 }
 
 export async function action({ request }) {
-  const errors = await shopify.login(request);
+  const errors = loginErrorMessage(await shopify.login(request));
 
   return json({
-    errors: loginErrorMessage(errors),
+    errors,
   });
 }
 
 export default function Auth() {
   const { polarisTranslations } = useLoaderData();
+  const loaderData = useLoaderData();
   const actionData = useActionData();
+  const errors = actionData?.errors || loaderData.errors;
   const [shop, setShop] = useState("");
 
   return (
@@ -60,7 +61,7 @@ export default function Auth() {
                 value={shop}
                 onChange={setShop}
                 autoComplete="on"
-                error={actionData?.errors.shop}
+                error={errors.shop}
               />
               <Button submit primary>
                 Log in
