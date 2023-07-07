@@ -2,23 +2,22 @@ import { i18nextServer } from "@shopify/shopify-app-remix/i18n";
 
 import resourcesToBackend from "i18next-resources-to-backend";
 
+/**
+ * @see Available Shopify Admin languages in the Shopify Help Center:
+ * https://help.shopify.com/en/manual/your-account/languages#available-languages
+ */
+const resources = {
+  en: async () => import("./locales/en.json"),
+  de: async () => import("./locales/de.json"),
+  fr: async () => import("./locales/fr.json"),
+};
+
 export const backend = resourcesToBackend(async (locale, _namespace) => {
-  switch (locale) {
-    case "en":
-      return (await import("./locales/en.json")).default;
-    case "de":
-      return (await import("./locales/de.json")).default;
-    case "fr":
-      return (await import("./locales/fr.json")).default;
-  }
+  return (await resources[locale]()).default;
 });
 
 export const i18nextServerOptions = {
-  /**
-   * @see Available Shopify Admin languages in the Shopify Help Center:
-   * https://help.shopify.com/en/manual/your-account/languages#available-languages
-   */
-  supportedLngs: ["en", "de", "fr"],
+  supportedLngs: Object.keys(resources),
   fallbackLng: "en",
   debug: false,
   interpolation: {

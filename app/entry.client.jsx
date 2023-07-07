@@ -28,4 +28,7 @@ async function initI18n() {
 
 initI18n()
   .then(hydrate)
-  .catch((error) => console.log(error));
+  .catch((error) => {
+    console.log("Error during hydration");
+    console.log(error);
+  });
