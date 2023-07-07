@@ -4,6 +4,7 @@ import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import { Provider as AppBridgeReactProvider } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
+import { useTranslation } from "react-i18next";
 
 import { shopify } from "../shopify.server";
 import { i18nServer } from "../i18n/config";
@@ -27,6 +28,7 @@ export default function App() {
   const { polarisTranslations } = useLoaderData();
   const { apiKey, host } = useLoaderData();
   const [config] = useState({ host, apiKey });
+  const { t } = useTranslation();
 
   return (
     <>
@@ -35,7 +37,9 @@ export default function App() {
         data-api-key={apiKey}
       />
       <ui-nav-menu>
-        <Link to="/app/internationalization">Internationalization</Link>
+        <Link to="/app/internationalization">
+          {t("Internationalization.title")}
+        </Link>
       </ui-nav-menu>
       <PolarisAppProvider i18n={polarisTranslations}>
         <AppBridgeReactProvider config={config}>
