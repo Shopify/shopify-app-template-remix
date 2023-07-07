@@ -1,9 +1,7 @@
 import "@shopify/shopify-app-remix/adapters/node";
 import {
   AppDistribution,
-  BillingInterval,
   DeliveryMethod,
-  LogSeverity,
   shopifyApp,
 } from "@shopify/shopify-app-remix";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
@@ -20,9 +18,6 @@ export const shopify = shopifyApp({
   sessionStorage: new PrismaSessionStorage(prisma),
   distribution: AppDistribution.AppStore,
   restResources,
-  logger: {
-    level: LogSeverity.Debug,
-  },
   webhooks: {
     APP_UNINSTALLED: {
       deliveryMethod: DeliveryMethod.Http,
@@ -32,13 +27,6 @@ export const shopify = shopifyApp({
   hooks: {
     afterAuth: async ({ session }) => {
       shopify.registerWebhooks({ session });
-    },
-  },
-  billing: {
-    monthly: {
-      amount: 5,
-      currencyCode: "EUR",
-      interval: BillingInterval.Every30Days,
     },
   },
   ...(process.env.SHOP_CUSTOM_DOMAIN

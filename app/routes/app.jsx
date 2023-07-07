@@ -45,3 +45,24 @@ export default function App() {
     </>
   );
 }
+
+// We need to catch errors at this point so we can ensure the headers are included in the response. This should never be
+// rendered.
+export function ErrorBoundary() {
+  return <h1>Error occurred.</h1>;
+}
+
+export const headers = ({
+  loaderHeaders,
+  actionHeaders,
+  errorHeaders,
+  parentHeaders,
+}) => {
+  // Ensure all of the headers Shopify needs are set for embedded app requests
+  return new Headers([
+    ...(actionHeaders ? Array.from(actionHeaders.entries()) : []),
+    ...(loaderHeaders ? Array.from(loaderHeaders.entries()) : []),
+    ...(errorHeaders ? Array.from(errorHeaders.entries()) : []),
+    ...(parentHeaders ? Array.from(parentHeaders.entries()) : []),
+  ]);
+};
