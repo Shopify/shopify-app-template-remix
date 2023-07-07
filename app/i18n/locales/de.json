@@ -1,18 +1,18 @@
 {
   "Internationalization": {
     "title": "Internationalisierung",
-    "intro": "Die App-Vorlage kommt mit eingebauter Unterstützung für Internationalisierung, so dass Sie Ihre App in mehrere Sprachen übersetzen können. Diese Seite zeigt Beispiele, wie man mit dem i18next-Framework mehrere Sprachen unterstützt.",
+    "intro": "Die App-Vorlage enthält eine Internationalisierungsunterstützung, damit du deine App in mehrere Sprache übersetzen kannst. Diese Seite zeigt Beispiele, wie mehrere Sprachen mit dem i18next-Framework unterstützt werden können.",
     "translating": {
-      "title": "Übersetzen Ihrer App",
-      "intro": "Bei der Erstellung von Apps ist die Internationalisierung wichtig, um so viele Händler wie möglich unterstützen zu können. Diese Vorlage ermöglicht die Unterstützung mehrerer Sprachen, indem einfach JSON-Dateien mit den entsprechenden Übersetzungen eingefügt werden.",
-      "example": "Sie können neue Übersetzungen erstellen, indem Sie diese zu Ihren {{localePath}}-Dateien hinzufügen und den {{hookName}} React-Hook verwenden, um sie in Ihren Komponenten darzustellen.",
-      "example_loader": "Wenn Sie Strings in Ihrem Loader übersetzen müssen, können Sie das {{remixI18nUtility}}-Tool verwenden, um einen übersetzten String mit dem {{useLoaderDataHook}} an Ihre React-Komponente zurückzugeben. Dies könnte nützlich sein für Strings, die direkt von Ihrem Server empfangen werden, wie zum Beispiel Fehlermeldungen.",
-      "file": "Diese Seite ist vollständig in Ihrer Vorlage lokalisiert, bitte sehen Sie sich die {{filePath}}-Datei an."
+      "title": "Deine App übersetzen",
+      "intro": "Beim Erstellen von Apps ist die Internationalisierung wichtig, um sicherzustellen, dass du so viele Händler wie möglich unterstützen kannst. Diese Vorlage ermöglicht die Unterstützung mehrerer Sprachen, da sie JSON-Dateien mit den entsprechenden Übersetzungen enthält.",
+      "example": "Du kannst neue Übersetzungen erstellen, indem du sie zu deinen {{localePath}}-Dateien hinzufügst und den {{hookName}}-React-Hook verwendest, um sie in deine Komponenten einzubringen.",
+      "example_loader": "Wenn du Strings in deinem Loader übersetzen musst, kannst du das {{remixI18nUtility}}-Dienstprogramm nutzen, um mit dem {{useLoaderDataHook}} einen übersetzten String für deine React-Komponente zu erhalten. Dies ist ggf. nützlich für Strings, die direkt von deinem Server kommen, z. B. Fehlermeldungen.",
+      "file": "Diese Seite ist vollständig lokalisiert in deiner Vorlage. Dies kannst du in der {{filePath}}-Datei sehen."
     },
     "resources": {
       "title": "Ressourcen",
-      "i18next": "Übersetzen mit i18next",
-      "remix-i18next": "remix-i18next Dokumentation"
+      "i18next": "Mit i18next übersetzen",
+      "remix-i18next": "remix-i18next-Dokumentation"
     }
   }
 }

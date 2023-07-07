@@ -1,18 +1,18 @@
 {
   "Internationalization": {
-    "title": "Internationalisation",
-    "intro": "Le modèle d'application est livré avec un support d'internationalisation intégré, vous permettant de traduire votre application dans plusieurs langues. Cette page montre des exemples de comment supporter plusieurs langues en utilisant le cadre i18next.",
+    "title": "Vendre à l’international",
+    "intro": "Le modèle d’application est fourni avec une prise en charge intégrée de la vente à l’international, ce qui vous permet de traduire votre application en plusieurs langues. Cette page montre des exemples de prise en charge de plusieurs langues à l’aide de l’infrastructure i18next.",
     "translating": {
-      "title": "Traduire votre application",
-      "intro": "Lors de la construction d'applications, l'internationalisation est importante pour garantir que vous pouvez supporter autant de commerçants que possible. Ce modèle permet le support de plusieurs langues en incluant simplement des fichiers JSON avec les traductions appropriées.",
-      "example": "Vous pouvez créer de nouvelles traductions en les ajoutant à vos fichiers {{localePath}}, et en utilisant le crochet React {{hookName}} pour les afficher dans vos composants.",
-      "example_loader": "Si vous avez besoin de traduire des chaînes dans votre chargeur, vous pouvez utiliser l'utilitaire {{remixI18nUtility}} pour renvoyer une chaîne traduite à votre composant React en utilisant le {{useLoaderDataHook}}. Cela pourrait être utile pour les chaînes reçues directement de votre serveur, comme les messages d'erreur.",
-      "file": "Cette page est entièrement localisée dans votre modèle, veuillez voir le fichier {{filePath}}."
+      "title": "Traduction de votre application",
+      "intro": "Lors de la création d’applications, la vente à l’international est importante pour garantir que vous pouvez prendre en charge autant de marchands que possible. Ce modèle permet de prendre en charge plusieurs langues en incluant simplement des fichiers JSON contenant les traductions appropriées.",
+      "example": "Vous pouvez créer de nouvelles traductions en les ajoutant à vos fichiers {{localePath}} et en utilisant le crochet React {{hookName}} pour les restituer dans vos composants.",
+      "example_loader": "Si vous avez besoin de traduire des chaînes dans votre chargeur, vous pouvez utiliser l’utilitaire {{remixI18nUtility}} pour renvoyer une chaîne traduite à votre composant React à l’aide de {{useLoaderDataHook}}. Cela peut être utile pour les chaînes reçues directement de votre serveur, telles que les messages d’erreur.",
+      "file": "Cette page est entièrement localisée dans votre modèle. Veuillez consulter le fichier {{filePath}}."
     },
     "resources": {
       "title": "Ressources",
-      "i18next": "Traduire avec i18next",
-      "remix-i18next": "Documentation de remix-i18next"
+      "i18next": "Traduction avec i18next",
+      "remix-i18next": "documentation remix-i18next"
     }
   }
 }
