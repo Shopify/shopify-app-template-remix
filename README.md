@@ -56,21 +56,18 @@ Using yarn:
 
 ```shell
 yarn install
-yarn setup
 ```
 
 Using npm:
 
 ```shell
 npm install
-npm run setup
 ```
 
 Using pnpm:
 
 ```shell
 pnpm install
-pnpm run setup
 ```
 
 ### Local Development

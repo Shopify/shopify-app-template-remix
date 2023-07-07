@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "NODE_ENV=production remix build",
+    "predev": "prisma generate && prisma migrate deploy",
     "dev": "shopify app dev",
     "push": "shopify app push",
     "generate": "shopify app generate",
@@ -22,7 +23,7 @@
     "@remix-run/serve": "^1.18.1",
     "@shopify/app-bridge-react": "^3.7.8",
     "@shopify/polaris": "^11.1.2",
-    "@shopify/shopify-app-remix": "file:../shopify-app-js/packages/shopify-app-remix/shopify-shopify-app-remix-1.0.0.tgz",
+    "@shopify/shopify-app-remix": "file:shopify-shopify-app-remix-1.0.0.tgz",
     "@shopify/shopify-app-session-storage-prisma": "^1.0.0",
     "cross-env": "^7.0.3",
     "i18next-resources-to-backend": "^1.1.4",
