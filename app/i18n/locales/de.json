@@ -1,0 +1,18 @@
+{
+  "Internationalization": {
+    "title": "Internationalisierung",
+    "intro": "Die App-Vorlage kommt mit eingebauter Unterstützung für Internationalisierung, so dass Sie Ihre App in mehrere Sprachen übersetzen können. Diese Seite zeigt Beispiele, wie man mit dem i18next-Framework mehrere Sprachen unterstützt.",
+    "translating": {
+      "title": "Übersetzen Ihrer App",
+      "intro": "Bei der Erstellung von Apps ist die Internationalisierung wichtig, um so viele Händler wie möglich unterstützen zu können. Diese Vorlage ermöglicht die Unterstützung mehrerer Sprachen, indem einfach JSON-Dateien mit den entsprechenden Übersetzungen eingefügt werden.",
+      "example": "Sie können neue Übersetzungen erstellen, indem Sie diese zu Ihren {{localePath}}-Dateien hinzufügen und den {{hookName}} React-Hook verwenden, um sie in Ihren Komponenten darzustellen.",
+      "example_loader": "Wenn Sie Strings in Ihrem Loader übersetzen müssen, können Sie das {{remixI18nUtility}}-Tool verwenden, um einen übersetzten String mit dem {{useLoaderDataHook}} an Ihre React-Komponente zurückzugeben. Dies könnte nützlich sein für Strings, die direkt von Ihrem Server empfangen werden, wie zum Beispiel Fehlermeldungen.",
+      "file": "Diese Seite ist vollständig in Ihrer Vorlage lokalisiert, bitte sehen Sie sich die {{filePath}}-Datei an."
+    },
+    "resources": {
+      "title": "Ressourcen",
+      "i18next": "Übersetzen mit i18next",
+      "remix-i18next": "remix-i18next Dokumentation"
+    }
+  }
+}
