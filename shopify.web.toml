@@ -1,5 +1,5 @@
-type="frontend"
-webhooks_path="/webhooks"
+type = "frontend"
+webhooks_path = "/webhooks"
 
 [commands]
 dev = "npm exec remix dev"
