@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "NODE_ENV=production remix build",
+    "predev": "prisma generate && prisma migrate deploy",
     "dev": "shopify app dev",
     "push": "shopify app push",
     "generate": "shopify app generate",
