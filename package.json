@@ -25,13 +25,10 @@
     "@shopify/shopify-app-remix": "file:../shopify-app-js/packages/shopify-app-remix/shopify-shopify-app-remix-1.0.0.tgz",
     "@shopify/shopify-app-session-storage-prisma": "^1.0.0",
     "cross-env": "^7.0.3",
-    "i18next-resources-to-backend": "^1.1.4",
     "isbot": "latest",
     "prisma": "^4.11.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-i18next": "^13.0.0",
-    "remix-i18next": "^5.2.0"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@remix-run/dev": "^1.18.1",

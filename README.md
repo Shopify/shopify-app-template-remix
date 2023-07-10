@@ -27,16 +27,11 @@ The Remix app template comes with the following out-of-the-box functionality:
 This template combines a number of third party open-source tools:
 
 - [Remix](https://remix.run) sets up both the backend and frontend of the app, using [React](https://reactjs.org/). Using App Bridge, Remix automatically sets up:
-- [`i18next`](https://www.i18next.com/) and related libraries are used to internationalize the frontend.
-  - [`remix-i18next`](https://github.com/sergiodxa/remix-i18next) is used to set up i18n for Remix apps.
-  - [`react-i18next`](https://react.i18next.com/) is used for React-specific i18n functionality.
-  - [`@formatjs/intl-pluralrules`](https://formatjs.io/docs/polyfills/intl-pluralrules) is used as a polyfill for [`Intl.PluralRules`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules) if necessary.
 
 The following Shopify tools complement these third-party tools to ease app development:
 
 - [Shopify App Remix](https://github.com/Shopify/shopify-app-js/blob/main/packages/shopify-app-remix/README.md) provides the tooling required to authenticate and interact with Shopify APIs.
 - [Polaris React](https://polaris.shopify.com/) is a powerful design system and component library that helps developers build high quality, consistent experiences for Shopify merchants.
-- [`@shopify/i18next-shopify`](https://github.com/Shopify/i18next-shopify) is a plugin for [`i18next`](https://www.i18next.com/) that allows translation files to follow the same JSON schema used by Shopify [app extensions](https://shopify.dev/docs/apps/checkout/best-practices/localizing-ui-extensions#how-it-works) and [themes](https://shopify.dev/docs/themes/architecture/locales/storefront-locale-files#usage).
 
 ## Getting started
 
@@ -158,10 +153,3 @@ When you reach the step for [setting up environment variables](https://shopify.d
 - [App extensions](https://shopify.dev/docs/apps/app-extensions/list)
 - [Shopify Functions](https://shopify.dev/docs/api/functions)
 - [Getting started with internationalizing your app](https://shopify.dev/docs/apps/best-practices/internationalization/getting-started)
-  - [`i18next` Docs](https://www.i18next.com/)
-    - [Configuration options](https://www.i18next.com/overview/configuration-options)
-  - [`react-i18next` Docs](https://react.i18next.com/)
-    - [`useTranslation` hook](https://react.i18next.com/latest/usetranslation-hook)
-  - [`remix-i18next`](https://github.com/sergiodxa/remix-i18next)
-  - [`@shopify/i18next-shopify`](https://github.com/Shopify/i18next-shopify), a plugin for `i18next` that allows translation files to follow the same JSON schema used by Shopify [app extensions](https://shopify.dev/docs/apps/checkout/best-practices/localizing-ui-extensions#how-it-works) and [themes](https://shopify.dev/docs/themes/architecture/locales/storefront-locale-files#usage)
-  - [`FormatJS Intl API Polyfills`](https://formatjs.io/docs/polyfills/)

@@ -214,18 +214,6 @@ export default function Index() {
                         GraphQL API
                       </Link>
                     </HorizontalStack>
-                    <Divider />
-                    <HorizontalStack align="space-between">
-                      <Text as="span" variant="bodyMd">
-                        Internationalization
-                      </Text>
-                      <Link
-                        url="https://github.com/sergiodxa/remix-i18next"
-                        target="_blank"
-                      >
-                        remix-i18next
-                      </Link>
-                    </HorizontalStack>
                   </VerticalStack>
                 </VerticalStack>
               </Card>
