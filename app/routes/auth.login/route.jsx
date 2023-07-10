@@ -15,17 +15,15 @@ import polarisStyles from "@shopify/polaris/build/esm/styles.css";
 
 import { shopify } from "../../shopify.server";
 import { loginErrorMessage } from "./error.server";
-import { i18nServer } from "../../i18n/config";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export async function loader({ request }) {
   const errors = loginErrorMessage(await shopify.login(request));
-  const locale = await i18nServer.getLocale(request);
 
   return json({
     errors,
-    polarisTranslations: require(`@shopify/polaris/locales/${locale}.json`),
+    polarisTranslations: require(`@shopify/polaris/locales/en.json`),
   });
 }
 
