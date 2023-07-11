@@ -23,7 +23,7 @@ export default function App() {
   return (
     <>
       <script
-        src="https://cdn.shopify.com/shopifycloud/app-bridge-next.js"
+        src="https://cdn.shopify.com/shopifycloud/app-bridge.js"
         data-api-key={apiKey}
       />
       <PolarisAppProvider i18n={polarisTranslations}>
