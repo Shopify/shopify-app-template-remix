@@ -13,7 +13,6 @@ import {
   HorizontalStack,
   Tooltip,
 } from "@shopify/polaris";
-import { TitleBar } from "@shopify/app-bridge-react";
 
 import { getQRCodes } from "../models/QRCode.server";
 import { DiamondAlertMajor, ImageMajor } from "@shopify/polaris-icons";
@@ -119,13 +118,11 @@ export default function Index() {
 
   return (
     <Page>
-      <TitleBar
-        title="QR codes"
-        primaryAction={{
-          content: "Create QR code",
-          url: "/app/qrcodes/new",
-        }}
-      />
+      <ui-title-bar title="Products">
+        <button primary onClick={() => navigate("app/qrcodes/new")}>
+          Create QR code
+        </button>
+      </ui-title-bar>
       <Layout>
         <Layout.Section>
           <Card padding={"0"}>

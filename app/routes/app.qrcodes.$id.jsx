@@ -3,6 +3,7 @@ import { json, redirect } from "@remix-run/node";
 import {
   useActionData,
   useLoaderData,
+  useNavigate,
   useNavigation,
   useSubmit,
 } from "@remix-run/react";
@@ -83,6 +84,7 @@ export default function Index() {
   const errors = useActionData()?.errors || {};
   const submit = useSubmit();
   const nav = useNavigation();
+  const navigate = useNavigate();
 
   const isSaving = nav.state === "submitting" && nav.formMethod === "POST";
   const isDeleting = nav.state === "submitting" && nav.formMethod === "DELETE";
@@ -123,11 +125,11 @@ export default function Index() {
 
   return (
     <Page>
-      <TitleBar
-        title={QRCode ? "Edit QR code" : "Create new QR code"}
-        breadcrumbs={[{ content: "QR codes", url: "/app" }]}
-        primaryAction={null}
-      />
+      <ui-title-bar title={QRCode ? "Edit QR code" : "Create new QR code"}>
+        <button breadcrumb onClick={() => navigate("app/qrcodes")}>
+          Qr Codes
+        </button>
+      </ui-title-bar>
       <Layout>
         <Layout.Section>
           <VerticalStack gap="5">

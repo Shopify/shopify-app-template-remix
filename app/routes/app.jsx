@@ -29,11 +29,7 @@ export default function App() {
   return (
     <>
       <script
-<<<<<<< HEAD
         src="https://cdn.shopify.com/shopifycloud/app-bridge.js"
-=======
-        src="https://cdn.shopify.com/shopifycloud/app-bridge-next/app-bridge.js"
->>>>>>> e2fbdd9 (Fix rebase issues)
         data-api-key={apiKey}
       />
       <PolarisAppProvider i18n={polarisTranslations}>
