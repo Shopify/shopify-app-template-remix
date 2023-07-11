@@ -2,61 +2,6 @@ import qrcode from "qrcode";
 import db from "../db.server";
 import { APP_URL } from "../shopify.server";
 
-export async function createMetaFieldDefinition(graphql) {
-  return graphql(
-    `
-      mutation metafieldDefinitionCreate(
-        $definition: MetafieldDefinitionInput!
-      ) {
-        metafieldDefinitionCreate(definition: $definition) {
-          userErrors {
-            field
-            message
-            code
-          }
-        }
-      }
-    `,
-    {
-      variables: {
-        definition: {
-          name: "Product qr codes",
-          ownerType: "PRODUCT",
-          namespace: "$app:qrcodes",
-          key: "qrcode",
-          type: "json",
-        },
-      },
-    }
-  );
-}
-
-export function createQRCode(data, grapqhl) {
-  return grapqhl(
-    `
-      mutation SetMetafield($metafields: [MetafieldsSetInput!]!) {
-        metafieldsSet(metafields: $metafields) {
-          userErrors {
-            field
-            message
-            code
-          }
-        }
-      }
-    `,
-    {
-      variables: {
-        metafields: {
-          owner: data.productId,
-          ownerType: "PRODUCT",
-          namespace: "$app:qrcodes",
-          value: JSON.stringify({ data }),
-        },
-      },
-    }
-  );
-}
-
 export function validateQRCode(data) {
   const errors = {};
 
@@ -88,40 +33,6 @@ export async function getQRCode(id, graphql) {
 }
 
 export async function getQRCodes(shop, graphql) {
-  const response = await graphql(
-    `
-      {
-        metafieldDefinitions(
-          namespace: "$app:qrcodes"
-          key: "qrcode"
-          ownerType: PRODUCT
-          first: 25
-        ) {
-          nodes {
-            metafields(first: 25) {
-              nodes {
-                createdAt
-                key
-                value
-                owner {
-                  ... on Product {
-                    id
-                    title
-                    handle
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    `
-  );
-
-  const json = await response.json();
-
-  console.log(JSON.stringify(json, null, 2));
-
   const QRCodes = await db.qRCode.findMany({
     where: { shop },
     orderBy: { id: "desc" },
