@@ -17,9 +17,7 @@ import {
   HorizontalStack,
   InlineError,
   Layout,
-  Link,
   Page,
-  Select,
   Text,
   TextField,
   Thumbnail,
@@ -35,18 +33,14 @@ import { ImageMajor } from "@shopify/polaris-icons";
 
 import db from "../db.server";
 import { deleteQRCode, getQRCode } from "../models/QRCode.server";
-import { getDiscountCodes } from "~/models/discountCodes.server";
 
 export async function loader({ request, params }) {
-  const { admin, sessionToken } = await shopify.authenticate.admin(request);
-  const discounts = await getDiscountCodes(admin);
+  const { admin } = await shopify.authenticate.admin(request);
   const QRCodeId = params.id === "new" || !params.id ? null : Number(params.id);
   const QRCode = QRCodeId ? await getQRCode(QRCodeId, admin.graphql) : null;
 
   return json({
-    discounts,
     QRCode,
-    createDiscountUrl: `${sessionToken.iss}/discounts/new`,
   });
 }
 
@@ -66,8 +60,6 @@ export async function action({ request, params }) {
     shop: session.shop,
     productId: formData.get("productId"),
     productVariantId: formData.get("productVariantId"),
-    discountId: formData.get("discountId"),
-    discountCode: formData.get("discountCode"),
     destination: formData.get("destination"),
   };
 
@@ -100,14 +92,13 @@ export async function action({ request, params }) {
 }
 
 export default function Index() {
-  const { discounts, createDiscountUrl, QRCode } = useLoaderData();
+  const { QRCode } = useLoaderData();
   const errors = useActionData()?.errors || {};
 
   const [title, setTitle] = useState(QRCode?.title || "");
   const [destination, setDestination] = useState([
     QRCode?.destination || "product",
   ]);
-  const [discount, setDiscount] = useState(QRCode?.discountId || "none");
   const [product, setProduct] = useState({
     id: QRCode?.productId || "",
     title: QRCode?.productTitle || "",
@@ -140,7 +131,6 @@ export default function Index() {
   const [cleanState, setCleanState] = useState({
     title,
     destination,
-    discount,
     product,
   });
 
@@ -150,16 +140,14 @@ export default function Index() {
       JSON.stringify({
         title,
         destination,
-        discount,
         product,
       })
     );
-  }, [cleanState, title, destination, discount, product]);
+  }, [cleanState, title, destination, product]);
 
   const resetForm = useCallback(() => {
     setTitle(cleanState.title);
     setDestination(cleanState.destination);
-    setDiscount(cleanState.discount);
     setProduct(cleanState.product);
   }, [cleanState]);
 
@@ -172,17 +160,10 @@ export default function Index() {
       productVariantId: product.variantId,
     };
 
-    if (discount !== "none") {
-      data.discountId = discount;
-      data.discountCode =
-        discounts.find((d) => d.value === discount)?.label || "";
-    }
-
     submit(data, { method: "post" });
     setCleanState({
       title,
       destination,
-      discount,
       product,
     });
   };
@@ -288,31 +269,6 @@ export default function Index() {
                   selected={destination}
                   onChange={setDestination}
                   error={errors.destination}
-                />
-              </VerticalStack>
-            </Card>
-            <Card>
-              <VerticalStack gap="5">
-                <HorizontalStack align="space-between">
-                  <Text as={"h2"} variant="headingLg">
-                    Discount
-                  </Text>
-                  <Link
-                    onClick={() => window.shopify.redirectTo(createDiscountUrl)}
-                  >
-                    Create discount
-                  </Link>
-                </HorizontalStack>
-                <Select
-                  id="discount"
-                  label="Discount"
-                  labelHidden
-                  options={[
-                    { label: "No discount", value: "none" },
-                    ...discounts,
-                  ]}
-                  onChange={setDiscount}
-                  value={discount}
                 />
               </VerticalStack>
             </Card>

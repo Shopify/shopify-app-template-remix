@@ -1,4 +1,3 @@
-import React from "react";
 import { json } from "@remix-run/node";
 import { useLoaderData, Link, useNavigate } from "@remix-run/react";
 import { shopify } from "../shopify.server";
@@ -61,7 +60,6 @@ export default function Index() {
         { title: "Thumbnail", hidden: true },
         { title: "Title" },
         { title: "Product" },
-        { title: "Discount" },
         { title: "Date created" },
         { title: "Scans" },
       ]}
@@ -74,7 +72,6 @@ export default function Index() {
           productImage,
           productTitle,
           productDeleted,
-          discountCode,
           createdAt,
           scans,
         }) => {
@@ -109,7 +106,6 @@ export default function Index() {
                   truncate(productTitle, 25)
                 )}
               </IndexTable.Cell>
-              <IndexTable.Cell>{discountCode}</IndexTable.Cell>
               <IndexTable.Cell>
                 {new Date(createdAt).toDateString()}
               </IndexTable.Cell>
