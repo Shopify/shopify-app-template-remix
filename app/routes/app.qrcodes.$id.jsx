@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { json, redirect } from "@remix-run/node";
 import {
   useActionData,
@@ -37,10 +37,14 @@ import { getQRCode, validateQRCode } from "../models/QRCode.server";
 export async function loader({ request, params }) {
   const { admin } = await shopify.authenticate.admin(request);
   const QRCodeId = !params.id || params.id === "new" ? null : Number(params.id);
-  const QRCode = QRCodeId ? await getQRCode(QRCodeId, admin.graphql) : null;
+
+  if (QRCodeId) {
+    return json(await getQRCode(QRCodeId, admin.graphql));
+  }
 
   return json({
-    QRCode,
+    destination: "product",
+    title: "",
   });
 }
 
@@ -75,89 +79,47 @@ export async function action({ request, params }) {
 }
 
 export default function Index() {
-  const { QRCode } = useLoaderData();
+  const QRCode = useLoaderData();
   const errors = useActionData()?.errors || {};
+  const submit = useSubmit();
+  const nav = useNavigation();
 
-  const [title, setTitle] = useState(QRCode?.title || "");
-  const [destination, setDestination] = useState([
-    QRCode?.destination || "product",
-  ]);
-  const [product, setProduct] = useState({
-    id: QRCode?.productId || "",
-    title: QRCode?.productTitle || "",
-    handle: QRCode?.productHandle || "",
-    variantId: QRCode?.productVariantId || "",
-    image: {
-      alt: QRCode?.productAlt || "",
-      src: QRCode?.productImage || "",
-    },
-  });
+  const isSaving = nav.state === "submitting" && nav.formMethod === "POST";
+  const isDeleting = nav.state === "submitting" && nav.formMethod === "DELETE";
 
+  const [formState, setFormState] = useState(QRCode);
+  const [cleanFormState, setCleanFormState] = useState(QRCode);
   const [showResourcePicker, setShowResourcePicker] = useState(false);
 
-  const handleProductChange = useCallback(({ selection }) => {
-    const { images, id, variants, title } = selection[0];
+  const isDirty = JSON.stringify(formState) !== JSON.stringify(cleanFormState);
 
-    setProduct({
-      id,
-      title,
-      variantId: variants[0].id,
-      image: {
-        alt: images[0]?.altText,
-        src: images[0]?.imageSrc || images[0]?.originalSrc,
-      },
+  function handleProductChange({ selection }) {
+    const { images, id, variants, title, handle } = selection[0];
+
+    setFormState({
+      ...formState,
+      productId: id,
+      productVariantId: variants[0].id,
+      productTitle: title,
+      productHandle: handle,
+      productAlt: images[0]?.altText,
+      productImage: images[0]?.imageSrc || images[0]?.originalSrc,
     });
 
     setShowResourcePicker(false);
-  }, []);
+  }
 
-  const [cleanState, setCleanState] = useState({
-    title,
-    destination,
-    product,
-  });
-
-  const isDirty = useMemo(() => {
-    return (
-      JSON.stringify(cleanState) !==
-      JSON.stringify({
-        title,
-        destination,
-        product,
-      })
-    );
-  }, [cleanState, title, destination, product]);
-
-  const resetForm = useCallback(() => {
-    setTitle(cleanState.title);
-    setDestination(cleanState.destination);
-    setProduct(cleanState.product);
-  }, [cleanState]);
-
-  const submit = useSubmit();
-  const handleSave = () => {
+  function handleSave() {
     const data = {
-      title,
-      destination: destination[0],
-      productId: product.id,
-      productVariantId: product.variantId,
+      title: formState.title,
+      productId: formState.productId,
+      productVariantId: formState.productVariantId,
+      destination: formState.destination,
     };
 
+    setCleanFormState({ ...formState });
     submit(data, { method: "post" });
-    setCleanState({
-      title,
-      destination,
-      product,
-    });
-  };
-
-  const handleDelete = () => {
-    submit({}, { method: "delete" });
-  };
-
-  const { state, formMethod } = useNavigation();
-  const isSaving = state === "submitting" && formMethod === "post";
-  const isDeleting = state === "submitting" && formMethod === "delete";
+  }
 
   return (
     <Page>
@@ -180,8 +142,10 @@ export default function Index() {
                   label="title"
                   labelHidden
                   autoComplete="off"
-                  value={title}
-                  onChange={setTitle}
+                  value={formState.title}
+                  onChange={(title) =>
+                    setFormState({ ...formState, title: title })
+                  }
                   error={errors.title}
                 />
               </VerticalStack>
@@ -192,12 +156,12 @@ export default function Index() {
                   <Text as={"h2"} variant="headingLg">
                     Product
                   </Text>
-                  {product.id ? (
+                  {formState.productId ? (
                     <Button
                       plain
                       onClick={() => setShowResourcePicker(!showResourcePicker)}
                     >
-                      {product.id ? "Change product" : "Select product"}
+                      Change product
                     </Button>
                   ) : null}
                   <ResourcePicker
@@ -211,14 +175,14 @@ export default function Index() {
                     open={showResourcePicker}
                   />
                 </HorizontalStack>
-                {product.id ? (
+                {formState.productId ? (
                   <HorizontalStack blockAlign="center" gap={"5"}>
                     <Thumbnail
-                      source={product.image.src || ImageMajor}
-                      alt={product.image.alt}
+                      source={formState.productImage || ImageMajor}
+                      alt={formState.productAlt}
                     />
                     <Text as="span" variant="headingMd" fontWeight="semibold">
-                      {product.title}
+                      {formState.productTitle}
                     </Text>
                   </HorizontalStack>
                 ) : (
@@ -249,8 +213,10 @@ export default function Index() {
                       value: "cart",
                     },
                   ]}
-                  selected={destination}
-                  onChange={setDestination}
+                  selected={[formState.destination]}
+                  onChange={(destination) =>
+                    setFormState({ ...formState, destination: destination[0] })
+                  }
                   error={errors.destination}
                 />
               </VerticalStack>
@@ -270,10 +236,19 @@ export default function Index() {
               </EmptyState>
             )}
             <VerticalStack gap="5">
-              <Button disabled={!QRCode} url={QRCode?.image} download primary>
+              <Button
+                disabled={!QRCode?.image}
+                url={QRCode?.image}
+                download
+                primary
+              >
                 Download
               </Button>
-              <Button url={QRCode?.destinationUrl} external>
+              <Button
+                disabled={!QRCode.destinationUrl}
+                url={QRCode?.destinationUrl}
+                external
+              >
                 Go to destination
               </Button>
             </VerticalStack>
@@ -288,7 +263,7 @@ export default function Index() {
                 disabled: !QRCode || isSaving || isDeleting,
                 destructive: true,
                 outline: true,
-                onClick: handleDelete,
+                onClick: () => submit({}, { method: "delete" }),
               },
             ]}
             primaryAction={{
@@ -308,7 +283,7 @@ export default function Index() {
         }}
         discardAction={{
           label: "Discard",
-          onAction: resetForm,
+          onAction: () => setFormState(cleanFormState),
           loading: isSaving,
           disabled: !isDirty || isSaving,
         }}
