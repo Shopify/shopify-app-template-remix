@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { json, redirect } from "@remix-run/node";
 import {
   useActionData,
@@ -32,11 +32,11 @@ import {
 import { ImageMajor } from "@shopify/polaris-icons";
 
 import db from "../db.server";
-import { deleteQRCode, getQRCode } from "../models/QRCode.server";
+import { getQRCode, validateQRCode } from "../models/QRCode.server";
 
 export async function loader({ request, params }) {
   const { admin } = await shopify.authenticate.admin(request);
-  const QRCodeId = params.id === "new" || !params.id ? null : Number(params.id);
+  const QRCodeId = !params.id || params.id === "new" ? null : Number(params.id);
   const QRCode = QRCodeId ? await getQRCode(QRCodeId, admin.graphql) : null;
 
   return json({
@@ -46,41 +46,24 @@ export async function loader({ request, params }) {
 
 export async function action({ request, params }) {
   const { session } = await shopify.authenticate.admin(request);
-  const id = params.id === "new" || !params.id ? undefined : Number(params.id);
+  const shop = session.shop;
+  const id = !params.id || params.id === "new" ? undefined : Number(params.id);
 
   if (request.method === "DELETE") {
-    await deleteQRCode(id, session.shop);
+    await db.qRCode.deleteMany({ where: { id, shop } });
 
     return redirect("/app");
   }
 
   const formData = await request.formData();
   const data = {
-    title: formData.get("title"),
-    shop: session.shop,
-    productId: formData.get("productId"),
-    productVariantId: formData.get("productVariantId"),
-    destination: formData.get("destination"),
+    ...Object.fromEntries(formData),
+    shop,
   };
 
-  const requiredFieldMessages = {
-    title: "Title is required",
-    productId: "Product is required",
-    destination: "Destination is required",
-  };
+  const errors = validateQRCode(data);
 
-  const errors = Object.entries(requiredFieldMessages).reduce(
-    (errors, [field, message]) => {
-      if (!data[field]) {
-        errors[field] = message;
-      }
-
-      return errors;
-    },
-    {}
-  );
-
-  if (Object.keys(errors).length) {
+  if (errors) {
     return json({ errors }, { status: 422 });
   }
 
