@@ -66,72 +66,38 @@ async function hydrateQRCode(QRCode, graphql) {
     data: { product },
   } = await response.json();
 
+  const destinationUrl =
+    QRCode.destination === "product"
+      ? productViewURL(QRCode.shop, product.handle)
+      : productCheckoutURL(QRCode.shop, QRCode.productVariantId);
+
   return {
     ...QRCode,
+    destinationUrl,
     productDeleted: !product.title,
     productTitle: product.title,
     productHandle: product.handle,
     productImage: product.images?.nodes[0]?.url,
     productAlt: product.images?.nodes[0]?.altText,
-    image: await getQRCodeImage(QRCode),
-    destinationUrl: await getQRCodeDestinationUrl(QRCode),
+    image: await getQRCodeImage(QRCode.id),
   };
 }
 
-async function getQRCodeImage(QRCode) {
-  const image = await qrcode.toBuffer(
-    `${APP_URL.origin}/qrcodes/${QRCode.id}/scan`
-  );
+async function getQRCodeImage(id) {
+  const image = await qrcode.toBuffer(`${APP_URL.origin}/qrcodes/${id}/scan`);
 
   return `data:image/jpeg;base64, ${image.toString("base64")}`;
 }
 
-async function getQRCodeDestinationUrl(qrCode) {
-  const url = new URL(`https://${qrCode.shop}`);
-  switch (qrCode.destination) {
-    case "product":
-      return productViewURL({
-        host: url.toString(),
-        productHandle: qrCode.productHandle,
-        discountCode: qrCode.discountCode,
-      });
-    case "cart":
-      return productCheckoutURL({
-        discountCode: qrCode.discountCode,
-        host: url.toString(),
-        variantId: qrCode.productVariantId,
-      });
-    default:
-      throw `Unrecognized destination "${qrCode.destination}"`;
-  }
+function productViewURL(shop, productHandle) {
+  return `https://${shop}/products/${productHandle}`;
 }
 
-function productViewURL({ host, productHandle, discountCode }) {
-  const url = new URL(host);
-  const productPath = `/products/${productHandle}`;
-
-  if (discountCode) {
-    url.pathname = `/discount/${discountCode}`;
-    url.searchParams.append("redirect", productPath);
-  } else {
-    url.pathname = productPath;
-  }
-
-  return url.toString();
-}
-
-function productCheckoutURL({ host, variantId, discountCode }) {
-  const url = new URL(host);
+function productCheckoutURL(shop, variantId) {
   const id = variantId.replace(
     /gid:\/\/shopify\/ProductVariant\/([0-9]+)/,
     "$1"
   );
 
-  url.pathname = `/cart/${id}:1`;
-
-  if (discountCode) {
-    url.searchParams.append("discount", discountCode);
-  }
-
-  return url.toString();
+  return `https://${shop}/cart/${id}:1`;
 }

@@ -27,8 +27,6 @@ model QRCode {
   shop             String
   productId        String
   productVariantId String
-  discountId       String?
-  discountCode     String?
   destination      String
   scans            Int      @default(0)
   createdAt        DateTime @default(now())
