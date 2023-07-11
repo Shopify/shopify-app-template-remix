@@ -22,7 +22,7 @@
     "@remix-run/react": "^1.18.1",
     "@remix-run/serve": "^1.18.1",
     "@shopify/polaris": "^11.1.2",
-    "@shopify/shopify-app-remix": "^1.0.0-rc.0",
+    "@shopify/shopify-app-remix": "^1.0.0-rc.1",
     "@shopify/shopify-app-session-storage-prisma": "^1.0.0",
     "cross-env": "^7.0.3",
     "isbot": "latest",
