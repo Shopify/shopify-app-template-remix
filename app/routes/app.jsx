@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { json } from "@remix-run/node";
 import { Outlet, useLoaderData, useRouteError } from "@remix-run/react";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
+import { Provider as AppBridgeReactProvider } from "@shopify/app-bridge-react";
 
 import { shopify } from "../shopify.server";
 
@@ -10,24 +12,34 @@ export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 export async function loader({ request }) {
   await shopify.authenticate.admin(request);
 
+  const url = new URL(request.url);
+
   return json({
     polarisTranslations: require(`@shopify/polaris/locales/en.json`),
     apiKey: process.env.SHOPIFY_API_KEY,
+    host: url.searchParams.get("host"),
   });
 }
 
 export default function App() {
   const { polarisTranslations } = useLoaderData();
-  const { apiKey } = useLoaderData();
+  const { apiKey, host } = useLoaderData();
+  const [config] = useState({ host, apiKey });
 
   return (
     <>
       <script
+<<<<<<< HEAD
         src="https://cdn.shopify.com/shopifycloud/app-bridge.js"
+=======
+        src="https://cdn.shopify.com/shopifycloud/app-bridge-next/app-bridge.js"
+>>>>>>> e2fbdd9 (Fix rebase issues)
         data-api-key={apiKey}
       />
       <PolarisAppProvider i18n={polarisTranslations}>
-        <Outlet />
+        <AppBridgeReactProvider config={config}>
+          <Outlet />
+        </AppBridgeReactProvider>
       </PolarisAppProvider>
     </>
   );

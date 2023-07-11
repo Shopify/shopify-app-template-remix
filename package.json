@@ -25,6 +25,7 @@
     "@shopify/polaris": "^11.1.2",
     "@shopify/shopify-app-remix": "^1.0.0-rc.1",
     "@shopify/shopify-app-session-storage-prisma": "^1.0.0",
+    "@shopify/app-bridge-react": "^3.7.8",
     "@shopify/polaris-icons": "^7.1.0",
     "@shopify/shopify-api": "^7.3.0",
     "cross-env": "^7.0.3",
@@ -32,7 +33,8 @@
     "prisma": "^4.13.0",
     "qrcode": "^1.5.3",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "tiny-invariant": "^1.3.1"
   },
   "devDependencies": {
     "@remix-run/dev": "^1.19.0-pre.0",
