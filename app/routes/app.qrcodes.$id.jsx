@@ -32,7 +32,11 @@ import {
 import { ImageMajor } from "@shopify/polaris-icons";
 
 import db from "../db.server";
-import { getQRCode, validateQRCode } from "../models/QRCode.server";
+import {
+  getQRCode,
+  validateQRCode,
+  createQRCode,
+} from "../models/QRCode.server";
 
 export async function loader({ request, params }) {
   const { admin } = await shopify.authenticate.admin(request);
@@ -49,22 +53,17 @@ export async function loader({ request, params }) {
 }
 
 export async function action({ request, params }) {
-  const { session } = await shopify.authenticate.admin(request);
-  const shop = session.shop;
+  const { admin } = await shopify.authenticate.admin(request);
   const id = !params.id || params.id === "new" ? undefined : Number(params.id);
 
-  if (request.method === "DELETE") {
-    await db.qRCode.deleteMany({ where: { id, shop } });
+  // if (request.method === "DELETE") {
+  //   await db.qRCode.deleteMany({ where: { id, shop } });
 
-    return redirect("/app");
-  }
+  //   return redirect("/app");
+  // }
 
   const formData = await request.formData();
-  const data = {
-    ...Object.fromEntries(formData),
-    shop,
-  };
-
+  const data = Object.fromEntries(formData);
   const errors = validateQRCode(data);
 
   if (errors) {
@@ -73,7 +72,7 @@ export async function action({ request, params }) {
 
   const QRCode = id
     ? await db.qRCode.update({ where: { id }, data })
-    : await db.qRCode.create({ data });
+    : await createQRCode(admin.graphql, data);
 
   return redirect(`/app/qrcodes/${QRCode.id}`);
 }

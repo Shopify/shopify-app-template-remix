@@ -6,6 +6,7 @@ import {
 } from "@shopify/shopify-app-remix";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-07";
+import { createMetaFieldDefinition } from "./models/QRCode.server";
 
 import prisma from "./db.server";
 
@@ -40,8 +41,9 @@ export const shopify = shopifyApp({
     },
   },
   hooks: {
-    afterAuth: async ({ session }) => {
+    afterAuth: async ({ session, admin }) => {
       shopify.registerWebhooks({ session });
+      await createMetaFieldDefinition(admin.graphql);
     },
   },
   ...(process.env.SHOP_CUSTOM_DOMAIN
