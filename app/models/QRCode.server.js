@@ -2,6 +2,36 @@ import qrcode from "qrcode";
 import db from "../db.server";
 import { APP_URL } from "../shopify.server";
 
+export function validateQRCode(data) {
+  const errors = {};
+
+  if (!data.title) {
+    errors.title = "Title is required";
+  }
+
+  if (!data.productId) {
+    errors.productId = "Product is required";
+  }
+
+  if (!data.destination) {
+    errors.destination = "Destination is required";
+  }
+
+  if (Object.keys(errors).length) {
+    return errors;
+  }
+}
+
+export async function getQRCode(id, graphql) {
+  const QRCode = await db.qRCode.findFirst({ where: { id } });
+
+  if (!QRCode) {
+    return null;
+  }
+
+  return hydrateQRCode(QRCode, graphql);
+}
+
 export async function getQRCodes(shop, graphql) {
   const QRCodes = await db.qRCode.findMany({
     where: { shop },
@@ -15,20 +45,6 @@ export async function getQRCodes(shop, graphql) {
   return Promise.all(
     QRCodes.map(async (QRCode) => hydrateQRCode(QRCode, graphql))
   );
-}
-
-export async function getQRCode(id, graphql) {
-  const QRCode = await db.qRCode.findFirst({ where: { id } });
-
-  if (!QRCode) {
-    return null;
-  }
-
-  return hydrateQRCode(QRCode, graphql);
-}
-
-export async function deleteQRCode(id, shop) {
-  await db.qRCode.deleteMany({ where: { id, shop } });
 }
 
 export async function incrementScanCount(id) {
