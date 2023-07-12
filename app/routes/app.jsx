@@ -3,7 +3,7 @@ import { json } from "@remix-run/node";
 import { Outlet, useLoaderData, useRouteError } from "@remix-run/react";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
-import { Provider as AppBridgeReactProvider } from "@shopify/app-bridge-react";
+// import { Provider as AppBridgeReactProvider } from "@shopify/app-bridge-react";
 
 import { shopify } from "../shopify.server";
 
@@ -33,9 +33,9 @@ export default function App() {
         data-api-key={apiKey}
       />
       <PolarisAppProvider i18n={polarisTranslations}>
-        <AppBridgeReactProvider config={config}>
-          <Outlet />
-        </AppBridgeReactProvider>
+        {/* <AppBridgeReactProvider config={config}> */}
+        <Outlet />
+        {/* </AppBridgeReactProvider> */}
       </PolarisAppProvider>
     </>
   );

@@ -6,6 +6,7 @@ import {
   useNavigate,
   useNavigation,
   useSubmit,
+  Link,
 } from "@remix-run/react";
 import { shopify } from "../shopify.server";
 import {
@@ -25,11 +26,11 @@ import {
   VerticalStack,
   PageActions,
 } from "@shopify/polaris";
-import {
-  ResourcePicker,
-  ContextualSaveBar,
-  TitleBar,
-} from "@shopify/app-bridge-react";
+// import {
+//   ResourcePicker,
+//   ContextualSaveBar,
+//   TitleBar,
+// } from "@shopify/app-bridge-react";
 import { ImageMajor } from "@shopify/polaris-icons";
 
 import db from "../db.server";
@@ -126,9 +127,7 @@ export default function Index() {
   return (
     <Page>
       <ui-title-bar title={QRCode ? "Edit QR code" : "Create new QR code"}>
-        <button breadcrumb onClick={() => navigate("app/qrcodes")}>
-          Qr Codes
-        </button>
+        <Link to="/app/qrcodes">Qr Codes</Link>
       </ui-title-bar>
       <Layout>
         <Layout.Section>
@@ -166,7 +165,7 @@ export default function Index() {
                       Change product
                     </Button>
                   ) : null}
-                  <ResourcePicker
+                  {/* <ResourcePicker
                     resourceType="Product"
                     showVariants={false}
                     selectMultiple={false}
@@ -175,7 +174,7 @@ export default function Index() {
                     }}
                     onSelection={handleProductChange}
                     open={showResourcePicker}
-                  />
+                  /> */}
                 </HorizontalStack>
                 {formState.productId ? (
                   <HorizontalStack blockAlign="center" gap={"5"}>
@@ -276,7 +275,7 @@ export default function Index() {
           />
         </Layout.Section>
       </Layout>
-      <ContextualSaveBar
+      {/* <ContextualSaveBar
         saveAction={{
           label: "Save",
           onAction: handleSave,
@@ -291,7 +290,7 @@ export default function Index() {
         }}
         visible={isDirty || isSaving}
         fullWidth
-      />
+      /> */}
     </Page>
   );
 }
