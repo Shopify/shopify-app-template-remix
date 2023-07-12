@@ -5,6 +5,13 @@ This is a template for building a [Shopify app](https://shopify.dev/docs/apps/ge
 <!-- TODO: Uncomment this after we've started using the template in the CLI -->
 <!-- Rather than cloning this repo, you can use your preferred package manager and the Shopify CLI with [these steps](#installing-the-template). -->
 
+## Work in progress
+
+This repository is still a release candidate for a template.
+It should be functional at all times, and you can use it to try out the experience, but it is still under active development.
+
+We recommend waiting until our official release to create a production app using this template, but developers can try it out now to see what the new experience will be like.
+
 ## Benefits
 
 Shopify apps are built on a variety of Shopify tools to create a great merchant experience.
@@ -142,6 +149,28 @@ pnpm run build
 When you're ready to set up your app in production, you can follow [our deployment documentation](https://shopify.dev/docs/apps/deployment/web) to host your app on a cloud provider like [Heroku](https://www.heroku.com/) or [Fly.io](https://fly.io/).
 
 When you reach the step for [setting up environment variables](https://shopify.dev/docs/apps/deployment/web#set-env-vars), you also need to set the variable `NODE_ENV=production`.
+
+## Gotchas / Troubleshooting
+
+### Database tables don't exist
+
+If you run the app right after creating it, you'll get this error:
+
+```
+The table `main.Session` does not exist in the current database.
+```
+
+This will happen when the Prisma database hasn't been created.
+You can solve this by running the `setup` script in your app.
+
+### Navigating to other pages breaks
+
+In Remix apps, you can navigate to a different page either by adding an `<a>` tag, or using the `<Link>` component from `@remix-run/react`.
+
+When embedded, Shopify apps require certain parameters to be in the URL.
+Those parameters are automatically set when using `<Link>`, but not for regular `<a>` tags.
+
+You should avoid using `<a>` tags in your HTML code to redirect to other pages within your app.
 
 ## Resources
 
