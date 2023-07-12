@@ -10,6 +10,8 @@
     "target": "ES2019",
     "strict": true,
     "allowJs": true,
+    "checkJs": true,
+    "noImplicitAny": false,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
