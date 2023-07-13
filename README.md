@@ -24,14 +24,16 @@ The Remix app template comes with the following out-of-the-box functionality:
 
 ## Tech Stack
 
-This template combines a number of third party open-source tools:
+This template uses [Remix](https://remix.run) to set up both the backend and frontend of the app, using [React](https://reactjs.org/).
 
-- [Remix](https://remix.run) sets up both the backend and frontend of the app, using [React](https://reactjs.org/). Using App Bridge, Remix automatically sets up:
-
-The following Shopify tools complement these third-party tools to ease app development:
+The following Shopify tools are also included to ease app development:
 
 - [Shopify App Remix](https://github.com/Shopify/shopify-app-js/blob/main/packages/shopify-app-remix/README.md) provides the tooling required to authenticate and interact with Shopify APIs.
+- [Shopify App Bridge](https://shopify.dev/docs/apps/tools/app-bridge) allows you to load and seamlessly integrate your app within Shopify's Admin.
 - [Polaris React](https://polaris.shopify.com/) is a powerful design system and component library that helps developers build high quality, consistent experiences for Shopify merchants.
+
+> **Note**: This template runs on JavaScript, but it's fully set up for [TypeScript](https://www.typescriptlang.org/).
+> If you want to create your routes using TypeScript, we recommend removing the `noImplicitAny` config from [`tsconfig.json`](/tsconfig.json)
 
 ## Getting started
 
