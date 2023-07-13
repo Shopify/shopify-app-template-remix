@@ -1,4 +1,5 @@
-type = "frontend"
+name = "remix"
+roles = ["frontend", "backend"]
 webhooks_path = "/webhooks"
 
 [commands]

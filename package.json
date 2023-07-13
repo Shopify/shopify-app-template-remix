@@ -15,13 +15,13 @@
     "setup": "prisma generate && prisma migrate deploy"
   },
   "dependencies": {
-    "@shopify/app": "^3",
-    "@shopify/cli": "^3",
     "@faker-js/faker": "^8.0.2",
     "@prisma/client": "^4.13.0",
     "@remix-run/node": "^1.18.1",
     "@remix-run/react": "^1.18.1",
     "@remix-run/serve": "^1.18.1",
+    "@shopify/app": "^0.0.0-nightly-0",
+    "@shopify/cli": "^0.0.0-nightly-0",
     "@shopify/polaris": "^11.1.2",
     "@shopify/shopify-app-remix": "^1.0.0-rc.1",
     "@shopify/shopify-app-session-storage-prisma": "^1.0.0",
