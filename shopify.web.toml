@@ -1,3 +1,4 @@
+name = "remix"
 roles = ["frontend", "backend"]
 webhooks_path = "/webhooks"
 
