@@ -143,6 +143,27 @@ When you're ready to set up your app in production, you can follow [our deployme
 
 When you reach the step for [setting up environment variables](https://shopify.dev/docs/apps/deployment/web#set-env-vars), you also need to set the variable `NODE_ENV=production`.
 
+## Gotchas / Troubleshooting
+
+### Database tables don't exist
+
+If you run the app right after creating it, you'll get this error:
+
+```
+The table `main.Session` does not exist in the current database.
+```
+
+This will happen when the Prisma database hasn't been created.
+You can solve this by running the `setup` script in your app.
+
+### Navigating to other pages breaks
+
+In Remix apps, you can navigate to a different page either by adding an `<a>` tag, or using the `<Link>` component from `@remix-run/react`.
+
+In Shopify Remix apps you should avoid using `<a>`.
+Use `<Link> `from `@remix-run/react` instead.
+This ensures that your user remains authenticated.
+
 ## Resources
 
 - [Remix Docs](https://remix.run/docs/en/v1)
