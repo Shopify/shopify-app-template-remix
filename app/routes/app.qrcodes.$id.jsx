@@ -36,14 +36,15 @@ import {
   getQRCode,
   validateQRCode,
   createQRCode,
+  gid,
 } from "../models/QRCode.server";
 
 export async function loader({ request, params }) {
   const { admin } = await shopify.authenticate.admin(request);
-  const QRCodeId = !params.id || params.id === "new" ? null : Number(params.id);
+  const id = !params.id || params.id === "new" ? null : params.id;
 
-  if (QRCodeId) {
-    return json(await getQRCode(QRCodeId, admin.graphql));
+  if (id) {
+    return json(await getQRCode(admin.graphql, gid(id)));
   }
 
   return json({
@@ -70,11 +71,11 @@ export async function action({ request, params }) {
     return json({ errors }, { status: 422 });
   }
 
-  const QRCode = id
+  const QRCodeId = id
     ? await db.qRCode.update({ where: { id }, data })
     : await createQRCode(admin.graphql, data);
 
-  return redirect(`/app/qrcodes/${QRCode.id}`);
+  return redirect(`/app/qrcodes/${QRCodeId}`);
 }
 
 export default function Index() {

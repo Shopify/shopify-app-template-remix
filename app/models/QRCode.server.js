@@ -2,59 +2,14 @@ import qrcode from "qrcode";
 import db from "../db.server";
 import { APP_URL } from "../shopify.server";
 
-export async function createMetaFieldDefinition(graphql) {
-  return graphql(
-    `
-      mutation metafieldDefinitionCreate(
-        $definition: MetafieldDefinitionInput!
-      ) {
-        metafieldDefinitionCreate(definition: $definition) {
-          userErrors {
-            field
-            message
-            code
-          }
-        }
-      }
-    `,
-    {
-      variables: {
-        definition: {
-          name: "Product qr codes",
-          ownerType: "PRODUCT",
-          namespace: "$app:qrcodes",
-          key: "qrcode",
-          type: "json",
-        },
-      },
-    }
-  );
+// METAFIELDS
+export function id(id) {
+  return id.split("/").pop();
 }
 
-export function createQRCode(data, grapqhl) {
-  return grapqhl(
-    `
-      mutation SetMetafield($metafields: [MetafieldsSetInput!]!) {
-        metafieldsSet(metafields: $metafields) {
-          userErrors {
-            field
-            message
-            code
-          }
-        }
-      }
-    `,
-    {
-      variables: {
-        metafields: {
-          owner: data.productId,
-          ownerType: "PRODUCT",
-          namespace: "$app:qrcodes",
-          value: JSON.stringify({ data }),
-        },
-      },
-    }
-  );
+// METAFIELDS
+export function gid(id) {
+  return `gid://shopify/Metafield/${id}`;
 }
 
 export function validateQRCode(data) {
@@ -77,14 +32,102 @@ export function validateQRCode(data) {
   }
 }
 
-export async function getQRCode(id, graphql) {
-  const QRCode = await db.qRCode.findFirst({ where: { id } });
+// METAFIELDS
+export async function createQRCodeDefinition(graphql) {
+  return graphql(
+    `
+      mutation createQRCodeDefinition($definition: MetafieldDefinitionInput!) {
+        metafieldDefinitionCreate(definition: $definition) {
+          userErrors {
+            field
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        definition: {
+          name: "Product qr codes",
+          ownerType: "PRODUCT",
+          namespace: "$app:qrcodes",
+          key: "qrcode",
+          type: "json",
+        },
+      },
+    }
+  );
+}
 
-  if (!QRCode) {
-    return null;
-  }
+export async function createQRCode(grapqhl, data) {
+  const value = { ...data };
+  delete value.productId;
 
-  return hydrateQRCode(QRCode, graphql);
+  // METAFIELDS
+  const response = await grapqhl(
+    `
+      mutation createQRCode($metafields: [MetafieldsSetInput!]!) {
+        metafieldsSet(metafields: $metafields) {
+          metafields {
+            id
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        metafields: {
+          ownerId: data.productId,
+          namespace: "$app:qrcodes",
+          key: "qrcode",
+          value: JSON.stringify(value),
+        },
+      },
+    }
+  );
+  const json = await response.json();
+
+  // METAFIELDS
+  return id(json.data.metafieldsSet.metafields[0].id);
+}
+
+export async function getQRCode(graphql, QRCodeId) {
+  // METAFIELDS
+  const response = await graphql(
+    `
+      query getQRCode($id: ID!) {
+        metafield(id: $id) {
+          id
+          createdAt
+          key
+          value
+          owner {
+            ... on Product {
+              id
+              title
+              handle
+              images(first: 1) {
+                nodes {
+                  url
+                  altText
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        id: QRCodeId,
+      },
+    }
+  );
+
+  const {
+    data: { metafield },
+  } = await response.json();
+
+  return hydrateQRCode(metafield);
 }
 
 export async function getQRCodes(shop, graphql) {
@@ -95,10 +138,10 @@ export async function getQRCodes(shop, graphql) {
           namespace: "$app:qrcodes"
           key: "qrcode"
           ownerType: PRODUCT
-          first: 25
+          first: 20
         ) {
           nodes {
-            metafields(first: 25) {
+            metafields(first: 20) {
               nodes {
                 createdAt
                 key
@@ -108,6 +151,12 @@ export async function getQRCodes(shop, graphql) {
                     id
                     title
                     handle
+                    images(first: 1) {
+                      nodes {
+                        url
+                        altText
+                      }
+                    }
                   }
                 }
               }
@@ -143,48 +192,25 @@ export async function incrementScanCount(id) {
   });
 }
 
-async function hydrateQRCode(QRCode, graphql) {
-  // TODO: Use GraphQL to get the product data we need
-  const response = await graphql(
-    `
-      query hydrateQrCode($id: ID!) {
-        product(id: $id) {
-          title
-          handle
-          images(first: 1) {
-            nodes {
-              altText
-              url
-            }
-          }
-        }
-      }
-    `,
-    {
-      variables: {
-        id: QRCode.productId,
-      },
-    }
-  );
-
-  const {
-    data: { product },
-  } = await response.json();
-
+async function hydrateQRCode(metafield) {
+  const QRCode = JSON.parse(metafield.value);
+  const product = metafield.owner;
   const destinationUrl =
     QRCode.destination === "product"
-      ? productViewURL(QRCode.shop, product.handle)
-      : productCheckoutURL(QRCode.shop, QRCode.productVariantId);
+      ? productViewURL(shop, product.handle)
+      : productCheckoutURL(shop, QRCode.productVariantId);
 
   return {
     ...QRCode,
     destinationUrl,
-    productDeleted: !product.title,
+    id: id(metafield.id),
+    image: await getQRCodeImage(QRCode.id),
+    createdAt: metafield.createdAt,
+    productId: product.id,
     productTitle: product.title,
     productHandle: product.handle,
     productImage: product.images?.nodes[0]?.url,
     productAlt: product.images?.nodes[0]?.altText,
-    image: await getQRCodeImage(QRCode.id),
   };
 }
 
