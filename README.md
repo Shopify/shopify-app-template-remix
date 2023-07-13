@@ -128,9 +128,14 @@ You can solve this by running the `setup` script in your app.
 
 In Remix apps, you can navigate to a different page either by adding an `<a>` tag, or using the `<Link>` component from `@remix-run/react`.
 
-In Shopify Remix apps you should avoid using `<a>`.
-Use `<Link> `from `@remix-run/react` instead.
-This ensures that your user remains authenticated.
+In Shopify Remix apps you should avoid using `<a>`. Use `<Link> `from `@remix-run/react` instead. This ensures that your user remains authenticated.
+
+### Non Embedded
+
+Shopify apps are best when they are embedded into the Shopify Admin. This template is configured that way. If you have a reason to not embed your please make 2 changes:
+
+1. Remove the `<script/>` tag to App Bridge in `/app/routes/app.jsx`
+2. Update the config for shopifyApp. Pass `isEmbedded: false`
 
 ## Benefits
 
