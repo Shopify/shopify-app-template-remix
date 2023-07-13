@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import { Outlet, useLoaderData } from "@remix-run/react";
+import { Outlet, useLoaderData, useRouteError } from "@remix-run/react";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
 
@@ -33,10 +33,10 @@ export default function App() {
   );
 }
 
-// We need to catch errors at this point so we can ensure the headers are included in the response. This should never be
-// rendered.
+// Shopify methods such as billing.require() need Remix to catch errors so headers are included in the response.
+// We throw `useRouteError()` to retain Remix's default error behaviour after we've captured headers.
 export function ErrorBoundary() {
-  return <h1>Error occurred.</h1>;
+  throw useRouteError();
 }
 
 export const headers = ({
