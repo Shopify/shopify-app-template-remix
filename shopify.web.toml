@@ -1,4 +1,4 @@
-type = "frontend"
+roles = ["frontend", "backend"]
 webhooks_path = "/webhooks"
 
 [commands]
