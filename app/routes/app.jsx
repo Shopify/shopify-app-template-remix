@@ -33,8 +33,8 @@ export default function App() {
   );
 }
 
-// We need to catch errors at this point so we can ensure the headers are included in the response. We still want the
-// default Remix error boundary behavior, so we rethrow the error after we've captured the headers.
+// Shopify methods such as billing.require() need Remix to catch errors so headers are included in the response.
+// We throw `useRouteError()` to retain Remix's default error behaviour after we've captured headers.
 export function ErrorBoundary() {
   throw useRouteError();
 }
