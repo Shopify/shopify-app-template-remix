@@ -92,8 +92,8 @@ export async function loader({ request }) {
 
 This template come preconfigured with examples of:
 
-1. Querying data using Graphql. Please see: [/app/routes/app.\_index.tsx](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/routes/app._index.jsx).
-2. Setting up your Shopify app in [/app/shopify.server.js](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/shopify.server.js)
+1. Setting up your Shopify app in [/app/shopify.server.js](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/shopify.server.js)
+2. Querying data using Graphql. Please see: [/app/routes/app.\_index.tsx](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/routes/app._index.jsx).
 3. Responding to mandatory webhooks in [/app/routes/webhooks.jsx](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/routes/webhooks.jsx)
 
 Please read the [documentation for @shopify/shopify-app-remix](https://www.npmjs.com/package/@shopify/shopify-app-remix#authenticating-admin-requests) to understand what other API's are available.
@@ -171,7 +171,8 @@ In Shopify Remix apps you should avoid using `<a>`. Use `<Link> `from `@remix-ru
 Shopify apps are best when they are embedded into the Shopify Admin. This template is configured that way. If you have a reason to not embed your please make 2 changes:
 
 1. Remove the `<script/>` tag to App Bridge in `/app/routes/app.jsx`
-2. Update the config for shopifyApp. Pass `isEmbedded: false`
+2. Remove any use of App Bridge APIs (`window.shopify`) from your code. By default, the only place that happens is in `/app/routes/app._index.jsx`
+3. Update the config for shopifyApp in `app/shopify.server.js`. Pass `isEmbedded: false`
 
 ## Benefits
 
