@@ -38,15 +38,15 @@ export default function App() {
         <ul>
           <li>
             <strong>Product feature</strong>. Some detail about your feature and
-            it's benefit to your customer.
+            its benefit to your customer.
           </li>
           <li>
             <strong>Product feature</strong>. Some detail about your feature and
-            it's benefit to your customer.
+            its benefit to your customer.
           </li>
           <li>
             <strong>Product feature</strong>. Some detail about your feature and
-            it's benefit to your customer.
+            its benefit to your customer.
           </li>
         </ul>
       </div>
