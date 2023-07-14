@@ -19,7 +19,6 @@ import {
   Link,
   List,
 } from "@shopify/polaris";
-import { faker } from "@faker-js/faker";
 
 import { shopify } from "../shopify.server";
 
@@ -32,6 +31,9 @@ export const loader = async ({ request }) => {
 export async function action({ request }) {
   const { admin } = await shopify.authenticate.admin(request);
 
+  const color = ["Red", "Orange", "Yellow", "Green"][
+    Math.floor(Math.random() * 4)
+  ];
   const response = await admin.graphql(
     `#graphql
       mutation populateProduct($input: ProductInput!) {
@@ -57,7 +59,7 @@ export async function action({ request }) {
     {
       variables: {
         input: {
-          title: faker.commerce.productName(),
+          title: `${color} Snowboard`,
           variants: [{ price: Math.random() * 100 }],
         },
       },
