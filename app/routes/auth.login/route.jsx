@@ -55,15 +55,13 @@ export default function Auth() {
                 type="text"
                 name="shop"
                 label="Shop domain"
-                helpText="e.g. example.myshopify.com"
+                helpText="example.myshopify.com"
                 value={shop}
                 onChange={setShop}
                 autoComplete="on"
                 error={errors.shop}
               />
-              <Button submit primary>
-                Log in
-              </Button>
+              <Button submit>Log in</Button>
             </FormLayout>
           </Form>
         </Card>
