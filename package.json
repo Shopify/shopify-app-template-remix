@@ -4,7 +4,7 @@
   "scripts": {
     "build": "NODE_ENV=production remix build",
     "dev": "shopify app dev",
-    "link": "shopify app config link",
+    "config:link": "shopify app config link",
     "push": "shopify app config push",
     "generate": "shopify app generate",
     "deploy": "shopify app deploy",
