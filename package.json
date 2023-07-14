@@ -17,7 +17,6 @@
     "setup": "prisma generate && prisma migrate deploy"
   },
   "dependencies": {
-    "@faker-js/faker": "^8.0.2",
     "@prisma/client": "^4.13.0",
     "@remix-run/node": "^1.19.0-pre.0",
     "@remix-run/react": "^1.19.0-pre.0",
