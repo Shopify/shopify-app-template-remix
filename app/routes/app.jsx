@@ -3,12 +3,12 @@ import { Outlet, useLoaderData, useRouteError } from "@remix-run/react";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
 
-import { shopify } from "../shopify.server";
+import { authenticate } from "../shopify.server";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export async function loader({ request }) {
-  await shopify.authenticate.admin(request);
+  await authenticate.admin(request);
 
   return json({
     polarisTranslations: require(`@shopify/polaris/locales/en.json`),

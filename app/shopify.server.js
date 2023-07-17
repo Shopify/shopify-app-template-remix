@@ -9,7 +9,7 @@ import { restResources } from "@shopify/shopify-api/rest/admin/2023-07";
 
 import prisma from "./db.server";
 
-export const shopify = shopifyApp({
+const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
   apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
   scopes: process.env.SCOPES?.split(","),
@@ -33,3 +33,11 @@ export const shopify = shopifyApp({
     ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
     : {}),
 });
+
+export default shopify;
+export const addResponseHeaders = shopify.addResponseHeaders;
+export const authenticate = shopify.authenticate;
+export const canUseLoginForm = shopify.canUseLoginForm;
+export const login = shopify.login;
+export const registerWebhooks = shopify.registerWebhooks;
+export const sessionStorage = shopify.sessionStorage;

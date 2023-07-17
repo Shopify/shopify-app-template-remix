@@ -20,16 +20,16 @@ import {
   List,
 } from "@shopify/polaris";
 
-import { shopify } from "../shopify.server";
+import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }) => {
-  const { session } = await shopify.authenticate.admin(request);
+  const { session } = await authenticate.admin(request);
 
   return json({ shop: session.shop.replace(".myshopify.com", "") });
 };
 
 export async function action({ request }) {
-  const { admin } = await shopify.authenticate.admin(request);
+  const { admin } = await authenticate.admin(request);
 
   const color = ["Red", "Orange", "Yellow", "Green"][
     Math.floor(Math.random() * 4)
@@ -86,7 +86,7 @@ export default function Index() {
   );
   useEffect(() => {
     if (productId) {
-      window?.shopify.toast.show("Product created");
+      shopify.toast.show("Product created");
     }
   }, [productId]);
 

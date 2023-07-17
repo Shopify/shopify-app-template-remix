@@ -13,13 +13,13 @@ import {
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
 
-import { shopify } from "../../shopify.server";
+import { login } from "../../shopify.server";
 import { loginErrorMessage } from "./error.server";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export async function loader({ request }) {
-  const errors = loginErrorMessage(await shopify.login(request));
+  const errors = loginErrorMessage(await login(request));
 
   return json({
     errors,
@@ -28,7 +28,7 @@ export async function loader({ request }) {
 }
 
 export async function action({ request }) {
-  const errors = loginErrorMessage(await shopify.login(request));
+  const errors = loginErrorMessage(await login(request));
 
   return json({
     errors,
@@ -39,8 +39,8 @@ export default function Auth() {
   const { polarisTranslations } = useLoaderData();
   const loaderData = useLoaderData();
   const actionData = useActionData();
-  const errors = actionData?.errors || loaderData.errors;
   const [shop, setShop] = useState("");
+  const { errors } = actionData || loaderData;
 
   return (
     <PolarisAppProvider i18n={polarisTranslations}>

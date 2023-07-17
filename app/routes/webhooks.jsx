@@ -1,8 +1,8 @@
-import { shopify } from "../shopify.server";
+import { authenticate } from "../shopify.server";
 import db from "../db.server";
 
 export const action = async ({ request }) => {
-  const { topic, shop } = await shopify.authenticate.webhook(request);
+  const { topic, shop } = await authenticate.webhook(request);
 
   switch (topic) {
     case "APP_UNINSTALLED":
