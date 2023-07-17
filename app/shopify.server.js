@@ -40,7 +40,6 @@ export default shopify;
 export const apiVersion = LATEST_API_VERSION;
 export const addResponseHeaders = shopify.addResponseHeaders;
 export const authenticate = shopify.authenticate;
-export const canUseLoginForm = shopify.canUseLoginForm;
 export const login = shopify.login;
 export const registerWebhooks = shopify.registerWebhooks;
 export const sessionStorage = shopify.sessionStorage;
