@@ -1,7 +1,7 @@
-import { shopify } from "../shopify.server";
+import { authenticate } from "../shopify.server";
 
 export async function loader({ request }) {
-  await shopify.authenticate.admin(request);
+  await authenticate.admin(request);
 
   return null;
 }
