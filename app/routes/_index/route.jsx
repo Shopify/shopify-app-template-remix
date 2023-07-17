@@ -14,7 +14,7 @@ export async function loader({ request }) {
     throw redirect(`/app?${url.searchParams.toString()}`);
   }
 
-  return json({ showForm: login });
+  return json({ showForm: Boolean(login) });
 }
 
 export default function App() {
