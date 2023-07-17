@@ -1,7 +1,7 @@
 import { json, redirect } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 
-import { login } from "../../shopify.server";
+import { canUseLoginForm } from "../../shopify.server";
 
 import indexStyles from "./style.css";
 
@@ -14,7 +14,7 @@ export async function loader({ request }) {
     throw redirect(`/app?${url.searchParams.toString()}`);
   }
 
-  return json({ showForm: Boolean(login) });
+  return json({ showForm: canUseLoginForm });
 }
 
 export default function App() {
