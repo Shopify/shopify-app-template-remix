@@ -1,6 +1,6 @@
 {
   "recommendations": [
-    "orsenkucher.vscode-graphql",
+    "graphql.vscode-graphql",
     "shopify.polaris-for-vscode"
   ]
 }
