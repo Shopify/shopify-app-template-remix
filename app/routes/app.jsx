@@ -45,11 +45,14 @@ export const headers = ({
   errorHeaders,
   parentHeaders,
 }) => {
+  if (errorHeaders && Array.from(errorHeaders.entries()).length > 0) {
+    return errorHeaders;
+  }
+
   // Ensure all of the headers Shopify needs are set for embedded app requests
   return new Headers([
-    ...(actionHeaders ? Array.from(actionHeaders.entries()) : []),
-    ...(loaderHeaders ? Array.from(loaderHeaders.entries()) : []),
-    ...(errorHeaders ? Array.from(errorHeaders.entries()) : []),
     ...(parentHeaders ? Array.from(parentHeaders.entries()) : []),
+    ...(loaderHeaders ? Array.from(loaderHeaders.entries()) : []),
+    ...(actionHeaders ? Array.from(actionHeaders.entries()) : []),
   ]);
 };
