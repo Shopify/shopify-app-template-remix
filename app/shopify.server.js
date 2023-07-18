@@ -43,3 +43,4 @@ export const authenticate = shopify.authenticate;
 export const login = shopify.login;
 export const registerWebhooks = shopify.registerWebhooks;
 export const sessionStorage = shopify.sessionStorage;
+export const boundary = shopify.boundary;
