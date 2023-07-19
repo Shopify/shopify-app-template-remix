@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import { Outlet, useLoaderData, useRouteError } from "@remix-run/react";
+import { Link, Outlet, useLoaderData, useRouteError } from "@remix-run/react";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
 import { boundary } from "@shopify/shopify-app-remix";
@@ -27,6 +27,9 @@ export default function App() {
         src="https://cdn.shopify.com/shopifycloud/app-bridge.js"
         data-api-key={apiKey}
       />
+      <ui-nav-menu>
+        <Link to="/app/additional">Additional page</Link>
+      </ui-nav-menu>
       <PolarisAppProvider i18n={polarisTranslations}>
         <Outlet />
       </PolarisAppProvider>
