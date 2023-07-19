@@ -2,6 +2,7 @@ import { json } from "@remix-run/node";
 import { Outlet, useLoaderData, useRouteError } from "@remix-run/react";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
+import { boundary } from "@shopify/shopify-app-remix";
 
 import { authenticate } from "../shopify.server";
 
@@ -33,26 +34,11 @@ export default function App() {
   );
 }
 
-// Shopify methods such as billing.require() need Remix to catch errors so headers are included in the response.
-// We throw `useRouteError()` to retain Remix's default error behaviour after we've captured headers.
+// Shopify needs Remix to catch some thrown responses, so that their headers are included in the response.
 export function ErrorBoundary() {
-  throw useRouteError();
+  return boundary.error(useRouteError());
 }
 
-export const headers = ({
-  loaderHeaders,
-  actionHeaders,
-  errorHeaders,
-  parentHeaders,
-}) => {
-  if (errorHeaders && Array.from(errorHeaders.entries()).length > 0) {
-    return errorHeaders;
-  }
-
-  // Ensure all of the headers Shopify needs are set for embedded app requests
-  return new Headers([
-    ...(parentHeaders ? Array.from(parentHeaders.entries()) : []),
-    ...(loaderHeaders ? Array.from(loaderHeaders.entries()) : []),
-    ...(actionHeaders ? Array.from(actionHeaders.entries()) : []),
-  ]);
+export const headers = (headersArgs) => {
+  return boundary.headers(headersArgs);
 };

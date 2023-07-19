@@ -3,7 +3,7 @@ import {
   AppDistribution,
   DeliveryMethod,
   shopifyApp,
-  LATEST_API_VERSION
+  LATEST_API_VERSION,
 } from "@shopify/shopify-app-remix";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { restResources } from "@shopify/shopify-api/rest/admin/2023-07";
@@ -38,9 +38,8 @@ const shopify = shopifyApp({
 
 export default shopify;
 export const apiVersion = LATEST_API_VERSION;
-export const addResponseHeaders = shopify.addResponseHeaders;
+export const addDocumentResponseHeaders = shopify.addDocumentResponseHeaders;
 export const authenticate = shopify.authenticate;
-export const canUseLoginForm = shopify.canUseLoginForm;
 export const login = shopify.login;
 export const registerWebhooks = shopify.registerWebhooks;
 export const sessionStorage = shopify.sessionStorage;
