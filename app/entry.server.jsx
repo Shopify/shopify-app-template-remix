@@ -4,7 +4,7 @@ import { Response } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import isbot from "isbot";
 
-import { addResponseHeaders } from "./shopify.server";
+import { addDocumentResponseHeaders } from "./shopify.server";
 
 const ABORT_DELAY = 5_000;
 
@@ -15,7 +15,7 @@ export default async function handleRequest(
   remixContext,
   _loadContext
 ) {
-  addResponseHeaders(request, responseHeaders);
+  addDocumentResponseHeaders(request, responseHeaders);
 
   const callbackName = isbot(request.headers.get("user-agent"))
     ? "onAllReady"
