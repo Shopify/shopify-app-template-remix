@@ -22,6 +22,7 @@
     "@remix-run/react": "^1.19.0-pre.0",
     "@remix-run/serve": "^1.19.0-pre.0",
     "@shopify/app": "^0.0.0-nightly-0",
+    "@shopify/app-bridge-types": "^0.0.2",
     "@shopify/cli": "^0.0.0-nightly-0",
     "@shopify/polaris": "^11.1.2",
     "@shopify/shopify-app-remix": "^1.0.0-rc.2",

@@ -1,3 +1,4 @@
+import "@shopify/app-bridge-types";
 import { useEffect } from "react";
 import { json } from "@remix-run/node";
 import {
