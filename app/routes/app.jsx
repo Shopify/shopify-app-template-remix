@@ -1,4 +1,3 @@
-import "@shopify/app-bridge-types";
 import { json } from "@remix-run/node";
 import { Link, Outlet, useLoaderData, useRouteError } from "@remix-run/react";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
