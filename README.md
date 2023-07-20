@@ -17,25 +17,24 @@ This is a template for building a [Shopify app](https://shopify.dev/docs/apps/ge
 
 ### Setup
 
+If you used the CLI to create the template, you can skip this section.
+
 Using yarn:
 
 ```shell
 yarn install
-yarn setup
 ```
 
 Using npm:
 
 ```shell
 npm install
-npm run setup
 ```
 
 Using pnpm:
 
 ```shell
 pnpm install
-pnpm run setup
 ```
 
 ### Local Development
@@ -55,6 +54,7 @@ npm run dev
 Using pnpm:
 
 ```shell
+pnpm run setup
 pnpm run dev
 ```
 
