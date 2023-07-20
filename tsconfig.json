@@ -17,6 +17,9 @@
     "paths": {
       "~/*": ["./app/*"]
     },
+    "types": [
+      "@shopify/app-bridge-types"
+    ],
     "noEmit": true
   }
 }
