@@ -74,12 +74,13 @@ export async function action({ request }) {
 }
 
 export default function Index() {
-  const { state } = useNavigation();
+  const nav = useNavigation();
   const { shop } = useLoaderData();
   const actionData = useActionData();
   const submit = useSubmit();
 
-  const isLoading = ["submitting", "loading"].includes(state);
+  const isLoading =
+    ["loading", "submitting"].includes(nav.state) && nav.formMethod === "POST";
 
   const productId = actionData?.product?.id.replace(
     "gid://shopify/Product/",
