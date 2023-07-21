@@ -1,8 +1,8 @@
-import { Link } from "@remix-run/react";
 import {
   Box,
   Card,
   Layout,
+  Link,
   List,
   Page,
   Text,
@@ -22,7 +22,7 @@ export default function AdditionalPage() {
                 demonstrates how to create multiple pages within app navigation
                 using{" "}
                 <Link
-                  to="https://shopify.dev/docs/apps/tools/app-bridge"
+                  url="https://shopify.dev/docs/apps/tools/app-bridge"
                   target="_blank"
                 >
                   App Bridge
@@ -47,7 +47,7 @@ export default function AdditionalPage() {
               <List spacing="extraTight">
                 <List.Item>
                   <Link
-                    to="https://shopify.dev/docs/apps/design-guidelines/navigation#app-nav"
+                    url="https://shopify.dev/docs/apps/design-guidelines/navigation#app-nav"
                     target="_blank"
                   >
                     App nav best practices

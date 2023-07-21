@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { json } from "@remix-run/node";
 import {
-  Link,
   useActionData,
   useLoaderData,
   useNavigation,
@@ -18,6 +17,7 @@ import {
   Box,
   Divider,
   List,
+  Link,
 } from "@shopify/polaris";
 
 import { authenticate } from "../shopify.server";
@@ -114,18 +114,18 @@ export default function Index() {
                   <Text variant="bodyMd" as="p">
                     This embedded app template uses{" "}
                     <Link
-                      to="https://shopify.dev/docs/apps/tools/app-bridge"
+                      url="https://shopify.dev/docs/apps/tools/app-bridge"
                       target="_blank"
                     >
                       App Bridge
                     </Link>{" "}
                     interface examples like an{" "}
-                    <Link to="/app/additional">
+                    <Link url="/app/additional">
                       additional page in the app nav
                     </Link>
                     , as well as an{" "}
                     <Link
-                      to="https://shopify.dev/docs/api/admin-graphql"
+                      url="https://shopify.dev/docs/api/admin-graphql"
                       target="_blank"
                     >
                       Admin GraphQL
@@ -142,7 +142,7 @@ export default function Index() {
                     Generate a product with GraphQL and get the JSON output for
                     that product. Learn more about the{" "}
                     <Link
-                      to="https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate"
+                      url="https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate"
                       target="_blank"
                     >
                       productCreate
@@ -193,7 +193,7 @@ export default function Index() {
                       <Text as="span" variant="bodyMd">
                         Framework
                       </Text>
-                      <Link to="https://remix.run" target="_blank">
+                      <Link url="https://remix.run" target="_blank">
                         Remix
                       </Link>
                     </HorizontalStack>
@@ -202,7 +202,7 @@ export default function Index() {
                       <Text as="span" variant="bodyMd">
                         Database
                       </Text>
-                      <Link to="https://www.prisma.io/" target="_blank">
+                      <Link url="https://www.prisma.io/" target="_blank">
                         Prisma
                       </Link>
                     </HorizontalStack>
@@ -212,12 +212,12 @@ export default function Index() {
                         Interface
                       </Text>
                       <span>
-                        <Link to="https://polaris.shopify.com" target="_blank">
+                        <Link url="https://polaris.shopify.com" target="_blank">
                           Polaris
                         </Link>
                         {", "}
                         <Link
-                          to="https://shopify.dev/docs/apps/tools/app-bridge"
+                          url="https://shopify.dev/docs/apps/tools/app-bridge"
                           target="_blank"
                         >
                           App Bridge
@@ -230,7 +230,7 @@ export default function Index() {
                         API
                       </Text>
                       <Link
-                        to="https://shopify.dev/docs/api/admin-graphql"
+                        url="https://shopify.dev/docs/api/admin-graphql"
                         target="_blank"
                       >
                         GraphQL API
@@ -248,7 +248,7 @@ export default function Index() {
                     <List.Item>
                       Build an{" "}
                       <Link
-                        to="https://shopify.dev/docs/apps/getting-started/build-app-example"
+                        url="https://shopify.dev/docs/apps/getting-started/build-app-example"
                         target="_blank"
                       >
                         {" "}
@@ -259,7 +259,7 @@ export default function Index() {
                     <List.Item>
                       Explore Shopify’s API with{" "}
                       <Link
-                        to="https://shopify.dev/docs/apps/tools/graphiql-admin-api"
+                        url="https://shopify.dev/docs/apps/tools/graphiql-admin-api"
                         target="_blank"
                       >
                         GraphiQL
