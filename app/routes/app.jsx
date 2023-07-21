@@ -1,9 +1,9 @@
+import React from "react";
 import { json } from "@remix-run/node";
 import { Link, Outlet, useLoaderData, useRouteError } from "@remix-run/react";
 import { AppProvider as PolarisAppProvider } from "@shopify/polaris";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css";
 import { boundary } from "@shopify/shopify-app-remix";
-import { RemixPolarisLink } from "@shopify/shopify-app-remix/components";
 
 import { authenticate } from "../shopify.server";
 
@@ -13,14 +13,13 @@ export async function loader({ request }) {
   await authenticate.admin(request);
 
   return json({
-    polarisTranslations: require(`@shopify/polaris/locales/en.json`),
+    polarisTranslations: require("@shopify/polaris/locales/en.json"),
     apiKey: process.env.SHOPIFY_API_KEY,
   });
 }
 
 export default function App() {
-  const { polarisTranslations } = useLoaderData();
-  const { apiKey } = useLoaderData();
+  const { apiKey, polarisTranslations } = useLoaderData();
 
   return (
     <>
@@ -43,6 +42,13 @@ export default function App() {
     </>
   );
 }
+
+/** @type {any} */
+const RemixPolarisLink = React.forwardRef((/** @type {any} */ props, ref) => (
+  <Link {...props} to={props.url ?? props.to} ref={ref}>
+    {props.children}
+  </Link>
+));
 
 // Shopify needs Remix to catch some thrown responses, so that their headers are included in the response.
 export function ErrorBoundary() {
