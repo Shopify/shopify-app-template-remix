@@ -54,7 +54,6 @@ npm run dev
 Using pnpm:
 
 ```shell
-pnpm run setup
 pnpm run dev
 ```
 
