@@ -26,7 +26,7 @@
     "@shopify/app-bridge-types": "^0.0.2",
     "@shopify/cli": "^3.48",
     "@shopify/polaris": "^11.1.2",
-    "@shopify/shopify-app-remix": "^1.0.3",
+    "@shopify/shopify-app-remix": "github:Shopify/shopify-app-js#hackdays34-simple-dev",
     "@shopify/shopify-app-session-storage-prisma": "^1.0.0",
     "cross-env": "^7.0.3",
     "isbot": "latest",
