@@ -1,3 +1,4 @@
+#:schema ./app_schema.json
 # This file stores configurations for your Shopify app.
 
 scopes = "write_products"
