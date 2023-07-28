@@ -29,6 +29,7 @@
     "@shopify/shopify-app-remix": "file:../shopify-app-js/packages/shopify-app-remix",
     "@shopify/shopify-api": "file:../shopify-api-js",
     "@shopify/shopify-app-session-storage-prisma": "file:../shopify-app-js/packages/shopify-app-session-storage-prisma",
+    "@shopify/shopify-app-session-storage-memory": "file:../shopify-app-js/packages/shopify-app-session-storage-memory",
     "cross-env": "^7.0.3",
     "isbot": "latest",
     "prisma": "^4.13.0",
