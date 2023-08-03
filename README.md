@@ -171,7 +171,7 @@ Shopify apps are best when they are embedded into the Shopify Admin. This templa
 
 1. Remove the `<script/>` tag to App Bridge in `/app/routes/app.jsx`
 2. Remove any use of App Bridge APIs (`window.shopify`) from your code
-3. Update the config for shopifyApp in `app/shopify.server.js`. Pass `isEmbedded: false`
+3. Update the config for shopifyApp in `app/shopify.server.js`. Pass `isEmbeddedApp: false`
 
 ## Benefits
 
