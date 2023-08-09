@@ -173,6 +173,29 @@ Shopify apps are best when they are embedded into the Shopify Admin. This templa
 2. Remove any use of App Bridge APIs (`window.shopify`) from your code
 3. Update the config for shopifyApp in `app/shopify.server.js`. Pass `isEmbeddedApp: false`
 
+### OAuth goes into a loop when I change my app's scopes
+
+If you change your app's scopes and notice that authentication goes into a loop and fails with a message from Shopify that it tried too many times, you might have forgotten to update your scopes with Shopify.
+To do that, you can run the `config push` CLI command.
+
+Using yarn:
+
+```shell
+yarn shopify app config push
+```
+
+Using npm:
+
+```shell
+npm run shopify app config push
+```
+
+Using pnpm:
+
+```shell
+pnpm run shopify app config push
+```
+
 ## Benefits
 
 Shopify apps are built on a variety of Shopify tools to create a great merchant experience.
