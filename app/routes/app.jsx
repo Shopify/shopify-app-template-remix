@@ -7,7 +7,14 @@ import { boundary } from "@shopify/shopify-app-remix";
 
 import { authenticate } from "../shopify.server";
 
-export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
+export const links = () => [
+  { rel: "stylesheet", href: polarisStyles },
+  {
+    rel: "preload",
+    as: "script",
+    href: "https://cdn.shopify.com/shopifycloud/app-bridge.js",
+  },
+];
 
 export async function loader({ request }) {
   await authenticate.admin(request);
