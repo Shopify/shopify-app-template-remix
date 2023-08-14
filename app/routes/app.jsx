@@ -10,6 +10,10 @@ import { authenticate } from "../shopify.server";
 export const links = () => [
   { rel: "stylesheet", href: polarisStyles },
   {
+    rel: "preconnect",
+    href: "https://cdn.shopify.com",
+  },
+  {
     rel: "preload",
     as: "script",
     href: "https://cdn.shopify.com/shopifycloud/app-bridge.js",
