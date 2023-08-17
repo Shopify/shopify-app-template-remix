@@ -1,4 +1,4 @@
-import { LoginErrorType } from "@shopify/shopify-app-remix";
+import { LoginErrorType } from "@shopify/shopify-app-remix/server";
 
 export function loginErrorMessage(loginErrors) {
   if (loginErrors?.shop === LoginErrorType.MissingShop) {
