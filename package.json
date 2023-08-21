@@ -39,7 +39,7 @@
     "@remix-run/eslint-config": "^1.19.1",
     "@types/eslint": "^8.40.0",
     "eslint": "^8.42.0",
-    "eslint-config-prettier": "^8.8.0",
+    "eslint-config-prettier": "^9.0.0",
     "prettier": "^2.8.8"
   },
   "workspaces": {
