@@ -169,7 +169,7 @@ In Shopify Remix apps you should avoid using `<a>`. Use `<Link> `from `@remix-ru
 
 Shopify apps are best when they are embedded into the Shopify Admin. This template is configured that way. If you have a reason to not embed your please make 2 changes:
 
-1. Remove the `<script/>` tag to App Bridge in `/app/routes/app.jsx`
+1. Change the `isEmbeddedApp` prop to false for the `AppProvider` in `/app/routes/app.jsx`
 2. Remove any use of App Bridge APIs (`window.shopify`) from your code
 3. Update the config for shopifyApp in `app/shopify.server.js`. Pass `isEmbeddedApp: false`
 
