@@ -1,11 +1,6 @@
 import { useEffect } from "react";
 import { json } from "@remix-run/node";
-import {
-  useActionData,
-  useLoaderData,
-  useNavigation,
-  useSubmit,
-} from "@remix-run/react";
+import { useActionData, useNavigation, useSubmit } from "@remix-run/react";
 import {
   Page,
   Layout,
@@ -23,9 +18,9 @@ import {
 import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }) => {
-  const { session } = await authenticate.admin(request);
+  await authenticate.admin(request);
 
-  return json({ shop: session.shop.replace(".myshopify.com", "") });
+  return null;
 };
 
 export async function action({ request }) {
@@ -75,7 +70,6 @@ export async function action({ request }) {
 
 export default function Index() {
   const nav = useNavigation();
-  const { shop } = useLoaderData();
   const actionData = useActionData();
   const submit = useSubmit();
 
@@ -153,7 +147,7 @@ export default function Index() {
                 <HorizontalStack gap="3" align="end">
                   {actionData?.product && (
                     <Button
-                      url={`https://admin.shopify.com/store/${shop}/admin/products/${productId}`}
+                      url={`shopify:admin/products/${productId}`}
                       target="_blank"
                     >
                       View product
