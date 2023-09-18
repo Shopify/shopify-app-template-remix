@@ -1,11 +1,6 @@
 import { useEffect } from "react";
 import { json } from "@remix-run/node";
-import {
-  useActionData,
-  useLoaderData,
-  useNavigation,
-  useSubmit,
-} from "@remix-run/react";
+import { useActionData, useLoaderData, useFetcher } from "@remix-run/react";
 import {
   Page,
   Layout,
@@ -74,13 +69,11 @@ export async function action({ request }) {
 }
 
 export default function Index() {
-  const nav = useNavigation();
   const { shop } = useLoaderData();
   const actionData = useActionData();
-  const submit = useSubmit();
 
-  const isLoading =
-    ["loading", "submitting"].includes(nav.state) && nav.formMethod === "POST";
+  const fetcher1 = useFetcher();
+  const fetcher2 = useFetcher();
 
   const productId = actionData?.product?.id.replace(
     "gid://shopify/Product/",
@@ -93,7 +86,10 @@ export default function Index() {
     }
   }, [productId]);
 
-  const generateProduct = () => submit({}, { replace: true, method: "POST" });
+  const generateProduct = () =>
+    fetcher1.submit({}, { replace: true, method: "POST" });
+  const generateProduct2 = () =>
+    fetcher2.submit({}, { replace: true, method: "POST" });
 
   return (
     <Page>
@@ -159,8 +155,19 @@ export default function Index() {
                       View product
                     </Button>
                   )}
-                  <Button loading={isLoading} primary onClick={generateProduct}>
-                    Generate a product
+                  <Button
+                    loading={fetcher1.state !== "idle"}
+                    primary
+                    onClick={generateProduct}
+                  >
+                    Generate a product (1)
+                  </Button>
+                  <Button
+                    loading={fetcher2.state !== "idle"}
+                    primary
+                    onClick={generateProduct2}
+                  >
+                    Generate a product (2)
                   </Button>
                 </HorizontalStack>
                 {actionData?.product && (
