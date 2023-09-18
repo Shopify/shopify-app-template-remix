@@ -150,20 +150,23 @@ When you reach the step for [setting up environment variables](https://shopify.d
 
 ### Database tables don't exist
 
-If you run the app right after creating it, you'll get this error:
+If you get this error:
 
 ```
 The table `main.Session` does not exist in the current database.
 ```
 
-This will happen when the Prisma database hasn't been created.
-You can solve this by running the `setup` script in your app.
+You need to create the database for Prisma. Run the `setup` script in `package.json` using your preferred package manager.
 
-### Navigating to other pages breaks
+### Navigating/redirecting breaks an embedded app
 
-In Remix apps, you can navigate to a different page either by adding an `<a>` tag, or using the `<Link>` component from `@remix-run/react`.
+Embedded Shopify apps must maintain the user session, which can be tricky inside an iFrame. To avoid issues:
 
-In Shopify Remix apps you should avoid using `<a>`. Use `<Link> `from `@remix-run/react` instead. This ensures that your user remains authenticated.
+1. Use `Link` from `@remix-run/react` or `@shopify/polaris`. Do not use `<a>`.
+2. Use the `redirect` helper returned from `authenticate.admin`. Do not use `redirect` from `@remix-run/node`
+3. Use `useSubmit` or `<Form/>` from `@remix-run/react`. Do not use a lowercase `<form/>`.
+
+This only applies if you app is embedded, which it will be by default.
 
 ### Non Embedded
 
@@ -175,7 +178,7 @@ Shopify apps are best when they are embedded into the Shopify Admin. This templa
 
 ### OAuth goes into a loop when I change my app's scopes
 
-If you change your app's scopes and notice that authentication goes into a loop and fails with a message from Shopify that it tried too many times, you might have forgotten to update your scopes with Shopify.
+If you change your app's scopes and authentication goes into a loop and fails with a message from Shopify that it tried too many times, you might have forgotten to update your scopes with Shopify.
 To do that, you can run the `config push` CLI command.
 
 Using yarn:
