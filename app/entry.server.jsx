@@ -1,6 +1,6 @@
 import { PassThrough } from "stream";
 import { renderToPipeableStream } from "react-dom/server";
-import { Response , createReadableStreamFromReadable } from "@remix-run/node";
+import { Response, createReadableStreamFromReadable } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import isbot from "isbot";
 import { addDocumentResponseHeaders } from "./shopify.server";
