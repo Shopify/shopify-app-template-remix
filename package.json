@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@remix-run/dev": "^1.19.1",
-    "@remix-run/eslint-config": "^1.19.1",
+    "@remix-run/eslint-config": "^2.0.1",
     "@types/eslint": "^8.40.0",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
