@@ -21,7 +21,7 @@
   "dependencies": {
     "@prisma/client": "^4.13.0",
     "@remix-run/node": "^1.19.1",
-    "@remix-run/react": "^1.19.1",
+    "@remix-run/react": "^2.0.1",
     "@remix-run/serve": "^1.19.1",
     "@shopify/app": "^3.48",
     "@shopify/app-bridge-types": "^0.0.3",
