@@ -64,7 +64,7 @@ export default function AdditionalPage() {
   );
 }
 
-function Code({ children }) {
+function Code({ children }: { children: React.ReactNode }) {
   return (
     <Box
       as="span"
