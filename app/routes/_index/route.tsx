@@ -1,3 +1,4 @@
+import type { LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import { login } from "../../shopify.server";
@@ -5,7 +6,7 @@ import indexStyles from "./style.css";
 
 export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
-export const loader = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url);
 
   if (url.searchParams.get("shop")) {
@@ -16,7 +17,7 @@ export const loader = async ({ request }) => {
 };
 
 export default function App() {
-  const { showForm } = useLoaderData();
+  const { showForm } = useLoaderData<typeof loader>();
 
   return (
     <div className="index">
