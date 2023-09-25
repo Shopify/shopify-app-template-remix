@@ -199,6 +199,15 @@ Using pnpm:
 pnpm run shopify app config push
 ```
 
+### Incorrect GraphQL Hints
+
+By default the [graphql.vscode-graphql](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql) extension for VS Code will assume that GraphQL queries or mutations are for the [Shopify Admin API](https://shopify.dev/docs/api/admin). This is a sensible default, but it may not be true if:
+
+1. You use another Shopify API such as the storefront API.
+2. You use a third party GraphQL API.
+
+in this situation, please update the [.graphqlrc.js](https://github.com/Shopify/shopify-app-template-remix/blob/main/.graphqlrc.js) config.
+
 ## Benefits
 
 Shopify apps are built on a variety of Shopify tools to create a great merchant experience.
