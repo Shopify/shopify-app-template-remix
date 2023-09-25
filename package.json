@@ -12,11 +12,11 @@
     "config:use": "shopify app config use",
     "env": "shopify app env",
     "start": "remix-serve build",
-    "docker-start": "prisma migrate deploy && remix-serve build",
+    "docker-start": "npm run setup && npm run start",
+    "setup": "prisma generate && prisma migrate deploy",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "shopify": "shopify",
-    "prisma": "prisma",
-    "setup": "prisma generate && prisma migrate deploy"
+    "prisma": "prisma"
   },
   "dependencies": {
     "@prisma/client": "^4.13.0",
