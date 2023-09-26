@@ -37,7 +37,7 @@ function getConfig() {
     }
     config.projects[entry] = {
       schema,
-      documents: [`${extensionPath}/input.graphql`],
+      documents: [`${extensionPath}/**/*.graphql`],
     };
   }
 
