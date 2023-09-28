@@ -1,0 +1,24 @@
+<div id="root">
+  {% liquid
+    # Relative to entrypointsDir
+    render 'vite-tag' with 'theme.css'
+    render 'vite-tag' with 'theme.jsx'
+  %}
+</div>
+
+<script>
+  const home = {{ request.path | json }}
+</script>
+
+{% schema %}
+{
+  "name": "Sample React Extension",
+  "templates": [
+    "page"
+  ],
+  "target": "section",
+  "settings": [
+
+  ]
+}
+{% endschema %}

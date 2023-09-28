@@ -1,5 +1,5 @@
 {
-  "name": "app",
+  "name": "shoppable-video-prisma",
   "private": true,
   "scripts": {
     "build": "NODE_ENV=production remix build",
@@ -12,28 +12,47 @@
     "config:use": "shopify app config use",
     "env": "shopify app env",
     "start": "remix-serve build",
-    "docker-start": "npm run setup && npm run start",
-    "setup": "prisma generate && prisma migrate deploy",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "shopify": "shopify",
-    "prisma": "prisma"
+    "prisma": "prisma",
+    "setup": "prisma generate && prisma migrate deploy",
+    "theme:dev": "run-p -sr vite:dev shopify:dev",
+    "theme:build": "run-s vite:build shopify:build",
+    "theme:deploy": "run-s vite:build cleanup shopify:deploy",
+    "shopify:build": "shopify app build",
+    "shopify:dev": "shopify app dev",
+    "shopify:info": "shopify app info",
+    "shopify:generate": "shopify app generate",
+    "shopify:deploy": "shopify app deploy",
+    "vite:dev": "vite",
+    "vite:build": "vite build",
+    "cleanup": "rimraf --glob extensions/*/assets/*.{json,geetkeep}"
   },
   "dependencies": {
-    "@prisma/client": "^4.13.0",
+    "@prisma/client": "^5.3.1",
     "@remix-run/node": "^1.19.1",
     "@remix-run/react": "^1.19.1",
     "@remix-run/serve": "^1.19.1",
-    "@shopify/app": "^3.48",
-    "@shopify/app-bridge-types": "^0.0.3",
-    "@shopify/cli": "^3.48",
+    "@shopify/app": "3.48.0",
+    "@shopify/app-bridge-types": "^0.0.2",
+    "@shopify/cli": "3.48.0",
     "@shopify/polaris": "^11.1.2",
-    "@shopify/shopify-app-remix": "^1.3.0",
-    "@shopify/shopify-app-session-storage-prisma": "^1.1.1",
+    "@shopify/polaris-icons": "^7.7.0",
+    "@shopify/shopify-app-remix": "^1.0.3",
+    "@shopify/shopify-app-session-storage-prisma": "^1.0.0",
+    "axios": "0.21.1",
     "cross-env": "^7.0.3",
     "isbot": "latest",
-    "prisma": "^4.13.0",
+    "prisma": "^5.3.1",
+    "qrcode": "^1.5.3",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "tiny-invariant": "^1.3.1",
+    "@vitejs/plugin-react": "^4.0.3",
+    "clsx": "^2.0.0",
+    "localforage": "^1.10.0",
+    "match-sorter": "^6.3.1",
+    "sort-by": "^1.2.0"
   },
   "devDependencies": {
     "@remix-run/dev": "^1.19.1",
@@ -41,11 +60,23 @@
     "@types/eslint": "^8.40.0",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
-    "prettier": "^2.8.8"
+    "prettier": "^2.8.8",
+    "autoprefixer": "^10.4.14",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.26",
+    "postcss-cli": "^10.1.0",
+    "rimraf": "^4.4.1",
+    "tailwindcss": "^3.3.3",
+    "vite": "^4.4.4",
+    "vite-plugin-shopify": "^2.1.1"
   },
-  "workspaces": {
-    "packages": [
-      "extensions/*"
-    ]
-  }
+  "workspaces": [
+    "app",
+    "frontend",
+    "extensions/*"
+  ],
+  "author": "jameson",
+  "packageManager": "yarn@1.22.19"
 }
+
+
