@@ -40,31 +40,31 @@
     "@shopify/polaris-icons": "^7.7.0",
     "@shopify/shopify-app-remix": "^1.0.3",
     "@shopify/shopify-app-session-storage-prisma": "^1.0.0",
+    "@vitejs/plugin-react": "^4.0.3",
     "axios": "0.21.1",
+    "clsx": "^2.0.0",
     "cross-env": "^7.0.3",
     "isbot": "latest",
+    "localforage": "^1.10.0",
+    "match-sorter": "^6.3.1",
     "prisma": "^5.3.1",
     "qrcode": "^1.5.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "tiny-invariant": "^1.3.1",
-    "@vitejs/plugin-react": "^4.0.3",
-    "clsx": "^2.0.0",
-    "localforage": "^1.10.0",
-    "match-sorter": "^6.3.1",
-    "sort-by": "^1.2.0"
+    "sort-by": "^1.2.0",
+    "tiny-invariant": "^1.3.1"
   },
   "devDependencies": {
     "@remix-run/dev": "^1.19.1",
     "@remix-run/eslint-config": "^1.19.1",
     "@types/eslint": "^8.40.0",
+    "autoprefixer": "^10.4.14",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
-    "prettier": "^2.8.8",
-    "autoprefixer": "^10.4.14",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.4.26",
     "postcss-cli": "^10.1.0",
+    "prettier": "^2.8.8",
     "rimraf": "^4.4.1",
     "tailwindcss": "^3.3.3",
     "vite": "^4.4.4",
@@ -78,5 +78,3 @@
   "author": "jameson",
   "packageManager": "yarn@1.22.19"
 }
-
-

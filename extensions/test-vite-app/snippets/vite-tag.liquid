@@ -3,9 +3,28 @@
   Do not attempt to modify this file directly, as any changes will be overwritten by the next build.
 {% endcomment %}
 {% assign path = vite-tag | replace: '~/', '../' | replace: '@/', '../' %}
-{% if path == "/frontend/entrypoints/theme.css" or path == "theme.css" %}
-  {{ 'theme-179954eb.css' | asset_url | split: '?' | first | stylesheet_tag: preload: preload_stylesheet }}
-{% elsif path == "/frontend/entrypoints/theme.jsx" or path == "theme.jsx" %}
-  <script src="{{ 'theme-695b4dc9.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
-  {{ 'theme-179954eb.css' | asset_url | split: '?' | first | stylesheet_tag: preload: preload_stylesheet }}
+{% liquid
+  assign path_prefix = path | slice: 0
+  if path_prefix == '/'
+    assign file_url_prefix = 'http://localhost:5173'
+  else
+    assign file_url_prefix = 'http://localhost:5173/frontend/entrypoints/'
+  endif
+  assign file_url = path | prepend: file_url_prefix
+  assign file_name = path | split: '/' | last
+  if file_name contains '.'
+    assign file_extension = file_name | split: '.' | last
+  endif
+  assign css_extensions = 'css|less|sass|scss|styl|stylus|pcss|postcss' | split: '|'
+  assign is_css = false
+  if css_extensions contains file_extension
+    assign is_css = true
+  endif
+%}
+<script src="http://localhost:5173/@id/__x00__vite-plugin-shopify:react-refresh" type="module"></script>
+<script src="http://localhost:5173/@vite/client" type="module"></script>
+{% if is_css == true %}
+  {{ file_url | stylesheet_tag }}
+{% else %}
+  <script src="{{ file_url }}" type="module"></script>
 {% endif %}
