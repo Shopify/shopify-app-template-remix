@@ -25,43 +25,20 @@ Using yarn:
 yarn install
 ```
 
-Using npm:
-
-```shell
-npm install
-```
-
-Using pnpm:
-
-```shell
-pnpm install
-```
-
 ### Local Development
 
 Using yarn:
 
-```shell
-yarn theme:build
-yarn theme:deploy
-```
-
-Enable development store preview in partner dashboard and run this command to see vite hmr updates:
+Enable development store preview in partner dashboard and run this command to see vite hmr updates to the theme extension:
 
 ```
 yarn theme:dev
 ```
 
-Using npm:
+To get Remix hmr updates to the shopify embedded admin app:
 
-```shell
-npm run dev
 ```
-
-Using pnpm:
-
-```shell
-pnpm run dev
+yarn dev
 ```
 
 Press P to open the URL to your app. Once you click install, you can start development.
@@ -129,22 +106,15 @@ To use one of these, you can use a different [datasource provider](https://www.p
 
 Remix handles building the app for you, by running the command below with the package manager of your choice:
 
-Using yarn:
+Using yarn for Remix App:
 
 ```shell
 yarn build
 ```
 
-Using npm:
-
 ```shell
-npm run build
-```
-
-Using pnpm:
-
-```shell
-pnpm run build
+yarn theme:build
+yarn theme:deploy
 ```
 
 ## Hosting
