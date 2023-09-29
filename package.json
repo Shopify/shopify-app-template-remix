@@ -1,5 +1,5 @@
 {
-  "name": "shoppable-video-prisma",
+  "name": "shopify-remix-vite-extension",
   "private": true,
   "scripts": {
     "dev": "run-p -sr vite:dev shopify:dev",

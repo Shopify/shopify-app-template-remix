@@ -1,6 +1,8 @@
-# Shopify App Template - Remix
+# Shopify App Template - Remix Vite
 
 This is a template for building a [Shopify app](https://shopify.dev/docs/apps/getting-started) using the [Remix](https://remix.run) framework.
+
+Theme extensions are built with Vite, React, and Tailwind boilerplate from the [theme-app-extension-react](https://github.com/iskurbanov/theme-app-extension-react) template.
 
 <!-- TODO: Uncomment this after we've started using the template in the CLI -->
 <!-- Rather than cloning this repo, you can use your preferred package manager and the Shopify CLI with [these steps](#installing-the-template). -->
@@ -25,20 +27,40 @@ Using yarn:
 yarn install
 ```
 
+Using npm:
+
+```shell
+npm install
+```
+
+Using pnpm:
+
+```shell
+pnpm install
+```
+
 ### Local Development
+
+Running the dev script will run a Remix server for the fullstack embedded admin app and a concurrent Vite server that bundles the react theme extension.
+
+Enable store preview to see live HMR updates to the theme extension
 
 Using yarn:
 
-Enable development store preview in partner dashboard and run this command to see vite hmr updates to the theme extension:
-
-```
-yarn theme:dev
-```
-
-To get Remix hmr updates to the shopify embedded admin app:
-
-```
+```shell
 yarn dev
+```
+
+Using npm:
+
+```shell
+npm run dev
+```
+
+Using pnpm:
+
+```shell
+pnpm run dev
 ```
 
 Press P to open the URL to your app. Once you click install, you can start development.
@@ -106,17 +128,22 @@ To use one of these, you can use a different [datasource provider](https://www.p
 
 Remix handles building the app for you, by running the command below with the package manager of your choice:
 
-Using yarn for Remix App:
+Using yarn:
 
 ```shell
 yarn build
 ```
 
-For building the React theme extension using vite:
+Using npm:
 
 ```shell
-yarn theme:build
-yarn theme:deploy
+npm run build
+```
+
+Using pnpm:
+
+```shell
+pnpm run build
 ```
 
 ## Hosting
