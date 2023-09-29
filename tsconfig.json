@@ -9,6 +9,7 @@
     "removeComments": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
+    "allowJs": true,
     "jsx": "react-jsx",
     "module": "Node16",
     "moduleResolution": "Node16",
