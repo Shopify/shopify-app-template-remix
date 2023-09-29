@@ -112,6 +112,8 @@ Using yarn for Remix App:
 yarn build
 ```
 
+For building the React theme extension using vite:
+
 ```shell
 yarn theme:build
 yarn theme:deploy
