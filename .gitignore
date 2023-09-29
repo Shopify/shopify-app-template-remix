@@ -13,3 +13,13 @@ database.sqlite
 .env
 package-lock.json
 yarn.lock
+
+
+# ngrok tunnel file
+config/tunnel.pid
+
+# vite build output
+dist/
+
+# extensions build output
+extensions/*/build
