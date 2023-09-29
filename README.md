@@ -42,7 +42,14 @@ pnpm install
 Using yarn:
 
 ```shell
-yarn dev
+yarn theme:build
+yarn theme:deploy
+```
+
+Enable development store preview in partner dashboard and run this command to see vite hmr updates:
+
+```
+yarn theme:dev
 ```
 
 Using npm:
