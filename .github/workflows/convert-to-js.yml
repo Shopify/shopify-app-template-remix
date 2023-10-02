@@ -3,8 +3,8 @@ name: Create Javascript conversion PR
 on:
   push:
     branches:
-      # TODO Rename this before merging the branch into `typescript`
-      - typescript_template
+      # TODO Rename this before merging the branch into `main`
+      - typescript
 
   workflow_dispatch:
 
@@ -74,6 +74,8 @@ jobs:
           git push --force origin javascript_updates
 
       - name: Create Javascript PR
-        run: gh pr view javascript_updates || gh pr create -B javascript -H javascript_updates --title 'Convert template to Javascript' --body 'This is an automated PR that converts the latest changes from Typescript to Javascript'
+        run: |
+          gh pr view --json mergedAt -q ".mergedAt" javascript_updates | grep -E "^$" || \
+          gh pr create -B javascript -H javascript_updates --title 'Convert template to Javascript' --body 'This is an automated PR that converts the latest changes from Typescript to Javascript'
         env:
           GH_TOKEN: ${{ github.token }}
