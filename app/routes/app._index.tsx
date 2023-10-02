@@ -15,12 +15,14 @@ import {
   Link,
 } from "@shopify/polaris";
 
+import { useAdminLoaderData } from "~/direct-api/useShopifyAdminLoaderData";
+
 import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }) => {
   await authenticate.admin(request);
 
-  return json;
+  return json({ server: "data" });
 };
 
 export async function action({ request }) {
@@ -69,6 +71,13 @@ export async function action({ request }) {
 }
 
 export default function Index() {
+  const {
+    admin,
+    loader: { server },
+  } = useAdminLoaderData<typeof loader>(`{shop { name }}`);
+
+  console.log({ admin, server });
+
   const nav = useNavigation();
   const actionData = useActionData();
   const submit = useSubmit();
@@ -103,7 +112,9 @@ export default function Index() {
               <VerticalStack gap="5">
                 <VerticalStack gap="2">
                   <Text as="h2" variant="headingMd">
-                    Congrats on creating a new Shopify app 🎉
+                    {`Congrats on creating a new Shopify app ${
+                      admin.data?.shop?.name || "..."
+                    }  🎉`}
                   </Text>
                   <Text variant="bodyMd" as="p">
                     This embedded app template uses{" "}
