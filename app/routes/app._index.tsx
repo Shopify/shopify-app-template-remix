@@ -1,6 +1,4 @@
 import { useEffect } from "react";
-import { json } from "@remix-run/node";
-import { useActionData, useNavigation, useSubmit } from "@remix-run/react";
 import {
   Page,
   Layout,
@@ -14,25 +12,36 @@ import {
   List,
   Link,
 } from "@shopify/polaris";
-
-import { useAdminLoaderData } from "~/direct-api/useShopifyAdminLoaderData";
-
 import { authenticate } from "../shopify.server";
+import { useShopifyAdmin } from "~/direct-api/useShopifyAdmin";
 
 export const loader = async ({ request }) => {
   await authenticate.admin(request);
 
-  return json({ server: "data" });
+  return null;
 };
 
-export async function action({ request }) {
-  const { admin } = await authenticate.admin(request);
+export default function Index() {
+  const admin = useShopifyAdmin();
+  const isLoading = admin.state === "loading";
+  const product = admin.data?.productCreate.product;
+  const productId = product?.id.replace("gid://shopify/Product/", "");
 
-  const color = ["Red", "Orange", "Yellow", "Green"][
-    Math.floor(Math.random() * 4)
-  ];
-  const response = await admin.graphql(
-    `#graphql
+  useEffect(() => {
+    if (productId) {
+      shopify.toast.show("Product created");
+    }
+  }, [productId]);
+
+  const generateProduct = () => {
+    const color = ["Red", "Orange", "Yellow", "Green"][
+      Math.floor(Math.random() * 4)
+    ];
+
+    // TODO: Do we need to worry about replace: true here?
+    // const generateProduct = () => submit({}, { replace: true, method: "POST" });
+    admin.graphql(
+      `#graphql
       mutation populateProduct($input: ProductInput!) {
         productCreate(input: $input) {
           product {
@@ -53,50 +62,16 @@ export async function action({ request }) {
           }
         }
       }`,
-    {
-      variables: {
-        input: {
-          title: `${color} Snowboard`,
-          variants: [{ price: Math.random() * 100 }],
+      {
+        variables: {
+          input: {
+            title: `${color} Snowboard`,
+            variants: [{ price: Math.random() * 100 }],
+          },
         },
-      },
-    }
-  );
-
-  const responseJson = await response.json();
-
-  return json({
-    product: responseJson.data.productCreate.product,
-  });
-}
-
-export default function Index() {
-  const {
-    admin,
-    loader: { server },
-  } = useAdminLoaderData<typeof loader>(`{shop { name }}`);
-
-  console.log({ admin, server });
-
-  const nav = useNavigation();
-  const actionData = useActionData();
-  const submit = useSubmit();
-
-  const isLoading =
-    ["loading", "submitting"].includes(nav.state) && nav.formMethod === "POST";
-
-  const productId = actionData?.product?.id.replace(
-    "gid://shopify/Product/",
-    ""
-  );
-
-  useEffect(() => {
-    if (productId) {
-      shopify.toast.show("Product created");
-    }
-  }, [productId]);
-
-  const generateProduct = () => submit({}, { replace: true, method: "POST" });
+      }
+    );
+  };
 
   return (
     <Page>
@@ -112,9 +87,7 @@ export default function Index() {
               <VerticalStack gap="5">
                 <VerticalStack gap="2">
                   <Text as="h2" variant="headingMd">
-                    {`Congrats on creating a new Shopify app ${
-                      admin.data?.shop?.name || "..."
-                    }  🎉`}
+                    Congrats on creating a new Shopify app 🎉
                   </Text>
                   <Text variant="bodyMd" as="p">
                     This embedded app template uses{" "}
@@ -156,7 +129,7 @@ export default function Index() {
                   </Text>
                 </VerticalStack>
                 <HorizontalStack gap="3" align="end">
-                  {actionData?.product && (
+                  {product && (
                     <Button
                       url={`shopify:admin/products/${productId}`}
                       target="_blank"
@@ -168,7 +141,7 @@ export default function Index() {
                     Generate a product
                   </Button>
                 </HorizontalStack>
-                {actionData?.product && (
+                {product && (
                   <Box
                     padding="4"
                     background="bg-subdued"
@@ -178,7 +151,7 @@ export default function Index() {
                     overflowX="scroll"
                   >
                     <pre style={{ margin: 0 }}>
-                      <code>{JSON.stringify(actionData.product, null, 2)}</code>
+                      <code>{JSON.stringify(product, null, 2)}</code>
                     </pre>
                   </Box>
                 )}
