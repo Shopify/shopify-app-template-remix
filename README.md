@@ -227,7 +227,7 @@ The Remix app template comes with the following out-of-the-box functionality:
 
 This template uses [Remix](https://remix.run). The following Shopify tools are also included to ease app development:
 
-- [Shopify App Remix](https://github.com/Shopify/shopify-app-js/blob/main/packages/shopify-app-remix/README.md) provides authentication and methods for interacting with Shopify APIs.
+- [Shopify App Remix](https://shopify.dev/docs/api/shopify-app-remix) provides authentication and methods for interacting with Shopify APIs.
 - [Shopify App Bridge](https://shopify.dev/docs/apps/tools/app-bridge) allows your app to seamlessly integrate your app within Shopify's Admin.
 - [Polaris React](https://polaris.shopify.com/) is a powerful design system and component library that helps developers build high quality, consistent experiences for Shopify merchants.
 - [Webhooks](https://github.com/Shopify/shopify-app-js/tree/main/packages/shopify-app-remix#authenticating-webhook-requests): Callbacks sent by Shopify when certain events occur
@@ -239,7 +239,7 @@ This template uses [Remix](https://remix.run). The following Shopify tools are a
 ## Resources
 
 - [Remix Docs](https://remix.run/docs/en/v1)
-- [Shopify App Remix](https://github.com/Shopify/shopify-app-js/blob/release-candidate/packages/shopify-app-remix/README.md)
+- [Shopify App Remix](https://shopify.dev/docs/api/shopify-app-remix)
 - [Introduction to Shopify apps](https://shopify.dev/docs/apps/getting-started)
 - [App authentication](https://shopify.dev/docs/apps/auth)
 - [Shopify CLI](https://shopify.dev/docs/apps/tools/cli)
