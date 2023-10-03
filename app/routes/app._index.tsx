@@ -14,14 +14,17 @@ import {
 } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
 import { useShopifyAdmin } from "~/direct-api/useShopifyAdmin";
+import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 
 export const loader = async ({ request }) => {
   await authenticate.admin(request);
 
-  return null;
+  return json({ number: Math.trunc(Math.random() * 100) });
 };
 
 export default function Index() {
+  const { number } = useLoaderData();
   const admin = useShopifyAdmin();
   const isLoading = admin.state === "loading";
   const product = admin.data?.productCreate.product;
@@ -87,7 +90,7 @@ export default function Index() {
               <VerticalStack gap="5">
                 <VerticalStack gap="2">
                   <Text as="h2" variant="headingMd">
-                    Congrats on creating a new Shopify app 🎉
+                    {number}: Congrats on creating a new Shopify app 🎉
                   </Text>
                   <Text variant="bodyMd" as="p">
                     This embedded app template uses{" "}

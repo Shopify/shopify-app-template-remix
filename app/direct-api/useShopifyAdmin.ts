@@ -1,6 +1,7 @@
 // NOTE: This would be provided by shopify-app-remix
 
-import { useCallback, useMemo, useState } from "react";
+import { useRevalidator } from "@remix-run/react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface GraphQLQueryOptions {
   variables?: {
@@ -9,6 +10,7 @@ interface GraphQLQueryOptions {
 }
 
 export function useShopifyAdmin() {
+  const revalidator = useRevalidator();
   const [state, setState] = useState<"idle" | "loading">("idle");
   const [data, setData] = useState<undefined | any>(undefined);
   const [extensions, setExtensions] = useState<undefined | any>(undefined);
@@ -27,13 +29,12 @@ export function useShopifyAdmin() {
 
       const { data, extensions } = await response.json();
 
-      // TODO: When/How should we revalidate()
-      // Should we return data before revalidating?
+      // TODO: Do we need to only return new state after revalidation?
+      if (query.includes("mutation")) {
+        revalidator.revalidate();
+      }
 
-      // TODO: Type data
       setData(data);
-
-      // TODO: Type extensions
       setExtensions(extensions);
       setState("idle");
     },
@@ -50,6 +51,6 @@ export function useShopifyAdmin() {
     }),
     // Whenever state changes, data changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [state, graphql]
+    [state]
   );
 }
