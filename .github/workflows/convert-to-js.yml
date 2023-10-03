@@ -3,8 +3,7 @@ name: Create Javascript conversion PR
 on:
   push:
     branches:
-      # TODO Rename this before merging the branch into `main`
-      - typescript
+      - main
 
   workflow_dispatch:
 
