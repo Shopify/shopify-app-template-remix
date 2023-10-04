@@ -9,15 +9,21 @@ interface GraphQLQueryOptions {
   };
 }
 
+interface Response {
+  data: any;
+  extensions: any;
+}
+
 export function useShopifyAdmin() {
   const revalidator = useRevalidator();
-  const [state, setState] = useState<"idle" | "loading">("idle");
-  const [data, setData] = useState<undefined | any>(undefined);
-  const [extensions, setExtensions] = useState<undefined | any>(undefined);
+  const [state, setState] = useState<"idle" | "loading" | "submitting">("idle");
+  const [data, setData] = useState<any>();
+  const [extensions, setExtensions] = useState<any>();
+  const [response, setResponse] = useState<undefined | Response>();
 
   const graphql = useCallback(
     async (query: string, options: GraphQLQueryOptions) => {
-      setState("loading");
+      setState("submitting");
 
       const response = await window.fetch("shopify:admin/api/graphql.json", {
         method: "POST",
@@ -30,23 +36,38 @@ export function useShopifyAdmin() {
       const { data, extensions } = await response.json();
 
       // TODO: Do we need to only return new state after revalidation?
+      // Need to be 100% sure how this works with use Fetcher()
       if (query.includes("mutation")) {
         revalidator.revalidate();
+        setState("loading");
+        setResponse({ data, extensions });
+      } else {
+        setState("idle");
+        setResponse({ data, extensions });
+        setData(data);
+        setExtensions(extensions);
       }
-
-      setData(data);
-      setExtensions(extensions);
-      setState("idle");
     },
     []
   );
 
+  useEffect(() => {
+    // TODO: Is this correct?
+    // Here we only update the data when revalidation finishes
+    // Should we update the data earlier?
+    if (state === "loading" && revalidator.state === "idle") {
+      setData(response?.data);
+      setExtensions(response?.extensions);
+      setState("idle");
+    }
+  }, [state, revalidator.state, response?.data, response?.extensions]);
+
   // TODO: What other API's do we want here?
   return useMemo(
     () => ({
-      state,
       data,
       extensions,
+      state,
       graphql,
     }),
     // Whenever state changes, data changes

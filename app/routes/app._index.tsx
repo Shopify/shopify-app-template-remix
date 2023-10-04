@@ -26,9 +26,11 @@ export const loader = async ({ request }) => {
 export default function Index() {
   const { number } = useLoaderData();
   const admin = useShopifyAdmin();
-  const isLoading = admin.state === "loading";
+  const isLoading = admin.state !== "idle";
   const product = admin.data?.productCreate.product;
   const productId = product?.id.replace("gid://shopify/Product/", "");
+
+  console.log(admin);
 
   useEffect(() => {
     if (productId) {
