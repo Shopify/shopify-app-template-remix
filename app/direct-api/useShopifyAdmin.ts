@@ -15,10 +15,8 @@ interface Response {
 }
 
 export function useShopifyAdmin() {
-  const revalidator = useRevalidator();
+  const { revalidate, state: revalidateState } = useRevalidator();
   const [state, setState] = useState<"idle" | "loading" | "submitting">("idle");
-  const [data, setData] = useState<any>();
-  const [extensions, setExtensions] = useState<any>();
   const [response, setResponse] = useState<undefined | Response>();
 
   const graphql = useCallback(
@@ -35,38 +33,33 @@ export function useShopifyAdmin() {
 
       const { data, extensions } = await response.json();
 
+      setResponse({ data, extensions });
+
       // TODO: Do we need to only return new state after revalidation?
       // Need to be 100% sure how this works with use Fetcher()
       if (query.includes("mutation")) {
-        revalidator.revalidate();
+        revalidate();
         setState("loading");
-        setResponse({ data, extensions });
       } else {
         setState("idle");
-        setResponse({ data, extensions });
-        setData(data);
-        setExtensions(extensions);
       }
     },
-    []
+    [revalidate]
   );
 
   useEffect(() => {
     // TODO: Is this correct?
     // Here we only update the data when revalidation finishes
     // Should we update the data earlier?
-    if (state === "loading" && revalidator.state === "idle") {
-      setData(response?.data);
-      setExtensions(response?.extensions);
+    if (state === "loading" && revalidateState === "idle") {
       setState("idle");
     }
-  }, [state, revalidator.state, response?.data, response?.extensions]);
+  }, [state, revalidateState, response?.data, response?.extensions]);
 
   // TODO: What other API's do we want here?
   return useMemo(
     () => ({
-      data,
-      extensions,
+      ...response,
       state,
       graphql,
     }),
