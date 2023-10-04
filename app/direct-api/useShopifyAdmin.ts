@@ -9,16 +9,30 @@ interface GraphQLQueryOptions {
   };
 }
 
+enum State {
+  Idle = "idle",
+  Submitting = "submitting",
+  Loading = "loading",
+}
+
 interface Response {
   data: any;
   extensions: any;
 }
 
-export function useShopifyAdmin() {
+interface ReturnValue extends Response {
+  state: State;
+  graphql: (query: string, options: GraphQLQueryOptions) => void;
+}
+
+export function useShopifyAdmin(): ReturnValue {
   const { revalidate, state: revalidatorState } = useRevalidator();
   const [fetching, setFetching] = useState(false);
   const [revalidating, setRevalidating] = useState(false);
-  const [response, setResponse] = useState<undefined | Response>();
+  const [response, setResponse] = useState<Response>({
+    data: undefined,
+    extensions: undefined,
+  });
 
   const graphql = useCallback(
     async (query: string, options: GraphQLQueryOptions) => {
@@ -32,7 +46,7 @@ export function useShopifyAdmin() {
         body: JSON.stringify({ query, variables: options?.variables }),
       });
 
-      const { data, extensions } = await response.json();
+      const { data, extensions }: Response = await response.json();
 
       // TODO: Do we need to only return new state after revalidation?
       // Need to be 100% sure how this works with use Fetcher()
@@ -54,12 +68,12 @@ export function useShopifyAdmin() {
   }, [revalidatorState]);
 
   return useMemo(() => {
-    let state = "idle";
+    let state = State.Idle;
 
     if (fetching) {
-      state = "submitting";
+      state = State.Submitting;
     } else if (revalidating) {
-      state = "loading";
+      state = State.Loading;
     }
 
     return {
