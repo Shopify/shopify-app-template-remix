@@ -15,13 +15,14 @@ interface Response {
 }
 
 export function useShopifyAdmin() {
-  const { revalidate, state: revalidateState } = useRevalidator();
-  const [state, setState] = useState<"idle" | "loading" | "submitting">("idle");
+  const { revalidate, state: revalidatorState } = useRevalidator();
+  const [fetching, setFetching] = useState(false);
+  const [revalidating, setRevalidating] = useState(false);
   const [response, setResponse] = useState<undefined | Response>();
 
   const graphql = useCallback(
     async (query: string, options: GraphQLQueryOptions) => {
-      setState("submitting");
+      setFetching(true);
 
       const response = await window.fetch("shopify:admin/api/graphql.json", {
         method: "POST",
@@ -33,38 +34,38 @@ export function useShopifyAdmin() {
 
       const { data, extensions } = await response.json();
 
-      setResponse({ data, extensions });
-
       // TODO: Do we need to only return new state after revalidation?
       // Need to be 100% sure how this works with use Fetcher()
       if (query.includes("mutation")) {
+        setRevalidating(true);
         revalidate();
-        setState("loading");
-      } else {
-        setState("idle");
       }
+
+      setFetching(false);
+      setResponse({ data, extensions });
     },
     [revalidate]
   );
 
   useEffect(() => {
-    // TODO: Is this correct?
-    // Here we only update the data when revalidation finishes
-    // Should we update the data earlier?
-    if (state === "loading" && revalidateState === "idle") {
-      setState("idle");
+    if (revalidatorState === "idle") {
+      setRevalidating(false);
     }
-  }, [state, revalidateState, response?.data, response?.extensions]);
+  }, [revalidatorState]);
 
-  // TODO: What other API's do we want here?
-  return useMemo(
-    () => ({
+  return useMemo(() => {
+    let state = "idle";
+
+    if (fetching) {
+      state = "submitting";
+    } else if (revalidating) {
+      state = "loading";
+    }
+
+    return {
       ...response,
       state,
       graphql,
-    }),
-    // Whenever state changes, data changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [state]
-  );
+    };
+  }, [response, fetching, revalidating, graphql]);
 }
