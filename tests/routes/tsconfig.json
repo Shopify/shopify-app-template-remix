@@ -1,0 +1,10 @@
+{
+    "extends": "../../tsconfig.json",
+    "include": ["./**/*.js", "./**/*.jsx"],
+    "paths": {
+      "~/*": ["./app/*"],
+      "@testing-library/polaris": [
+        "./tests/test-utilities/testing-library-polaris"
+      ]
+    }
+  }  
