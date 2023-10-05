@@ -38,6 +38,8 @@ export function useShopifyAdmin(): ReturnValue {
     async (query: string, options: GraphQLQueryOptions) => {
       setFetching(true);
 
+      // TODO: Need to cancel previous in flight requests
+      // Need to be sure to match Remix's behaviour here
       const response = await window.fetch("shopify:admin/api/graphql.json", {
         method: "POST",
         headers: {
@@ -48,8 +50,6 @@ export function useShopifyAdmin(): ReturnValue {
 
       const { data, extensions }: Response = await response.json();
 
-      // TODO: Do we need to only return new state after revalidation?
-      // Need to be 100% sure how this works with use Fetcher()
       if (query.includes("mutation")) {
         setRevalidating(true);
         revalidate();
