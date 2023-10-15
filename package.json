@@ -38,6 +38,7 @@
     "vite-tsconfig-paths": "^4.3.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.39.0",
     "@remix-run/eslint-config": "^2.7.1",
     "@shopify/api-codegen-preset": "^0.0.3",
     "@shopify/app-bridge-types": "^0.0.7",
@@ -53,6 +54,7 @@
     "@vitejs/plugin-react": "^4.1.0",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.1.0",
+    "jose": "^4.15.2",
     "jsdom": "^22.1.0",
     "prettier": "^3.2.4",
     "typescript": "^5.2.2",

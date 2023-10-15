@@ -13,3 +13,6 @@ database.sqlite
 .env
 package-lock.json
 yarn.lock
+/tests/e2e/results/
+/tests/e2e/reports/
+/playwright/.cache/
