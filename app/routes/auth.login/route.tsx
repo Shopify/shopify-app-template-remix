@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
   AppProvider as PolarisAppProvider,
@@ -17,7 +17,7 @@ import { loginErrorMessage } from "./error.server";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const errors = loginErrorMessage(await login(request));
 
   return json({
@@ -26,7 +26,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   });
 };
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const errors = loginErrorMessage(await login(request));
 
   return json({

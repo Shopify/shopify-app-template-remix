@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useActionData, useNavigation, useSubmit } from "@remix-run/react";
 import {
@@ -17,13 +17,13 @@ import {
 } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
 
   return null;
 };
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
   const color = ["Red", "Orange", "Yellow", "Green"][
     Math.floor(Math.random() * 4)
