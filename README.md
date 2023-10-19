@@ -233,9 +233,6 @@ This template uses [Remix](https://remix.run). The following Shopify tools are a
 - [Webhooks](https://github.com/Shopify/shopify-app-js/tree/main/packages/shopify-app-remix#authenticating-webhook-requests): Callbacks sent by Shopify when certain events occur
 - [Polaris](https://polaris.shopify.com/): Design system that enables apps to create Shopify-like experiences
 
-> **Note**: This template runs on JavaScript, but it's fully set up for [TypeScript](https://www.typescriptlang.org/).
-> If you want to create your routes using TypeScript, we recommend removing the `noImplicitAny` config from [`tsconfig.json`](/tsconfig.json)
-
 ## Resources
 
 - [Remix Docs](https://remix.run/docs/en/v1)

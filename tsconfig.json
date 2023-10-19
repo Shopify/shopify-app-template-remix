@@ -1,26 +1,25 @@
 {
-  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2019"],
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "jsx": "react-jsx",
-    "module": "node16",
-    "moduleResolution": "node16",
-    "resolveJsonModule": true,
-    "target": "ES2019",
     "strict": true,
-    "allowJs": true,
-    "checkJs": true,
-    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
+    "removeComments": false,
     "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "allowJs": true,
+    "jsx": "react-jsx",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "target": "ES2019",
     "baseUrl": ".",
     "paths": {
       "~/*": ["./app/*"]
     },
     "types": [
-      "@shopify/app-bridge-types"
-    ],
-    "noEmit": true
+      "node", "@shopify/app-bridge-types"
+    ]
   }
 }
