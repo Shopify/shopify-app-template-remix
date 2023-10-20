@@ -49,5 +49,6 @@
     "packages": [
       "extensions/*"
     ]
-  }
+  },
+  "trustedDependencies": ["@shopify/plugin-cloudflare"]
 }
