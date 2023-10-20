@@ -24,7 +24,7 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn add -W --dev @shopify/prettier-config @shopify/eslint-plugin
+        run: yarn add -W --dev @shopify/prettier-config @shopify/eslint-plugin --ignore-engines
 
       - name: Transpile to Javascript
         run: |
