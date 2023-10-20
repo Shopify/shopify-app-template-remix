@@ -6,14 +6,13 @@ import {
   Page,
   Layout,
   Text,
-  VerticalStack,
   Card,
   Button,
-  HorizontalStack,
+  BlockStack,
   Box,
-  Divider,
   List,
   Link,
+  InlineStack,
 } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
 
@@ -91,12 +90,12 @@ export default function Index() {
           Generate a product
         </button>
       </ui-title-bar>
-      <VerticalStack gap="5">
+      <BlockStack gap="500">
         <Layout>
           <Layout.Section>
             <Card>
-              <VerticalStack gap="5">
-                <VerticalStack gap="2">
+              <BlockStack gap="500">
+                <BlockStack gap="200">
                   <Text as="h2" variant="headingMd">
                     Congrats on creating a new Shopify app 🎉
                   </Text>
@@ -105,25 +104,27 @@ export default function Index() {
                     <Link
                       url="https://shopify.dev/docs/apps/tools/app-bridge"
                       target="_blank"
+                      removeUnderline
                     >
                       App Bridge
                     </Link>{" "}
                     interface examples like an{" "}
-                    <Link url="/app/additional">
+                    <Link url="/app/additional" removeUnderline>
                       additional page in the app nav
                     </Link>
                     , as well as an{" "}
                     <Link
                       url="https://shopify.dev/docs/api/admin-graphql"
                       target="_blank"
+                      removeUnderline
                     >
                       Admin GraphQL
                     </Link>{" "}
                     mutation demo, to provide a starting point for app
                     development.
                   </Text>
-                </VerticalStack>
-                <VerticalStack gap="2">
+                </BlockStack>
+                <BlockStack gap="200">
                   <Text as="h3" variant="headingMd">
                     Get started with products
                   </Text>
@@ -133,32 +134,35 @@ export default function Index() {
                     <Link
                       url="https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate"
                       target="_blank"
+                      removeUnderline
                     >
                       productCreate
                     </Link>{" "}
                     mutation in our API references.
                   </Text>
-                </VerticalStack>
-                <HorizontalStack gap="3" align="end">
+                </BlockStack>
+                <InlineStack gap="300">
+                  <Button loading={isLoading} onClick={generateProduct}>
+                    Generate a product
+                  </Button>
                   {actionData?.product && (
                     <Button
                       url={`shopify:admin/products/${productId}`}
                       target="_blank"
+                      variant="plain"
                     >
                       View product
                     </Button>
                   )}
-                  <Button loading={isLoading} primary onClick={generateProduct}>
-                    Generate a product
-                  </Button>
-                </HorizontalStack>
+                </InlineStack>
                 {actionData?.product && (
                   <Box
-                    padding="4"
-                    background="bg-subdued"
+                    padding="400"
+                    background="bg-surface-active"
+                    padding="400"
+                    borderWidth="025"
+                    borderRadius="200"
                     borderColor="border"
-                    borderWidth="1"
-                    borderRadius="2"
                     overflowX="scroll"
                   >
                     <pre style={{ margin: 0 }}>
@@ -166,70 +170,80 @@ export default function Index() {
                     </pre>
                   </Box>
                 )}
-              </VerticalStack>
+              </BlockStack>
             </Card>
           </Layout.Section>
-          <Layout.Section secondary>
-            <VerticalStack gap="5">
+          <Layout.Section variant="oneThird">
+            <BlockStack gap="500">
               <Card>
-                <VerticalStack gap="2">
+                <BlockStack gap="200">
                   <Text as="h2" variant="headingMd">
                     App template specs
                   </Text>
-                  <VerticalStack gap="2">
-                    <Divider />
-                    <HorizontalStack align="space-between">
+                  <BlockStack gap="200">
+                    <InlineStack align="space-between">
                       <Text as="span" variant="bodyMd">
                         Framework
                       </Text>
-                      <Link url="https://remix.run" target="_blank">
+                      <Link
+                        url="https://remix.run"
+                        target="_blank"
+                        removeUnderline
+                      >
                         Remix
                       </Link>
-                    </HorizontalStack>
-                    <Divider />
-                    <HorizontalStack align="space-between">
+                    </InlineStack>
+                    <InlineStack align="space-between">
                       <Text as="span" variant="bodyMd">
                         Database
                       </Text>
-                      <Link url="https://www.prisma.io/" target="_blank">
+                      <Link
+                        url="https://www.prisma.io/"
+                        target="_blank"
+                        removeUnderline
+                      >
                         Prisma
                       </Link>
-                    </HorizontalStack>
-                    <Divider />
-                    <HorizontalStack align="space-between">
+                    </InlineStack>
+                    <InlineStack align="space-between">
                       <Text as="span" variant="bodyMd">
                         Interface
                       </Text>
                       <span>
-                        <Link url="https://polaris.shopify.com" target="_blank">
+                        <Link
+                          url="https://polaris.shopify.com"
+                          target="_blank"
+                          removeUnderline
+                        >
                           Polaris
                         </Link>
                         {", "}
                         <Link
                           url="https://shopify.dev/docs/apps/tools/app-bridge"
                           target="_blank"
+                          removeUnderline
                         >
                           App Bridge
                         </Link>
                       </span>
-                    </HorizontalStack>
-                    <Divider />
-                    <HorizontalStack align="space-between">
+                    </InlineStack>
+                    <InlineStack align="space-between">
                       <Text as="span" variant="bodyMd">
                         API
                       </Text>
                       <Link
                         url="https://shopify.dev/docs/api/admin-graphql"
                         target="_blank"
+                        removeUnderline
                       >
                         GraphQL API
                       </Link>
-                    </HorizontalStack>
-                  </VerticalStack>
-                </VerticalStack>
+                    </InlineStack>
+                  </BlockStack>
+                </BlockStack>
               </Card>
               <Card>
-                <VerticalStack gap="2">
+                <BlockStack gap="200">
                   <Text as="h2" variant="headingMd">
                     Next steps
                   </Text>
@@ -239,6 +253,7 @@ export default function Index() {
                       <Link
                         url="https://shopify.dev/docs/apps/getting-started/build-app-example"
                         target="_blank"
+                        removeUnderline
                       >
                         {" "}
                         example app
@@ -250,17 +265,18 @@ export default function Index() {
                       <Link
                         url="https://shopify.dev/docs/apps/tools/graphiql-admin-api"
                         target="_blank"
+                        removeUnderline
                       >
                         GraphiQL
                       </Link>
                     </List.Item>
                   </List>
-                </VerticalStack>
+                </BlockStack>
               </Card>
-            </VerticalStack>
+            </BlockStack>
           </Layout.Section>
         </Layout>
-      </VerticalStack>
+      </BlockStack>
     </Page>
   );
 }
