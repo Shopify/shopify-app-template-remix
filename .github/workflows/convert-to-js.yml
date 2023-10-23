@@ -64,13 +64,19 @@ jobs:
 
       - name: Stage changes to files
         run: |
-          git fetch
-          git checkout javascript_updates || git checkout -b javascript_updates
           git config user.name GitHub
           git config user.email noreply@github.com
-          git add app
+          git fetch
+          git restore --staged package.json
+          git restore package.json
+          git add .
+          git checkout -b temp_javascript_updates
           git commit -m "Convert template to Javascript"
-          git push --force origin javascript_updates
+          git checkout javascript
+          git pull
+          git checkout -
+          git rebase -m -X theirs javascript
+          git push -f origin temp_javascript_updates:javascript_updates
 
       - name: Create Javascript PR
         run: |
