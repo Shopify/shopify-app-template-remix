@@ -45,7 +45,7 @@ export default function AdditionalPage() {
               <Text as="h2" variant="headingMd">
                 Resources
               </Text>
-              <List spacing="extraTight">
+              <List>
                 <List.Item>
                   <Link
                     url="https://shopify.dev/docs/apps/design-guidelines/navigation#app-nav"
