@@ -158,7 +158,6 @@ export default function Index() {
                   <Box
                     padding="400"
                     background="bg-surface-active"
-                    padding="400"
                     borderWidth="025"
                     borderRadius="200"
                     borderColor="border"
@@ -246,7 +245,7 @@ export default function Index() {
                   <Text as="h2" variant="headingMd">
                     Next steps
                   </Text>
-                  <List spacing="extraTight">
+                  <List>
                     <List.Item>
                       Build an{" "}
                       <Link
