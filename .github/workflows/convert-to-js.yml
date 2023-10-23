@@ -72,6 +72,9 @@ jobs:
           git add .
           git checkout -b temp_javascript_updates
           git commit -m "Convert template to Javascript"
+          git checkout javascript
+          git pull
+          git checkout -
           git rebase -m -X theirs javascript
           git push -f origin temp_javascript_updates:javascript_updates
 
