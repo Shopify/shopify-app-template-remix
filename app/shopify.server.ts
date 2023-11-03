@@ -32,6 +32,7 @@ const shopify = shopifyApp({
   },
   future: {
     v3_webhookAdminContext: true,
+    v3_authenticatePublic: true,
   },
   ...(process.env.SHOP_CUSTOM_DOMAIN
     ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
