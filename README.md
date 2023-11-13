@@ -198,6 +198,18 @@ Using pnpm:
 pnpm run shopify app config push
 ```
 
+### My webhooks aren't being updated
+
+This template registers webhooks after OAuth completes, usng the `afterAuth` hook when calling `shopifyApp`.
+The package calls that hook in 2 scenarios:
+- After installing the app
+- When an access token expires
+
+During normal development, the app won't need to re-authenticate most of the time, so the subscriptions aren't updated.
+
+To force your app to update the subscriptions, you can uninstall and reinstall it in your development store.
+That will force the OAuth process and call the `afterAuth` hook.
+
 ### Incorrect GraphQL Hints
 
 By default the [graphql.vscode-graphql](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql) extension for VS Code will assume that GraphQL queries or mutations are for the [Shopify Admin API](https://shopify.dev/docs/api/admin). This is a sensible default, but it may not be true if:
