@@ -198,7 +198,7 @@ Using pnpm:
 pnpm run shopify app config push
 ```
 
-### My webhooks aren't being updated
+### My webhook subscriptions aren't being updated
 
 This template registers webhooks after OAuth completes, usng the `afterAuth` hook when calling `shopifyApp`.
 The package calls that hook in 2 scenarios:
