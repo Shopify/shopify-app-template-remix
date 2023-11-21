@@ -2,7 +2,7 @@
   "name": "app",
   "private": true,
   "scripts": {
-    "build": "tsc && remix vite:build",
+    "build": "vite build && vite build --ssr",
     "dev": "shopify app dev",
     "config:link": "shopify app config link",
     "generate": "shopify app generate",
@@ -15,7 +15,8 @@
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "shopify": "shopify",
     "prisma": "prisma",
-    "graphql-codegen": "graphql-codegen"
+    "graphql-codegen": "graphql-codegen",
+    "vite": "vite"
   },
   "type": "module",
   "dependencies": {
