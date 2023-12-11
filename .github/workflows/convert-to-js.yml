@@ -62,13 +62,23 @@ jobs:
               { "blankLine": "always", "prev": "block-like", "next": "*" }
             ]}'
 
-      - name: Stage changes to files
+      - name: Prepare files for git
         run: |
           git config user.name GitHub
           git config user.email noreply@github.com
           git fetch
           git restore --staged package.json
           git restore package.json
+
+      - name: Remove tsc from the build command
+        run: |
+          patternToRemove="tsc && "
+          sedChangesFile=sedchanges.log
+          sed -i "s/^\( *\"build\": \".*\)$patternToRemove\(.*\)$/\1\2/w $sedChangesFile" package.json
+          if [ -s $sedChangesFile ]; then rm $sedChangesFile; else echo replacement failed; exit 1; fi
+
+      - name: Stage changes to files
+        run: |
           git add .
           git checkout -b temp_javascript_updates
           git commit -m "Convert template to Javascript"
