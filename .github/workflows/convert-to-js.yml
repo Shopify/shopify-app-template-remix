@@ -44,6 +44,13 @@ jobs:
       - name: Remove Typescript files
         run: find app \( -name "*.ts" -o -name "*.tsx" \) -delete
 
+      - name: Remove tsc from the build command
+        run: |
+          patternToRemove="tsc && "
+          sedChangesFile=sedchanges.log
+          sed -i "s/^\( *\"build\": \".*\)$patternToRemove\(.*\)$/\1\2/w $sedChangesFile" package.json
+          if [ -s $sedChangesFile ]; then rm $sedChangesFile; else echo replacement failed; exit 1; fi
+
       - name: Run prettier
         run: yarn prettier -w "app/**/*.{js,jsx}" --plugin @shopify/prettier-config
 
