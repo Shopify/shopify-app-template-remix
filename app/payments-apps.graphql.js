@@ -35,6 +35,7 @@ export default class PaymentsAppsClient {
    * @param {*} session the session to resolve upon
    * @returns the response body from the Shopify Payments Apps API
    */
+  // [START build-offsite-payments-app.graphql.resolve]
   async resolveSession({ id, gid }) {
     const response = await this.#perform(schema[this.resolveMutation], { id: gid });
     const responseData = response[this.resolveMutation]
@@ -42,12 +43,14 @@ export default class PaymentsAppsClient {
 
     return responseData;
   }
+  // [END build-offsite-payments-app.graphql.resolve]
 
   /**
    * Generic session rejection function
    * @param {*} session the session to reject upon
    * @returns the response body from the Shopify Payments Apps API
    */
+  // [START build-offsite-payments-app.graphql.reject]
   async rejectSession({ id, gid }) {
     const response = await this.#perform(schema[this.rejectMutation], {
       id: gid,
@@ -61,12 +64,15 @@ export default class PaymentsAppsClient {
 
     return responseData;
   }
+  // [END build-offsite-payments-app.graphql.reject]
+
 
   /**
    * Generic session pending function
    * @param {*} session the session to pend
    * @returns the response body from the Shopify Payments Apps API
    */
+  // [START build-offsite-payments-app.graphql.pending]
   async pendSession({ id, gid }) {
     if (this.type !== PAYMENT) throw new Error("Cannot pend a session for this client");
 
@@ -83,6 +89,7 @@ export default class PaymentsAppsClient {
 
     return responseData;
   }
+  // [END build-offsite-payments-app.graphql.pending]
 
   /**
    * Client perform function. Calls Shopify Payments Apps API.
@@ -90,6 +97,7 @@ export default class PaymentsAppsClient {
    * @param {*} variables the variables to pass
    * @returns
    */
+  // [START build-offsite-payments-app.graphql.perform]
   async #perform(query, variables) {
     const apiVersion = "unstable"
 
@@ -111,11 +119,14 @@ export default class PaymentsAppsClient {
 
     return response.ok ? responseBody.data : null
   }
+  // [END build-offsite-payments-app.graphql.perform]
 
+  // [START build-offsite-payments-app.graphql.configure]
   async paymentsAppConfigure(externalHandle, ready) {
     const response = await this.#perform(schema.paymentsAppConfigure, { externalHandle, ready })
     return response?.paymentsAppConfigure
   }
+  // [END build-offsite-payments-app.graphql.configure]
 
   /**
    * Function that injects the dependencies for this client based on the session type

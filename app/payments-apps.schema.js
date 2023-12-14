@@ -1,6 +1,7 @@
 /**
 * This "schema" contains the mutations consumed by the client in payments-apps.graphql
 */
+// [START build-offsite-payments-app.schema.app-configure]
 const paymentsAppConfigure = `
   mutation PaymentsAppConfigure($externalHandle: String, $ready: Boolean!) {
     paymentsAppConfigure(externalHandle: $externalHandle, ready: $ready) {
@@ -11,7 +12,9 @@ const paymentsAppConfigure = `
     }
   }
 `;
+// [END build-offsite-payments-app.schema.app-configure]
 
+// [START build-offsite-payments-app.schema.payment-resolve]
 const paymentSessionResolve = `
   mutation PaymentSessionResolve($id: ID!) {
     paymentSessionResolve(id: $id) {
@@ -40,7 +43,9 @@ const paymentSessionResolve = `
     }
   }
 `;
+// [END build-offsite-payments-app.schema.payment-resolve]
 
+// [START build-offsite-payments-app.schema.payment-reject]
 const paymentSessionReject = `
   mutation PaymentSessionReject($id: ID!, $reason: PaymentSessionRejectionReasonInput!) {
     paymentSessionReject(id: $id, reason: $reason) {
@@ -71,7 +76,9 @@ const paymentSessionReject = `
     }
   }
 `;
+// [END build-offsite-payments-app.schema.payment-resolve]
 
+// [START build-offsite-payments-app.schema.payment-pending]
 const paymentSessionPending = `
   mutation PaymentSessionPending($id: ID!, $pendingExpiresAt: DateTime!, $reason: PaymentSessionStatePendingReason!) {
     paymentSessionPending(id: $id, pendingExpiresAt: $pendingExpiresAt, reason: $reason) {
@@ -101,7 +108,9 @@ const paymentSessionPending = `
     }
   }
 `
+// [END build-offsite-payments-app.schema.payment-pending]
 
+// [START build-offsite-payments-app.schema.refund-resolve]
 const refundSessionResolve = `
   mutation RefundSessionResolve($id: ID!) {
     refundSessionResolve(id: $id) {
@@ -120,7 +129,9 @@ const refundSessionResolve = `
     }
   }
 `;
+// [END build-offsite-payments-app.schema.refund-resolve]
 
+// [START build-offsite-payments-app.schema.refund-reject]
 const refundSessionReject = `
   mutation RefundSessionReject($id: ID!, $reason: RefundSessionRejectionReasonInput!) {
     refundSessionReject(id: $id, reason: $reason) {
@@ -141,7 +152,9 @@ const refundSessionReject = `
     }
   }
 `;
+// [END build-offsite-payments-app.schema.refund-reject]
 
+// [START build-offsite-payments-app.schema.capture-resolve]
 const captureSessionResolve = `
   mutation CaptureSessionResolve($id: ID!) {
     captureSessionResolve(id: $id) {
@@ -160,7 +173,9 @@ const captureSessionResolve = `
     }
   }
 `;
+// [END build-offsite-payments-app.schema.capture-resolve]
 
+// [START build-offsite-payments-app.schema.capture-reject]
 const captureSessionReject = `
   mutation CaptureSessionReject($id: ID!, $reason: CaptureSessionRejectionReasonInput!) {
     captureSessionReject(id: $id, reason: $reason) {
@@ -181,7 +196,9 @@ const captureSessionReject = `
     }
   }
 `;
+// [END build-offsite-payments-app.schema.capture-reject]
 
+// [START build-offsite-payments-app.schema.void-resolve]
 const voidSessionResolve = `
   mutation VoidSessionResolve($id: ID!) {
     voidSessionResolve(id: $id) {
@@ -200,7 +217,9 @@ const voidSessionResolve = `
     }
   }
 `;
+// [END build-offsite-payments-app.schema.void-resolve]
 
+// [START build-offsite-payments-app.schema.void-reject]
 const voidSessionReject = `
   mutation VoidSessionReject($id: ID!, $reason: VoidSessionRejectionReasonInput!) {
     voidSessionReject(id: $id, reason: $reason) {
@@ -221,6 +240,7 @@ const voidSessionReject = `
     }
   }
 `;
+// [END build-offsite-payments-app.schema.void-reject]
 
 export default {
   paymentsAppConfigure,

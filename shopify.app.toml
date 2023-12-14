@@ -1,7 +1,9 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
+# [START build-offsite-payments-app.app-configuration]
 name = "<App Name>"
 client_id = "<API Client ID>"
+# [END build-offsite-payments-app.app-configuration]
 application_url = "https://example.com"
 embedded = false
 

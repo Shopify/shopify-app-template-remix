@@ -5,6 +5,7 @@ import { createVoidSession } from "~/payments.repository";
 /**
  * Saves and starts a void session.
  */
+// [START build-offsite-payments-app.void-session]
 export const action = async ({ request }) => {
   const requestBody = await request.json();
 
@@ -15,7 +16,9 @@ export const action = async ({ request }) => {
 
   return json(voidSessionHash);
 }
+// [END build-offsite-payments-app.void-session]
 
+// [START build-offsite-payments-app.void-session.create-params]
 const createParams = ({id, gid, payment_id, proposed_at}) => (
   {
     id,
@@ -24,3 +27,4 @@ const createParams = ({id, gid, payment_id, proposed_at}) => (
     proposedAt: proposed_at,
   }
 )
+// [END build-offsite-payments-app.void-session.create-params]

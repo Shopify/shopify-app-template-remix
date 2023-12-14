@@ -5,6 +5,7 @@ import { createRefundSession } from "~/payments.repository";
 /**
  * Saves and starts a refund session.
  */
+// [START build-offsite-payments-app.refund-session]
 export const action = async ({ request }) => {
   const requestBody = await request.json();
 
@@ -15,7 +16,9 @@ export const action = async ({ request }) => {
 
   return json(refundSessionHash);
 }
+// [END build-offsite-payments-app.refund-session]
 
+// [START build-offsite-payments-app.refund-session.create-params]
 const createParams = ({id, gid, amount, currency, payment_id, proposed_at}) => (
   {
     id,
@@ -26,3 +29,4 @@ const createParams = ({id, gid, amount, currency, payment_id, proposed_at}) => (
     proposedAt: proposed_at,
   }
 )
+// [END build-offsite-payments-app.refund-session.create-params]
