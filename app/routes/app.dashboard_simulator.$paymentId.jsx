@@ -49,6 +49,7 @@ export const loader = async ({ params: { paymentId } }) => {
  *  session: the payment/refund/capture/void session, as a string
  * }
  */
+// [START build-credit-card-payments-app.dashboard-simulator.process-session]
 export const action = async ({ request }) => {
   const formData = await request.formData();
   const resolve = formData.get("resolve") === "true";
@@ -67,6 +68,7 @@ export const action = async ({ request }) => {
 
   return json({ active: false })
 }
+// [END build-credit-card-payments-app.dashboard-simulator.process-session]
 
 export default function DashboardSimulator() {
   const {

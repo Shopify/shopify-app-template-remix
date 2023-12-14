@@ -1,6 +1,7 @@
 /**
 * This "schema" contains the mutations consumed by the client in payments-apps.graphql
 */
+// [START build-credit-card-payments-app.schema.app-configure]
 const paymentsAppConfigure = `
   mutation PaymentsAppConfigure($externalHandle: String, $ready: Boolean!) {
     paymentsAppConfigure(externalHandle: $externalHandle, ready: $ready) {
@@ -11,7 +12,9 @@ const paymentsAppConfigure = `
     }
   }
 `;
+// [END build-credit-card-payments-app.schema.app-configure]
 
+// [START build-credit-card-payments-app.schema.payment-resolve]
 const paymentSessionResolve = `
   mutation PaymentSessionResolve(
     $id: ID!,
@@ -38,7 +41,9 @@ const paymentSessionResolve = `
     }
   }
 `
+// [END build-credit-card-payments-app.schema.payment-resolve]
 
+// [START build-credit-card-payments-app.schema.payment-reject]
 const paymentSessionReject = `
   mutation PaymentSessionReject(
     $id: ID!,
@@ -75,7 +80,9 @@ const paymentSessionReject = `
     }
   }
 `
+// [END build-credit-card-payments-app.schema.payment-reject]
 
+// [START build-credit-card-payments-app.schema.payment-pending]
 const paymentSessionPending = `
   mutation PaymentSessionPending($id: ID!, $pendingExpiresAt: DateTime!, $reason: PaymentSessionStatePendingReason!) {
     paymentSessionPending(id: $id, pendingExpiresAt: $pendingExpiresAt, reason: $reason) {
@@ -105,7 +112,9 @@ const paymentSessionPending = `
     }
   }
 `
+// [END build-credit-card-payments-app.schema.payment-pending]
 
+// [START build-credit-card-payments-app.schema.payment-redirect]
 const paymentSessionRedirect = `
   mutation PaymentSessionRedirect($id: ID!, $redirectUrl: URL!) {
     paymentSessionRedirect(id: $id, redirectUrl: $redirectUrl) {
@@ -134,7 +143,9 @@ const paymentSessionRedirect = `
     }
   }
 `
+// [END build-credit-card-payments-app.schema.payment-redirect]
 
+// [START build-credit-card-payments-app.schema.payment-confirm]
 const paymentSessionConfirm = `
   mutation PaymentSessionConfirm($id: ID!) {
     paymentSessionConfirm(id: $id) {
@@ -163,7 +174,9 @@ const paymentSessionConfirm = `
     }
   }
 `
+// [END build-credit-card-payments-app.schema.payment-confirm]
 
+// [START build-credit-card-payments-app.schema.refund-resolve]
 const refundSessionResolve = `
   mutation RefundSessionResolve($id: ID!) {
     refundSessionResolve(id: $id) {
@@ -182,7 +195,9 @@ const refundSessionResolve = `
     }
   }
 `;
+// [END build-credit-card-payments-app.schema.refund-resolve]
 
+// [START build-credit-card-payments-app.schema.refund-reject]
 const refundSessionReject = `
   mutation RefundSessionReject($id: ID!, $reason: RefundSessionRejectionReasonInput!) {
     refundSessionReject(id: $id, reason: $reason) {
@@ -203,7 +218,9 @@ const refundSessionReject = `
     }
   }
 `;
+// [END build-credit-card-payments-app.schema.refund-reject]
 
+// [START build-credit-card-payments-app.schema.capture-resolve]
 const captureSessionResolve = `
   mutation CaptureSessionResolve($id: ID!) {
     captureSessionResolve(id: $id) {
@@ -222,7 +239,9 @@ const captureSessionResolve = `
     }
   }
 `;
+// [END build-credit-card-payments-app.schema.capture-resolve]
 
+// [START build-credit-card-payments-app.schema.capture-reject]
 const captureSessionReject = `
   mutation CaptureSessionReject($id: ID!, $reason: CaptureSessionRejectionReasonInput!) {
     captureSessionReject(id: $id, reason: $reason) {
@@ -243,7 +262,9 @@ const captureSessionReject = `
     }
   }
 `;
+// [END build-credit-card-payments-app.schema.capture-reject]
 
+// [START build-credit-card-payments-app.schema.void-resolve]
 const voidSessionResolve = `
   mutation VoidSessionResolve($id: ID!) {
     voidSessionResolve(id: $id) {
@@ -262,7 +283,9 @@ const voidSessionResolve = `
     }
   }
 `;
+// [END build-credit-card-payments-app.schema.void-resolve]
 
+// [START build-credit-card-payments-app.schema.void-reject]
 const voidSessionReject = `
   mutation VoidSessionReject($id: ID!, $reason: VoidSessionRejectionReasonInput!) {
     voidSessionReject(id: $id, reason: $reason) {
@@ -283,6 +306,7 @@ const voidSessionReject = `
     }
   }
 `;
+// [END build-credit-card-payments-app.schema.void-reject]
 
 export default {
   paymentsAppConfigure,

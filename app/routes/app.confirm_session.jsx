@@ -6,6 +6,7 @@ import { sessionStorage } from "../shopify.server";
 /**
  * Confirms a session.
  */
+// [START build-credit-card-payments-app.confirm-session]
 export const action = async ({ request }) => {
   const requestBody = await request.json();
   const paymentSession = await getPaymentSession(requestBody.id);
@@ -29,3 +30,4 @@ export const action = async ({ request }) => {
 
   return json({}, { status: 200 });
 }
+// [END build-credit-card-payments-app.confirm-session]
