@@ -24,7 +24,8 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn add -W --dev @shopify/prettier-config @shopify/eslint-plugin --ignore-engines
+        # run: yarn add -W --dev @shopify/prettier-config @shopify/eslint-plugin --ignore-engines
+        run: yarn add -W --dev @shopify/eslint-plugin --ignore-engines
 
       - name: Transpile to Javascript
         run: |
@@ -45,7 +46,8 @@ jobs:
         run: find app \( -name "*.ts" -o -name "*.tsx" \) -delete
 
       - name: Run prettier
-        run: yarn prettier -w "app/**/*.{js,jsx}" --plugin @shopify/prettier-config
+        # run: yarn prettier -w "app/**/*.{js,jsx}" --plugin @shopify/prettier-config
+        run: yarn prettier -w "app/**/*.{js,jsx}"
 
       - name: Run ESLint
         run: |
