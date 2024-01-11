@@ -34,7 +34,6 @@ export const loader = async ({ params: { paymentId } }) => {
 /**
  * Completes a payment session based on the simulator's form.
  */
-// [START build-offsite-payments-app.payment-simulator.process]
 export const action = async ({ request, params: { paymentId } }) => {
   const formData = await request.formData();
   const resolution = formData.get("resolution");
@@ -57,14 +56,11 @@ export const action = async ({ request, params: { paymentId } }) => {
       response = await client.pendSession(paymentSession);
       break;
   }
-  // [END build-offsite-payments-app.payment-simulator.process]
 
   const userErrors = response.userErrors;
   if (userErrors?.length > 0) return json({ errors: userErrors });
 
-  // [START build-offsite-payments-app.next-action]
   return redirect(response.paymentSession.nextAction.context.redirectUrl);
-  // [END build-offsite-payments-app.next-action]
 }
 
 export default function PaymentSimulator() {
@@ -99,9 +95,7 @@ export default function PaymentSimulator() {
     {value: PENDING, label: 'Pending'}
   ];
 
-  // [START build-offsite-payments-app.payment-cancel]
   const cancelUrl = paymentSession.cancelUrl;
-  // [END build-offsite-payments-app.payment-cancel]
 
   return (
     <Page
