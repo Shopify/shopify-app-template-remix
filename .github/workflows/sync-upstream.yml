@@ -30,7 +30,7 @@ jobs:
       with:
         repository: shopify/example-app--payments-app-template--remix
         fetch-depth: 0
-        ref: main
+        ref: main-js
 
     - name: Setup git config
       run: |
@@ -38,4 +38,6 @@ jobs:
         git config user.email "github-actions[bot]@users.noreply.github.com"
 
     - name: Sync upstream changes
-      run: gh pr create -B main --repo Shopify/example-app--payments-app-template--remix --head Shopify:shopify-app-template-remix:javascript --title 'Sync javascript with upstream' --body 'This is an automated PR that syncs the repo with its source upstream.'
+      run: |
+        gh repo sync shopify/example-app--payments-app-template--remix -b javascript
+        gh pr create --repo Shopify/example-app--payments-app-template--remix --head javascript --title 'Sync javascript with upstream' --body 'This is an automated PR that syncs the repo with its source upstream.'
