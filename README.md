@@ -1,6 +1,6 @@
-# Shopify Payments App Template - Remix
+# Shopify Payments App Template - Remix [Javascript]
 
-This is a template for building a [Payments App](https://shopify.dev/docs/apps/payments) using the [Remix](https://shopify.dev/docs/apps/payments) framework. This template includes a rough client for the Payments Apps API, as well as all the necessary routes for a simple Offsite payments app.
+This is a template for building a [Payments App](https://shopify.dev/docs/apps/payments) using the [Remix](https://shopify.dev/docs/apps/payments) framework in Javascript. This template includes a rough client for the Payments Apps API, as well as all the necessary routes for a simple Offsite payments app.
 
 _Notes:_
 - mTLS configuration is not included in this template. This should be configured in your own infrastructure.
