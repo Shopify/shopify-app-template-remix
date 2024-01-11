@@ -27,6 +27,13 @@ jobs:
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
 
+    - name: Setup updates branch
+      run: |
+        git push origin --delete docs_updates &>/dev/null || true  
+        git switch -c docs_updates 
+        git reset --hard origin/main-js
+        git push origin docs_updates --force
+
     - name: Create PR
       run: |
-        gh pr create --repo Shopify/example-app--payments-app-template--remix --head main-js --base docs --title 'Sync docs' --body 'This is an automated PR. Please use this to make any updates to doc tags before merging.'
+        gh pr create --repo Shopify/example-app--payments-app-template--remix --head docs_updates --base docs --title 'Sync docs' --body 'This is an automated PR. Please use this to make any updates to doc tags before merging.'
