@@ -8,7 +8,6 @@ import decryptCreditCardPayload from "~/encryption";
  * Saves and starts a payment session.
  * Returns an empty response and process the payment asyncronously
  */
-// [START build-credit-card-payments-app.payment-session]
 export const action = async ({ request }) => {
   const requestBody = await request.json();
 
@@ -28,9 +27,7 @@ export const action = async ({ request }) => {
   // Return empty response, 201
   return json({}, { status: 201 });
 }
-// [END build-credit-card-payments-app.payment-session]
 
-// [START build-credit-card-payments-app.payment-session.create-params]
 const createParams = ({id, gid, group, amount, currency, test, kind, customer, payment_method, proposed_at, cancel_url, client_details}, shopDomain) => (
   {
     id,
@@ -48,9 +45,7 @@ const createParams = ({id, gid, group, amount, currency, test, kind, customer, p
     clientDetails: client_details,
   }
 )
-// [END build-credit-card-payments-app.payment-session.create-params]
 
-// [START build-credit-card-payments-app.payment-session.process-payment]
 const processPayment = async (paymentSession) => {
   const session = (await sessionStorage.findSessionsByShop(paymentSession.shop))[0];
   const client = new PaymentsAppsClient(session.shop, session.accessToken, PAYMENT);
@@ -64,7 +59,6 @@ const processPayment = async (paymentSession) => {
     await client.rejectSession(paymentSession, { reasonCode: getRejectReason(lastName) });
   } else if (firstName === "pending") {
     await client.pendSession(paymentSession);
-    // [START build-credit-card-payments-app.payment-session.3ds-redirect-url]
   } else if (firstName === "3ds") {
     const redirectUrl = three_d_secure_redirect_url(paymentSession.id, lastName === "FRICTIONLESS");
     await client.redirectSession(paymentSession, redirectUrl);
@@ -72,14 +66,12 @@ const processPayment = async (paymentSession) => {
     await client.resolveSession(paymentSession);
   }
 }
-// [END build-credit-card-payments-app.payment-session.process-payment]
 
 const three_d_secure_redirect_url = (payment_session_id, is_frictionless) => {
   const url = process.env.SHOPIFY_APP_URL;
 
   return `${url}/app/three-d-secure/${payment_session_id}${is_frictionless ? "?frictionless=true" : ""}`
 }
-// [END build-credit-card-payments-app.payment-session.3ds-redirect-url]
 
 const decryptCard = ({encrypted_message, ephemeral_public_key, tag}) => {
   return decryptCreditCardPayload({

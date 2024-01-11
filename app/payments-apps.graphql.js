@@ -41,7 +41,6 @@ export default class PaymentsAppsClient {
    * @param {*} session the session to resolve upon
    * @returns the response body from the Shopify Payments Apps API
    */
-  // [START build-credit-card-payments-app.graphql.resolve]
   async resolveSession(session) {
     const { id, gid, kind } = session;
     const payload = { id: gid };
@@ -55,14 +54,12 @@ export default class PaymentsAppsClient {
 
     return responseData;
   }
-  // [END build-credit-card-payments-app.graphql.resolve]
 
   /**
    * Generic session rejection function
    * @param {*} session the session to reject upon
    * @returns the response body from the Shopify Payments Apps API
    */
-  // [START build-credit-card-payments-app.graphql.reject]
   async rejectSession(session, { reasonCode = "PROCESSING_ERROR" } = {}) {
     const { id, gid } = session;
     const payload = {
@@ -80,14 +77,12 @@ export default class PaymentsAppsClient {
 
     return responseData;
   }
-  // [END build-credit-card-payments-app.graphql.reject]
 
   /**
    * Generic session pending function
    * @param {*} session the session to pend
    * @returns the response body from the Shopify Payments Apps API
    */
-  // [START build-credit-card-payments-app.graphql.pending]
   async pendSession({ id, gid }) {
     if (this.type !== PAYMENT) throw new Error("Cannot pend a session for this client");
 
@@ -101,7 +96,6 @@ export default class PaymentsAppsClient {
 
     return responseData;
   }
-  // [END build-credit-card-payments-app.graphql.pending]
 
   /**
    * Mutation to redirect buyer to 3DS Iframe
@@ -109,7 +103,6 @@ export default class PaymentsAppsClient {
    * @param {string} redirectUrl is the url we will redirect to for 3DS authentication
    * @returns the response body from the Shopify Payments Apps API
    */
-  // [START build-credit-card-payments-app.graphql.redirect]
   async redirectSession({ id, gid }, redirectUrl) {
     const response = await this.#perform(schema[this.redirectMutation], {
       id: gid,
@@ -120,14 +113,12 @@ export default class PaymentsAppsClient {
 
     return responseData;
   }
-  // [END build-credit-card-payments-app.graphql.redirect]
 
   /**
    * Mutation to confirm inventory (often following 3DS)
    * @param {*} session the session to confirm
    * @returns the response body from the Shopify Payments Apps API
    */
-  // [START build-credit-card-payments-app.graphql.confirm]
   async confirmSession({ id, gid }) {
     const response = await this.#perform(schema[this.confirmMutation], { id: gid });
     const responseData = response[this.confirmMutation];
@@ -136,7 +127,6 @@ export default class PaymentsAppsClient {
 
     return responseData;
   }
-  // [END build-credit-card-payments-app.graphql.confirm]
 
   /**
    * Client perform function. Calls Shopify Payments Apps API.
@@ -144,7 +134,6 @@ export default class PaymentsAppsClient {
    * @param {*} variables the variables to pass
    * @returns
    */
-  // [START build-credit-card-payments-app.graphql.perform]
   async #perform(query, variables) {
     const apiVersion = "unstable"
 
@@ -167,14 +156,11 @@ export default class PaymentsAppsClient {
 
     return response.ok ? responseBody.data : null
   }
-  // [END build-credit-card-payments-app.graphql.perform]
 
-  // [START build-credit-card-payments-app.graphql.configure]
   async paymentsAppConfigure(externalHandle, ready) {
     const response = await this.#perform(schema.paymentsAppConfigure, { externalHandle, ready })
     return response?.paymentsAppConfigure
   }
-  // [END build-credit-card-payments-app.graphql.configure]
 
   /**
    * Function that injects the dependencies for this client based on the session type

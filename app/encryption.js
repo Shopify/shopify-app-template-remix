@@ -1,4 +1,3 @@
-// [START build-credit-card-payments-app.credit-card-decryption]
 import crypto from 'crypto';
 import ecKeyUtils from 'eckey-utils';
 
@@ -68,4 +67,3 @@ const decryptCipher = (cipherKey, ciphertext) => {
 }
 
 export default decryptCreditCardPayload;
-// [END build-credit-card-payments-app.credit-card-decryption]

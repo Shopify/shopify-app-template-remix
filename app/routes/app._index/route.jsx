@@ -43,7 +43,6 @@ export const loader = async ({ request }) => {
 /**
  * Saves the app's configuration.
  */
-// [START build-credit-card-payments-app.configure]
 export const action = async ({ request }) => {
   const { session } = await authenticate.admin(request);
 
@@ -64,7 +63,6 @@ export const action = async ({ request }) => {
   if (userErrors.length > 0) return json({ errors: userErrors });
   return json({ raiseBanner: true, errors: userErrors });
 }
-// [END build-credit-card-payments-app.configure]
 
 export default function Index() {
   const nav = useNavigation();

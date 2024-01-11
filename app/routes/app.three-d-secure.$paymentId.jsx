@@ -37,7 +37,6 @@ export const loader = async ({request, params: { paymentId } }) => {
   const session = (await sessionStorage.findSessionsByShop(paymentSession.shop))[0];
   const client = new PaymentsAppsClient(session.shop, session.accessToken, PAYMENT);
 
-  // [START build-credit-card-payments-app.frictionless ]
   if (frictionless) { // Perform frictionless 3DS
     const authenticationPayload = {
       authenticationFlow: Object.keys(ThreeDSecure.flow)[0],
@@ -45,14 +44,13 @@ export const loader = async ({request, params: { paymentId } }) => {
       version: Object.keys(ThreeDSecure.version)[0],
       chargebackLiability: Object.keys(ThreeDSecure.chargebackLiability)[0]
     };
-  
+
   const newPaymentSession = await updatePaymentSessionAuthData(paymentId, authenticationPayload);
     const response = await client.confirmSession(newPaymentSession);
     if (response.userErrors?.length > 0) return json({ errors: response.userErrors });
 
     return redirect(response.paymentSession.nextAction.context.redirectUrl);
   }
-  // [END build-credit-card-payments-app.frictionless ]
 
   return json({ paymentSession });
 }
@@ -60,7 +58,6 @@ export const loader = async ({request, params: { paymentId } }) => {
 /**
  * Completes a 3DS session based on the simulator's form
  */
-// [START build-credit-card-payments-app.next-action ]
 export const action = async ({ request, params: { paymentId } }) => {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
@@ -92,7 +89,6 @@ export const action = async ({ request, params: { paymentId } }) => {
 
   return redirect(response.paymentSession.nextAction.context.redirectUrl);
 }
-// [END build-credit-card-payments-app.next-action ]
 
 export default function threeDSSimulator() {
   const action = useActionData();
