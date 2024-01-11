@@ -11,12 +11,75 @@ datasource db {
 }
 
 model Session {
-  id          String    @id
+  id            String          @id
+  shop          String
+  state         String
+  isOnline      Boolean         @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        BigInt?
+  Configuration Configuration?
+}
+
+model Configuration {
+  id          Int     @id @default(autoincrement())
+  session     Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId   String  @unique
   shop        String
-  state       String
-  isOnline    Boolean   @default(false)
-  scope       String?
-  expires     DateTime?
-  accessToken String
-  userId      BigInt?
+  accountName String
+  ready       Boolean @default(true)
+  apiVersion  String  @default("unstable")
+
+  @@index([sessionId])
+}
+
+model PaymentSession {
+  id            String          @id
+  gid           String
+  group         String
+  amount        Decimal
+  test          Boolean
+  currency      String
+  kind          String
+  shop          String
+  paymentMethod String
+  customer      String
+  cancelUrl     String
+  refunds       RefundSession[]
+  captures      CaptureSession[]
+  void          VoidSession?
+  proposedAt    DateTime
+  status        String?
+}
+
+model RefundSession {
+  id         String         @id
+  gid        String
+  payment    PaymentSession @relation(fields: [paymentId], references: [id])
+  paymentId  String
+  amount     Decimal
+  currency   String
+  proposedAt DateTime
+  status     String?
+}
+
+model CaptureSession {
+  id         String          @id
+  gid        String
+  payment    PaymentSession  @relation(fields: [paymentId], references: [id])
+  paymentId  String
+  amount     Decimal
+  currency   String
+  proposedAt DateTime
+  status     String?
+}
+
+model VoidSession {
+  id         String          @id
+  gid        String
+  payment    PaymentSession  @relation(fields: [paymentId], references: [id])
+  paymentId  String          @unique
+  proposedAt DateTime
+  status     String?
 }

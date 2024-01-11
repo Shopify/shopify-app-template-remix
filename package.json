@@ -1,5 +1,5 @@
 {
-  "name": "app",
+  "name": "example-app--payments-app-template--remix",
   "private": true,
   "scripts": {
     "build": "remix build",
@@ -37,6 +37,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@remix-run/dev": "^1.19.1",
     "@remix-run/eslint-config": "^2.0.0",
     "@shopify/api-codegen-preset": "^0.0.1",
     "@shopify/app-bridge-types": "^0.0.3",
@@ -51,6 +52,8 @@
   },
   "workspaces": {
     "packages": [
+      "web",
+      "web/frontend",
       "extensions/*"
     ]
   },
