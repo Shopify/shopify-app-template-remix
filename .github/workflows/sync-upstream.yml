@@ -28,8 +28,9 @@ jobs:
     - name: Checkout target repo
       uses: actions/checkout@v4
       with:
+        repository: shopify/example-app--payments-app-template--remix
         fetch-depth: 0
-        ref: javascript
+        ref: main
 
     - name: Setup git config
       run: |
@@ -37,4 +38,4 @@ jobs:
         git config user.email "github-actions[bot]@users.noreply.github.com"
 
     - name: Sync upstream changes
-      run: gh pr create --repo Shopify/example-app--payments-app-template--remix  --head Shopify:shopify-app-template-remix:javascript --title 'Sync javascript with upstream' --body 'This is an automated PR that syncs the repo with its source upstream.'
+      run: gh pr create --repo Shopify/example-app--payments-app-template--remix --head Shopify:shopify-app-template-remix:javascript --title 'Sync javascript with upstream' --body 'This is an automated PR that syncs the repo with its source upstream.'
