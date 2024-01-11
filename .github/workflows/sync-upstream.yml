@@ -22,6 +22,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: shopify/shopify-app-template-remix
+        fetch-depth: 0
         ref: javascript
 
     - name: Checkout target repo
