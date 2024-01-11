@@ -1,0 +1,32 @@
+name: Create Docs PR
+
+on:
+  push:
+    branches:
+      - main-js
+
+  workflow_dispatch:
+
+jobs:
+  create-docs-pr:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    name: Sync latest commits from upstream repo
+
+    steps:
+    - name: Checkout target repo
+      uses: actions/checkout@v4
+      with:
+        repository: shopify/example-app--payments-app-template--remix
+        fetch-depth: 0
+        ref: docs
+
+    - name: Setup git config
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Create PR
+      run: |
+        gh pr create --repo Shopify/example-app--payments-app-template--remix --head main-js --base docs --title 'Sync docs' --body 'This is an automated PR. Please use this to make any updates to doc tags before merging.'
