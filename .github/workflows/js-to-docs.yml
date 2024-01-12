@@ -20,7 +20,7 @@ jobs:
       with:
         repository: shopify/example-app--payments-app-template--remix
         fetch-depth: 0
-        ref: docs
+        ref: main-js
 
     - name: Setup git config
       run: |
