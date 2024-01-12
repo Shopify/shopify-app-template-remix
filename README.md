@@ -227,6 +227,12 @@ This template uses [Remix](https://remix.run). The following Shopify tools are a
 > **Note**: This template runs on JavaScript, but it's fully set up for [TypeScript](https://www.typescriptlang.org/).
 > If you want to create your routes using TypeScript, we recommend removing the `noImplicitAny` config from [`tsconfig.json`](/tsconfig.json)
 
+## Git Fork
+Github doesn't track this fork particularly well since we're not tracking `main` upstream. The fork organization looks as follows:
+
+- `example-app--payments-app-template--remix/main-js` tracks `shopify-app-template-remix/javascript`
+- `example-app--payments-app-template--remix/docs` tracks `example-app--payments-app-template--remix/main-js`
+
 ## Resources
 
 - [Remix Docs](https://remix.run/docs/en/v1)
