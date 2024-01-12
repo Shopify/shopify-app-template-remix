@@ -60,7 +60,7 @@ export const action = async ({ request }) => {
   const responseJson = await response.json();
 
   return json({
-    product: responseJson.data.productCreate.product,
+    product: responseJson.data?.productCreate?.product,
   });
 };
 
