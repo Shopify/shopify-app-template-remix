@@ -1,6 +1,6 @@
-# Shopify Payments App Template - Remix
+# Shopify Credit Card Payments App Template - Remix [Javascript]
 
-This is a template for building a [Credit Card Payments App](https://shopify.dev/docs/apps/payments) using the [Remix](https://shopify.dev/docs/apps/getting-started/build-qr-code-app?framework=remix) framework. This template includes a rough client for the Payments Apps API, as well as all the necessary routes for a simple Credit Card payments app.
+This is a template for building a [Credit Card Payments App](https://shopify.dev/docs/apps/payments) using the [Remix](https://shopify.dev/docs/apps/getting-started/build-qr-code-app?framework=remix) framework in Javascript. This template includes a rough client for the Payments Apps API, as well as all the necessary routes for a simple Credit Card payments app.
 
 _Notes:_
 - mTLS configuration is not included in this template. This should be configured in your own infrastructure.
