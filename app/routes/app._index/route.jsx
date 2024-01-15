@@ -10,7 +10,7 @@ import {
   Page,
   Layout,
   Text,
-  VerticalStack,
+  BlockStack,
   Card,
   Button,
   Banner,
@@ -136,21 +136,21 @@ export default function Index() {
 
   return (
     <Page>
-      <VerticalStack gap="5">
+      <BlockStack gap="5">
         <Layout>
           <Layout.Section>
-            <VerticalStack gap="4">
+            <BlockStack gap="4">
               {banner()}
               {errorBanner()}
-            </VerticalStack>
+            </BlockStack>
           </Layout.Section>
           <Layout.Section>
             <Welcome />
           </Layout.Section>
           <Layout.Section>
             <Card>
-              <VerticalStack gap="5">
-                <VerticalStack gap="2">
+              <BlockStack gap="5">
+                <BlockStack gap="2">
                   <Text as="h2" variant="headingMd">
                     Configure your Payments App
                   </Text>
@@ -161,8 +161,8 @@ export default function Index() {
                   <Text as="p">
                     If any details are already present, your app has already been configured with the shop.
                   </Text>
-                </VerticalStack>
-                <VerticalStack gap="2">
+                </BlockStack>
+                <BlockStack gap="2">
                   <Card>
                     <Form method="post">
                       <FormLayout>
@@ -191,8 +191,8 @@ export default function Index() {
                       </FormLayout>
                     </Form>
                   </Card>
-                </VerticalStack>
-              </VerticalStack>
+                </BlockStack>
+              </BlockStack>
             </Card>
           </Layout.Section>
         </Layout>
@@ -203,7 +203,7 @@ export default function Index() {
             payments apps
           </Link>
         </FooterHelp>
-      </VerticalStack>
+      </BlockStack>
     </Page>
   );
 }
