@@ -1,6 +1,6 @@
 import {
   Text,
-  VerticalStack,
+  BlockStack,
   CalloutCard,
   Link,
 } from "@shopify/polaris";
@@ -15,7 +15,7 @@ export default function Welcome() {
         url: "dashboard"
       }}
     >
-      <VerticalStack gap="2">
+      <BlockStack gap="2">
         <Text as="p">
           This payments app template includes the essential
           non-embedded setup to start a developing a payments app, including
@@ -27,7 +27,7 @@ export default function Welcome() {
         <Text as="p">
           The linked dashboard shows the stored refund sessions - both resolved and new.
         </Text>
-      </VerticalStack>
+      </BlockStack>
     </CalloutCard>
   )
 }
