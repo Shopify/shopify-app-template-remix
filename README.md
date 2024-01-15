@@ -15,11 +15,11 @@ _Notes:_
 1. You must create a store for testing if you don't have one, either a [development store](https://help.shopify.com/en/partners/dashboard/development-stores#create-a-development-store) or a [Shopify Plus sandbox store](https://help.shopify.com/en/partners/dashboard/managing-stores/plus-sandbox-store).
 
 ### App Setup
-1. You must [Create an app manually]() in the Partners Dashboard
+1. You must Create an app manually in the Partners Dashboard
 1. Disable embedded in the Partners Dashboard
-1. Replace App Name and API Client ID in the [shopify.app.toml]()
-1. Request these Shopify scopes: (_write\_payment\_gateways_, _write\_payment\_sessions_)
-1. Once you have the required scopes, push the config with `npm run shopify app config push`
+1. Create a payments app extension for your app. This doesn't need to be filled in yet.
+1. Replace App Name and API Client ID in the [shopify.app.toml](https://github.com/Shopify/example-app--payments-app-template--remix/blob/main-js/shopify.app.toml)
+1. Run `yarn shopify app config push` to update your config with Shopify.
 
 ### Setup
 
@@ -63,19 +63,21 @@ Using pnpm:
 pnpm run dev
 ```
 
-Press P to open the URL to your app. Once you click install, you can start development.
+Before beginning development, now set up your payments app extension. You can define a consitent tunnel for Shopify CLI to use with the `--tunnel` flag.
 
 Local development is powered by [the Shopify CLI](https://shopify.dev/docs/apps/tools/cli). It logs into your partners account, connects to an app, provides environment variables, updates remote config, creates a tunnel and provides commands to generate extensions.
 
 ### App Extension
-1. Create an extension for your app. For the most basic setup, use Offsite.
+1. Return to your payments app extension to begin filling it in.
 1. Set the payment and refund session URLs to the url hosted by `dev`
 1. Create a version
 1. Submit your extension for review
 1. Once approved, release the new version
-1. Now, you should be able to open the preview and set up your app through the configuration page.
+1. Now, you should be able to open the preview and set up your app through the configuration page. You'll have to activate the payments app (with test mode) in admin before using it in a shop.
 
-_Note:_ You may have to uninstall and reinstall the app from your store if the configuration page raises an error like "Payments App is not installed on this shop".
+_Note:_ You may have to uninstall and reinstall the app (pressing P in `dev` while the app is uninstalled will trigger an install) from your store if the configuration page raises an error like "Payments App is not installed on this shop".
+
+You can now begin working with your app.
 
 ---
 
@@ -109,9 +111,9 @@ export async function loader({ request }) {
 
 This template come preconfigured with examples of:
 
-1. Setting up your Shopify app in [/app/shopify.server.js](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/shopify.server.js)
-2. Querying data using Graphql. Please see: [/app/routes/app.\_index.jsx](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/routes/app._index.jsx).
-3. Responding to mandatory webhooks in [/app/routes/webhooks.jsx](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/routes/webhooks.jsx)
+1. Setting up your Shopify app in [/app/shopify.server.js](https://github.com/Shopify/example-app--payments-app-template--remix/blob/main-js/app/shopify.server.js)
+2. Querying data using Graphql. Please see: [/app/routes/app.\_index.jsx](https://github.com/Shopify/example-app--payments-app-template--remix/blob/main-js/app/routes/app._index.jsx).
+3. Responding to mandatory webhooks in [/app/routes/webhooks.jsx](https://github.com/Shopify/example-app--payments-app-template--remix/blob/main-js/app/routes/webhooks.jsx)
 
 Please read the [documentation for @shopify/shopify-app-remix](https://www.npmjs.com/package/@shopify/shopify-app-remix#authenticating-admin-requests) to understand what other API's are available.
 
