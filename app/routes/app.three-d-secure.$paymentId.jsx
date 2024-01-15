@@ -7,7 +7,7 @@ import {
   Page,
   Text,
   TextField,
-  VerticalStack,
+  BlockStack,
   Link,
   Banner,
   Select,
@@ -210,13 +210,13 @@ export default function threeDSSimulator() {
     <Page title="3DS challenge">
       <Layout>
         <Layout.Section>
-          <VerticalStack gap="4">
+          <BlockStack gap="4">
             {errorBanner()}
-          </VerticalStack>
+          </BlockStack>
         </Layout.Section>
         <Layout.Section>
           <Card>
-            <VerticalStack gap="5">
+            <BlockStack gap="5">
               <Form method="post">
                 <FormLayout>
                   <ChoiceList
@@ -229,7 +229,7 @@ export default function threeDSSimulator() {
                   <Button submit>Submit</Button>
                 </FormLayout>
               </Form>
-            </VerticalStack>
+            </BlockStack>
           </Card>
         </Layout.Section>
       </Layout>

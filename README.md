@@ -1,6 +1,6 @@
 # Shopify Credit Card Payments App Template - Remix [Javascript]
 
-This is a template for building a [Credit Card Payments App](https://shopify.dev/docs/apps/payments) using the [Remix](https://shopify.dev/docs/apps/getting-started/build-qr-code-app?framework=remix) framework in Javascript. This template includes a rough client for the Payments Apps API, as well as all the necessary routes for a simple Credit Card payments app.
+This is a template for building a [Credit Card Payments App](https://shopify.dev/docs/apps/payments) using the [Remix](https://remix.run/) framework in Javascript. This template includes a rough client for the Payments Apps API, as well as all the necessary routes for a simple Credit Card payments app.
 
 _Notes:_
 - mTLS configuration is not included in this template. This should be configured in your own infrastructure.
@@ -15,12 +15,11 @@ _Notes:_
 1. You must create a store for testing if you don't have one, either a [development store](https://help.shopify.com/en/partners/dashboard/development-stores#create-a-development-store) or a [Shopify Plus sandbox store](https://help.shopify.com/en/partners/dashboard/managing-stores/plus-sandbox-store).
 
 ### App Setup
-1. You must [Create an app manually]() in the Partners Dashboard
+1. You must Create an app manually in the Partners Dashboard
 1. Disable embedded in the Partners Dashboard
-1. Replace App Name and API Client ID in the [shopify.app.toml]()
-1. Request these Shopify scopes: (_write\_payment\_gateways_, _write\_payment\_sessions_)
-1. Once you have the required scopes, push the config with `npm run shopify app config push`
-
+1. Create a credit card payments app extension for your app. This doesn't need to be filled in yet.
+1. Replace App Name and API Client ID in the [shopify.app.toml](https://github.com/Shopify/example-app--payments-app-template--remix/blob/main-js/shopify.app.toml)
+1. Run `yarn shopify app config push` to update your config with Shopify.
 ### Setup
 
 If you used the CLI to create the template, you can skip this section.
@@ -63,13 +62,15 @@ Using pnpm:
 pnpm run dev
 ```
 
-Press P to open the URL to your app. Once you click install, you can start development. ([App extension](#app-extension) must be created and released before)
+Before beginning development, set up your payments app extension. You can define a consitent tunnel for Shopify CLI to use with the `--tunnel` flag.
 
 Local development is powered by [the Shopify CLI](https://shopify.dev/docs/apps/tools/cli). It logs into your partners account, connects to an app, provides environment variables, updates remote config, creates a tunnel and provides commands to generate extensions.
 
+Press P to open a page to install your app.
+
 ### App Extension
 
-1. Create an extension for your app, use Credit Card.
+1. Return to your payments app extension to begin filling it in.
 1. Set the payment and refund session URLs to the url hosted by `dev`.
 1. Create a version.
 1. Submit your extension for review.
@@ -102,6 +103,10 @@ If you have entered valid credit card information, after clicking Pay now, you s
 - Rejected payment should bring you back to the checkout page with an error message.
 
 Payments processed through this application are visible in the Dashboard (/app/dashboard)
+
+#### Encryption
+
+Since this is a credit card payments app, it supports encryption. You can uncomment [this line](https://github.com/Shopify/example-app--credit-card-payments-app-template--remix/blob/main-js/app/routes/app.payment_session.jsx#L22), and add your [private key](https://github.com/Shopify/example-app--credit-card-payments-app-template--remix/blob/main-js/app/encryption.js#L4) to test our included payload decryption.
 
 ---
 
