@@ -42,7 +42,9 @@ jobs:
             {} +
 
       - name: Remove Typescript files
-        run: find app \( -name "*.ts" -o -name "*.tsx" \) -delete
+        run: |
+          find app \( -name "*.ts" -o -name "*.tsx" \) -delete
+          find . -name ".graphqlrc.ts" -delete
 
       - name: Run prettier
         run: yarn prettier -w "app/**/*.{js,jsx}" --plugin @shopify/prettier-config
