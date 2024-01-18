@@ -6,13 +6,10 @@ on:
     # scheduled at 07:00 every Monday and Thursday
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
   sync_latest_from_upstream:
     runs-on: ubuntu-latest
+    permissions: write-all
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     name: Sync latest commits from upstream repo
@@ -39,11 +36,11 @@ jobs:
 
     - name: Reset javascript
       run: |
-        git push origin --delete javascript &>/dev/null || true  
-        git switch -c javascript 
+        git push origin --delete javascript &>/dev/null || true
+        git switch -c javascript
         git push origin javascript
 
     - name: Sync upstream changes
       run: |
         gh repo sync shopify/example-app--payments-app-template--remix -b javascript --force
-        gh pr create --repo Shopify/example-app--payments-app-template--remix --head javascript --title 'Sync javascript with upstream' --body 'This is an automated PR that syncs the repo with its source upstream.' &>/dev/null || true 
+        gh pr create --repo Shopify/example-app--payments-app-template--remix --head javascript --title 'Sync javascript with upstream' --body 'This is an automated PR that syncs the repo with its source upstream.' &>/dev/null || true
