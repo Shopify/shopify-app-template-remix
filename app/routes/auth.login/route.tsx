@@ -14,13 +14,13 @@ import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import "@shopify/polaris/build/esm/styles.css";
 import { login } from "~/shopify.server";
 import { loginErrorMessage } from "./error.server";
-
+import polarisTranslations from "@shopify/polaris/locales/en.json";
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const errors = loginErrorMessage(await login(request));
 
   return json({
     errors,
-    polarisTranslations: require(`@shopify/polaris/locales/en.json`),
+    polarisTranslations,
   });
 };
 
