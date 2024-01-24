@@ -28,7 +28,7 @@ jobs:
 
       - name: Transpile to Javascript
         run: |
-          find app \( -name "*.ts" -o -name "*.tsx" \) -exec yarn tsc \
+          find . \( \( -path "./app/*" -a \( -name "*.ts" -o -name "*.tsx" \) \) -o -name ".graphqlrc.ts" \) -exec yarn tsc \
             --strict \
             --removeComments false \
             --skipLibCheck \
@@ -42,7 +42,9 @@ jobs:
             {} +
 
       - name: Remove Typescript files
-        run: find app \( -name "*.ts" -o -name "*.tsx" \) -delete
+        run: |
+          find app \( -name "*.ts" -o -name "*.tsx" \) -delete
+          find . -name ".graphqlrc.ts" -delete
 
       - name: Run prettier
         run: yarn prettier -w "app/**/*.{js,jsx}" --plugin @shopify/prettier-config
