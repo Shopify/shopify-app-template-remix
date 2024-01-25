@@ -47,7 +47,7 @@ jobs:
           find . -name ".graphqlrc.ts" -delete
 
       - name: Run prettier
-        run: yarn prettier -w "app/**/*.{js,jsx}" --plugin @shopify/prettier-config
+        run: yarn prettier -w "app/**/*.{js,jsx}" --config node_modules/@shopify/prettier-config/index.json
 
       - name: Run ESLint
         run: |
