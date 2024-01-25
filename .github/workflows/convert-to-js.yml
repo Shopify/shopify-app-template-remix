@@ -24,7 +24,7 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn add -W --dev @shopify/prettier-config @shopify/eslint-plugin --ignore-engines
+        run: yarn add -W --dev @shopify/eslint-plugin --ignore-engines
 
       - name: Transpile to Javascript
         run: |
@@ -47,7 +47,7 @@ jobs:
           find . -name ".graphqlrc.ts" -delete
 
       - name: Run prettier
-        run: yarn prettier -w "app/**/*.{js,jsx}" --config node_modules/@shopify/prettier-config/index.json
+        run: yarn prettier -w "app/**/*.{js,jsx}"
 
       - name: Run ESLint
         run: |
