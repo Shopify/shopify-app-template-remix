@@ -55,7 +55,7 @@ export const action = async ({ request }) => {
           variants: [{ price: Math.random() * 100 }],
         },
       },
-    }
+    },
   );
   const responseJson = await response.json();
 
@@ -72,7 +72,7 @@ export default function Index() {
     ["loading", "submitting"].includes(nav.state) && nav.formMethod === "POST";
   const productId = actionData?.product?.id.replace(
     "gid://shopify/Product/",
-    ""
+    "",
   );
 
   useEffect(() => {
