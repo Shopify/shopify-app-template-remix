@@ -225,7 +225,7 @@ By default the [graphql.vscode-graphql](https://marketplace.visualstudio.com/ite
 1. You use another Shopify API such as the storefront API.
 2. You use a third party GraphQL API.
 
-in this situation, please update the [.graphqlrc.js](https://github.com/Shopify/shopify-app-template-remix/blob/main/.graphqlrc.js) config.
+in this situation, please update the [.graphqlrc.ts](https://github.com/Shopify/shopify-app-template-remix/blob/main/.graphqlrc.ts) config.
 
 ## Benefits
 
