@@ -216,25 +216,25 @@ In Shopify Remix apps you should avoid using `<a>`. Use `<Link> `from `@remix-ru
 
 ### OAuth goes into a loop when I change my app's scopes
 
-If you change your app's scopes and notice that authentication goes into a loop and fails with a message from Shopify that it tried too many times, you might have forgotten to update your scopes with Shopify.
-To do that, you can run the `config push` CLI command.
+If you change your app's scopes and authentication goes into a loop and fails with a message from Shopify that it tried too many times, you might have forgotten to update your scopes with Shopify.
+To do that, you can run the `deploy` CLI command.
 
 Using yarn:
 
 ```shell
-yarn shopify app config push
+yarn deploy
 ```
 
 Using npm:
 
 ```shell
-npm run shopify app config push
+npm run deploy
 ```
 
 Using pnpm:
 
 ```shell
-pnpm run shopify app config push
+pnpm run deploy
 ```
 
 ### My webhook subscriptions aren't being updated
