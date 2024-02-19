@@ -2,7 +2,7 @@
   "name": "example-app--credit-card-payments-app-template--remix",
   "private": true,
   "scripts": {
-    "build": "tsc && remix build",
+    "build": "remix build",
     "dev": "shopify app dev",
     "config:link": "shopify app config link",
     "generate": "shopify app generate",
