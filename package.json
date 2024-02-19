@@ -2,8 +2,7 @@
   "name": "app",
   "private": true,
   "scripts": {
-    "build": "remix build",
-    "predev": "prisma generate && prisma migrate deploy",
+    "build": "tsc && remix build",
     "dev": "shopify app dev",
     "config:link": "shopify app config link",
     "generate": "shopify app generate",
