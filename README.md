@@ -13,8 +13,22 @@ Visit the [`shopify.dev` documentation](https://shopify.dev/docs/api/shopify-app
 1. You must [download and install Node.js](https://nodejs.org/en/download/) if you don't already have it.
 2. You must [create a Shopify partner account](https://partners.shopify.com/signup) if you don’t have one.
 3. You must create a store for testing if you don't have one, either a [development store](https://help.shopify.com/en/partners/dashboard/development-stores#create-a-development-store) or a [Shopify Plus sandbox store](https://help.shopify.com/en/partners/dashboard/managing-stores/plus-sandbox-store).
+4. You must create an account with SafeDigit.io on app.safedigit.io
 
 ### Setup
+
+## SafeDigit
+
+Go to projects > click on ... next to create project and import the shopifyTemplate.json file.
+
+### Adding webhooks
+
+- Create a new trigger in your project.
+- The url should be globally unique so use the following pattern: clientId/webhookTopic. For example: POST your-company-name/orders-created
+- Refer to products-created trigger for reference to configure the trigger authentication.
+- Add entry to the webhooks map in shopify.server.ts
+
+## Shopify
 
 If you used the CLI to create the template, you can skip this section.
 
@@ -202,6 +216,7 @@ pnpm run deploy
 
 This template registers webhooks after OAuth completes, usng the `afterAuth` hook when calling `shopifyApp`.
 The package calls that hook in 2 scenarios:
+
 - After installing the app
 - When an access token expires
 
@@ -214,7 +229,7 @@ That will force the OAuth process and call the `afterAuth` hook.
 
 Webhooks subscriptions created in the [Shopify admin](https://help.shopify.com/en/manual/orders/notifications/webhooks) will fail HMAC validation. This is because the webhook payload is not signed with your app's secret key.
 
-Create [webhook subscriptions]((https://shopify.dev/docs/api/shopify-app-remix/v1/guide-webhooks)) using the `shopifyApp` object instead.
+Create [webhook subscriptions](<(https://shopify.dev/docs/api/shopify-app-remix/v1/guide-webhooks)>) using the `shopifyApp` object instead.
 
 Test your webhooks with the [Shopify CLI](https://shopify.dev/docs/apps/tools/cli/commands#webhook-trigger) or by triggering events manually in the Shopify admin(e.g. Updating the product title to trigger a `PRODUCTS_UPDATE`).
 

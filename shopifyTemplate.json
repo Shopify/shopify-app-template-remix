@@ -1,0 +1,189 @@
+{
+  "project": {
+    "id": "afe8ab73-b70f-4d3a-b8e0-c732a504d3fe",
+    "name": "Shopify Template",
+    "platform": "none",
+    "isModule": false,
+    "variables": {}
+  },
+  "pipelines": [
+    {
+      "id": "e81fca32-483c-436f-9854-021218ae3195",
+      "projectId": "afe8ab73-b70f-4d3a-b8e0-c732a504d3fe",
+      "name": "Product created handling pipeline",
+      "description": "",
+      "blocks": {
+        "zfwnmhbciw": {
+          "type": "TRANSFORM",
+          "id": "zfwnmhbciw",
+          "name": "getProductId",
+          "description": "",
+          "location": {
+            "x": 108.779305,
+            "y": 62.605232
+          },
+          "config": "$.id",
+          "nextBlock": "retrieveOrder"
+        },
+        "retrieveOrder": {
+          "type": "MODULE",
+          "id": "retrieveOrder",
+          "name": "Retrieve Order",
+          "description": "",
+          "location": {
+            "x": 347.2112,
+            "y": 62.605232
+          },
+          "moduleVersionId": "055c0c4e-45c6-4b5f-8436-1d434d49d1b3",
+          "moduleId": "161671cb-be1a-494c-85db-7ddde9ccdaf1",
+          "parameters": {
+            "method": "Retrieve",
+            "token": "$.sd_context.installation.configuration.shopifyToken",
+            "shopDomain": "$.sd_context.installation.configuration.shopifyShopDomain",
+            "id": "$"
+          },
+          "nextBlock": "sendGridRequest"
+        },
+        "sendGridRequest": {
+          "type": "TRANSFORM",
+          "id": "sendGridRequest",
+          "name": "Create Send Grid Request",
+          "description": "",
+          "location": {
+            "x": 592.9544,
+            "y": 62.605232
+          },
+          "config": {
+            "name": "$.product.title",
+            "description": "$.product.body_html"
+          }
+        }
+      },
+      "startingBlockId": "zfwnmhbciw",
+      "location": {
+        "x": 637.9548,
+        "y": 787.9732
+      }
+    },
+    {
+      "id": "1d18f39a-1ac9-4fc0-9852-a138b2dc5209",
+      "projectId": "afe8ab73-b70f-4d3a-b8e0-c732a504d3fe",
+      "name": "Create pipeline",
+      "description": "",
+      "blocks": {
+        "kylpwhbdsl": {
+          "type": "SYSTEM",
+          "id": "kylpwhbdsl",
+          "name": "Create tenant",
+          "description": "",
+          "location": {
+            "x": 186.09023,
+            "y": 63.36088
+          },
+          "action": "TENANT_CREATE"
+        }
+      },
+      "startingBlockId": "kylpwhbdsl",
+      "location": {
+        "x": 645.10864,
+        "y": 262.1817
+      }
+    },
+    {
+      "id": "1cc7a0ef-8862-4ac1-aa9f-ff3f305540da",
+      "projectId": "afe8ab73-b70f-4d3a-b8e0-c732a504d3fe",
+      "name": "remove-tenant",
+      "description": "Remove tenant",
+      "blocks": {
+        "oeejhmodgt": {
+          "type": "SYSTEM",
+          "id": "oeejhmodgt",
+          "name": "remove-tenant",
+          "description": "",
+          "location": {
+            "x": 172.13367,
+            "y": 64.39957
+          },
+          "action": "TENANT_REMOVE"
+        }
+      },
+      "startingBlockId": "oeejhmodgt",
+      "location": {
+        "x": 640.3643,
+        "y": 518.32666
+      }
+    }
+  ],
+  "apis": [
+    {
+      "id": "1b14c267-87a8-4c5a-a82e-b724b671d61d",
+      "path": "/clientId/products-create",
+      "method": "POST",
+      "name": "Product Created",
+      "authenticationConfig": {
+        "secretKey": "6cc5d8df9187272e14ba9888b27b5945",
+        "sourceHeader": "x-shopify-shop-domain",
+        "signatureHeader": "x-shopify-hmac-sha256",
+        "hmacAlgorithm": "HmacSHA256",
+        "clientId": "clientId",
+        "type": "hmac"
+      },
+      "projectId": "afe8ab73-b70f-4d3a-b8e0-c732a504d3fe",
+      "pipelineId": "e81fca32-483c-436f-9854-021218ae3195",
+      "location": {
+        "x": 216.25565,
+        "y": 791.32666
+      },
+      "requestContentType": "JSON",
+      "responseContentType": "JSON"
+    },
+    {
+      "id": "c0d134d9-9048-4b9a-95f6-78624ce2f182",
+      "path": "/clientId/remove-tenant",
+      "method": "POST",
+      "name": "remove-tenant",
+      "authenticationConfig": {
+        "secretKey": "6cc5d8df9187272e14ba9888b27b5945",
+        "sourceHeader": "x-shopify-shop-domain",
+        "signatureHeader": "x-shopify-hmac-sha256",
+        "hmacAlgorithm": "HmacSHA256",
+        "clientId": "clientId",
+        "type": "hmac"
+      },
+      "projectId": "afe8ab73-b70f-4d3a-b8e0-c732a504d3fe",
+      "pipelineId": "1cc7a0ef-8862-4ac1-aa9f-ff3f305540da",
+      "location": {
+        "x": 216.25565,
+        "y": 520.3071
+      },
+      "requestContentType": "JSON",
+      "responseContentType": "JSON"
+    },
+    {
+      "id": "bbe8de57-455b-46b3-93d1-63c5b8123e07",
+      "path": "/clientId/create-tenant",
+      "method": "POST",
+      "name": "create tenant",
+      "authenticationConfig": {
+        "type": "none"
+      },
+      "projectId": "afe8ab73-b70f-4d3a-b8e0-c732a504d3fe",
+      "pipelineId": "1d18f39a-1ac9-4fc0-9852-a138b2dc5209",
+      "location": {
+        "x": 219,
+        "y": 264.8839
+      },
+      "requestContentType": "JSON",
+      "responseContentType": "JSON"
+    }
+  ],
+  "modules": [
+    {
+      "id": "055c0c4e-45c6-4b5f-8436-1d434d49d1b3",
+      "version": "v0.1",
+      "description": "",
+      "moduleId": "161671cb-be1a-494c-85db-7ddde9ccdaf1",
+      "moduleName": "shopify-product"
+    }
+  ]
+}
