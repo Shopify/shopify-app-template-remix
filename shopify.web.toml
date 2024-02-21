@@ -3,7 +3,4 @@ roles = ["frontend", "backend"]
 webhooks_path = "/webhooks"
 
 [commands]
-dev = "npx prisma generate && npx prisma migrate deploy && npm exec remix dev"
-
-[hmr_server]
-http_paths = ["/ping"]
+dev = "npx prisma generate && npx prisma migrate deploy && npm exec remix vite:dev"
