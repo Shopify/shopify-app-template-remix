@@ -2,14 +2,11 @@ import fs from "fs";
 
 import { LATEST_API_VERSION } from "@shopify/shopify-api";
 import { shopifyApiProject, ApiType } from "@shopify/api-codegen-preset";
+import type { IGraphQLConfig } from "graphql-config";
 
 function getConfig() {
-  const config = {
-    // For syntax highlighting / auto-complete when writing operations
-    schema: `https://shopify.dev/admin-graphql-direct-proxy/${LATEST_API_VERSION}`,
-    documents: ["./app/**/*.{js,ts,jsx,tsx}"],
+  const config: IGraphQLConfig = {
     projects: {
-      // To produce variable / return types for Admin API operations
       default: shopifyApiProject({
         apiType: ApiType.Admin,
         apiVersion: LATEST_API_VERSION,

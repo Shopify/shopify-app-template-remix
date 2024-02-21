@@ -90,9 +90,9 @@ export async function loader({ request }) {
 
 This template come preconfigured with examples of:
 
-1. Setting up your Shopify app in [/app/shopify.server.js](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/shopify.server.js)
-2. Querying data using Graphql. Please see: [/app/routes/app.\_index.jsx](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/routes/app._index.jsx).
-3. Responding to mandatory webhooks in [/app/routes/webhooks.jsx](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/routes/webhooks.jsx)
+1. Setting up your Shopify app in [/app/shopify.server.ts](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/shopify.server.ts)
+2. Querying data using Graphql. Please see: [/app/routes/app.\_index.tsx](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/routes/app._index.tsx).
+3. Responding to mandatory webhooks in [/app/routes/webhooks.tsx](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/routes/webhooks.tsx)
 
 Please read the [documentation for @shopify/shopify-app-remix](https://www.npmjs.com/package/@shopify/shopify-app-remix#authenticating-admin-requests) to understand what other API's are available.
 
@@ -178,24 +178,24 @@ Shopify apps are best when they are embedded into the Shopify Admin. This templa
 ### OAuth goes into a loop when I change my app's scopes
 
 If you change your app's scopes and authentication goes into a loop and fails with a message from Shopify that it tried too many times, you might have forgotten to update your scopes with Shopify.
-To do that, you can run the `config push` CLI command.
+To do that, you can run the `deploy` CLI command.
 
 Using yarn:
 
 ```shell
-yarn shopify app config push
+yarn deploy
 ```
 
 Using npm:
 
 ```shell
-npm run shopify app config push
+npm run deploy
 ```
 
 Using pnpm:
 
 ```shell
-pnpm run shopify app config push
+pnpm run deploy
 ```
 
 ### My webhook subscriptions aren't being updated
@@ -225,7 +225,7 @@ By default the [graphql.vscode-graphql](https://marketplace.visualstudio.com/ite
 1. You use another Shopify API such as the storefront API.
 2. You use a third party GraphQL API.
 
-in this situation, please update the [.graphqlrc.js](https://github.com/Shopify/shopify-app-template-remix/blob/main/.graphqlrc.js) config.
+in this situation, please update the [.graphqlrc.ts](https://github.com/Shopify/shopify-app-template-remix/blob/main/.graphqlrc.ts) config.
 
 ## Benefits
 
