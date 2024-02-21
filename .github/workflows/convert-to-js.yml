@@ -29,7 +29,7 @@ jobs:
       - name: Create temporary tsconfig file
         run: |
           echo '{
-            "include": ["./app/*", "*.ts", "*.tsx", ".graphqlrc.ts"],
+            "include": ["./app/**/*", "*.ts", "*.tsx", ".graphqlrc.ts"],
             "compilerOptions": {
               "strict": true,
               "removeComments": false,
@@ -53,14 +53,14 @@ jobs:
       - name: Remove Typescript files
         run: |
           find app \( -name "*.ts" -o -name "*.tsx" \) -delete
-          find . \( -name ".graphqlrc.ts" -o -name "tsconfig.js.json" \) -delete
+          find . \( -name ".graphqlrc.ts" -o -name "tsconfig.js.json" -o -name "vite.config.ts" \) -delete
 
       - name: Run prettier
-        run: yarn prettier -w "app/**/*.{js,jsx}"
+        run: yarn prettier -w "app/**/*.{js,jsx}" ".graphqlrc.js" "vite.config.js"
 
       - name: Run ESLint
         run: |
-          yarn lint "app/**/*.{js,jsx}" --fix --no-cache --plugin @shopify/eslint-plugin --rule '{
+          yarn lint "app/**/*.{js,jsx}" ".graphqlrc.js" "vite.config.js" --fix --no-cache --ignore-pattern "\!.graphqlrc.js" --plugin @shopify/eslint-plugin --rule '{
             "import/order": "error",
             "import/newline-after-import": "error",
             "padding-line-between-statements": ["error",
@@ -80,13 +80,6 @@ jobs:
           git fetch
           git restore --staged package.json
           git restore package.json
-
-      - name: Remove tsc from the build command
-        run: |
-          patternToRemove="tsc && "
-          sedChangesFile=sedchanges.log
-          sed -i "s/^\( *\"build\": \".*\)$patternToRemove\(.*\)$/\1\2/w $sedChangesFile" package.json
-          if [ -s $sedChangesFile ]; then rm $sedChangesFile; else echo replacement failed; exit 1; fi
 
       - name: Stage changes to files
         run: |
