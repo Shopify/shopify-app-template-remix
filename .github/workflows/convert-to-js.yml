@@ -26,32 +26,41 @@ jobs:
       - name: Install dependencies
         run: yarn add -W --dev @shopify/eslint-plugin --ignore-engines
 
-      - name: Transpile to Javascript
+      - name: Create temporary tsconfig file
         run: |
-          find . \( \( -path "./app/*" -a \( -name "*.ts" -o -name "*.tsx" \) \) -o -name ".graphqlrc.ts" \) -exec yarn tsc \
-            --strict \
-            --removeComments false \
-            --skipLibCheck \
-            --isolatedModules \
-            --noEmitOnError \
-            --jsx "preserve" \
-            --module "ES2022" \
-            --moduleResolution "bundler" \
-            --target "ES2022" \
-            --types "@shopify/app-bridge-types" \
-            {} +
+          echo '{
+            "include": ["./app/**/*", "*.ts", "*.tsx", ".graphqlrc.ts"],
+            "compilerOptions": {
+              "strict": true,
+              "removeComments": false,
+              "skipLibCheck": true,
+              "isolatedModules": true,
+              "noEmitOnError": true,
+              "jsx": "preserve",
+              "module": "ES2022",
+              "moduleResolution": "bundler",
+              "target": "ES2022",
+              "types": ["@shopify/app-bridge-types"],
+              "paths": {
+                "~/*": ["./app/*"]
+              }
+            }
+          }' > tsconfig.js.json
+
+      - name: Transpile to Javascript
+        run: yarn tsc -p tsconfig.js.json
 
       - name: Remove Typescript files
         run: |
           find app \( -name "*.ts" -o -name "*.tsx" \) -delete
-          find . -name ".graphqlrc.ts" -delete
+          find . \( -name ".graphqlrc.ts" -o -name "tsconfig.js.json" -o -name "vite.config.ts" \) -delete
 
       - name: Run prettier
-        run: yarn prettier -w "app/**/*.{js,jsx}"
+        run: yarn prettier -w "app/**/*.{js,jsx}" ".graphqlrc.js" "vite.config.js"
 
       - name: Run ESLint
         run: |
-          yarn lint "app/**/*.{js,jsx}" --fix --no-cache --plugin @shopify/eslint-plugin --rule '{
+          yarn lint "app/**/*.{js,jsx}" ".graphqlrc.js" "vite.config.js" --fix --no-cache --ignore-pattern "\!.graphqlrc.js" --plugin @shopify/eslint-plugin --rule '{
             "import/order": "error",
             "import/newline-after-import": "error",
             "padding-line-between-statements": ["error",
@@ -71,13 +80,6 @@ jobs:
           git fetch
           git restore --staged package.json
           git restore package.json
-
-      - name: Remove tsc from the build command
-        run: |
-          patternToRemove="tsc && "
-          sedChangesFile=sedchanges.log
-          sed -i "s/^\( *\"build\": \".*\)$patternToRemove\(.*\)$/\1\2/w $sedChangesFile" package.json
-          if [ -s $sedChangesFile ]; then rm $sedChangesFile; else echo replacement failed; exit 1; fi
 
       - name: Stage changes to files
         run: |
