@@ -145,6 +145,18 @@ When you're ready to set up your app in production, you can follow [our deployme
 
 When you reach the step for [setting up environment variables](https://shopify.dev/docs/apps/deployment/web#set-env-vars), you also need to set the variable `NODE_ENV=production`.
 
+### Hosting on Vercel
+
+When hosting your Shopify Remix app on Vercel, Vercel uses a fork of the [Remix library](https://github.com/vercel/remix).
+
+To  ensure all global variables are set correctly when you deploy your app to Vercel update your app to use the Vercel adapter instead of the node adapter.
+
+```diff
+// shopify.server.ts
+- import "@shopify/shopify-app-remix/adapters/node";
++ import "@shopify/shopify-app-remix/adapters/vercel";
+```
+
 ## Gotchas / Troubleshooting
 
 ### Database tables don't exist
@@ -226,6 +238,10 @@ By default the [graphql.vscode-graphql](https://marketplace.visualstudio.com/ite
 2. You use a third party GraphQL API.
 
 in this situation, please update the [.graphqlrc.ts](https://github.com/Shopify/shopify-app-template-remix/blob/main/.graphqlrc.ts) config.
+
+### First parameter has member 'readable' that is not a ReadableStream.
+
+See [hosting on Vercel](#hosting-on-vercel).
 
 ## Benefits
 
