@@ -4,6 +4,3 @@ webhooks_path = "/webhooks"
 
 [commands]
 dev = "npx prisma generate && npx prisma migrate deploy && npm exec remix vite:dev"
-
-[hmr_server]
-http_paths = ["/ping"]
