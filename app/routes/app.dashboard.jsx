@@ -1,7 +1,7 @@
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData, useSubmit } from "@remix-run/react";
 import { Page, Card, DataTable, Button, Text, LegacyStack, Icon } from "@shopify/polaris";
-import { MinusMinor, TickMinor } from "@shopify/polaris-icons";
+import { MinusIcon, CheckSmallIcon } from "@shopify/polaris-icons";
 
 import { getPaymentSessions } from "~/payments.repository";
 
@@ -35,8 +35,8 @@ export default function Dashboard() {
     <LegacyStack>
       {
         isVoid
-          ? (<Icon source={TickMinor} color="critical"/>)
-          : (<Icon source={MinusMinor} color="primary"/>)
+          ? (<Icon source={CheckSmallIcon} color="critical"/>)
+          : (<Icon source={MinusIcon} color="primary"/>)
       }
     </LegacyStack>
   );
