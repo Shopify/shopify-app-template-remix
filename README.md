@@ -200,7 +200,7 @@ pnpm run deploy
 
 ### My webhook subscriptions aren't being updated
 
-This template registers webhooks after OAuth completes, usng the `afterAuth` hook when calling `shopifyApp`.
+This template registers webhooks after OAuth completes, using the `afterAuth` hook when calling `shopifyApp`.
 The package calls that hook in 2 scenarios:
 - After installing the app
 - When an access token expires
