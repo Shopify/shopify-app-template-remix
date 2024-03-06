@@ -40,11 +40,7 @@ export default defineConfig({
     hmr: hmrConfig,
     fs: {
       // See https://vitejs.dev/config/server-options.html#server-fs-allow for more information
-      allow: [
-        "app",
-        "node_modules/@shopify/polaris/build/esm/styles.css",
-        "node_modules/@remix-run/dev/dist/config/defaults/entry.client.tsx",
-      ],
+      allow: ["app", "node_modules"],
     },
   },
   plugins: [
