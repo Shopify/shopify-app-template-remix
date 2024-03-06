@@ -20,3 +20,9 @@ model Session {
   accessToken String
   userId      BigInt?
 }
+
+model Review {
+  id        String @id
+  review    String
+  productId String
+}
