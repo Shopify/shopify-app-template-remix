@@ -1,6 +1,5 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["./**/*.js", "./**/*.jsx"],
   "compilerOptions": {
     "paths": {
       "~/*": ["./app/*"],

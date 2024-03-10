@@ -1,9 +1,9 @@
 import { beforeEach, test, expect } from 'vitest';
 import { render, screen } from '@testing-library/polaris';
-import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing';
+import { createRemixStub } from '@remix-run/testing';
 import AdditionalPage from '~/routes/app.additional';
 
-let App;
+let App: ReturnType<typeof createRemixStub>;
 
 beforeEach(() => {
   App = createRemixStub([

@@ -38,11 +38,11 @@
     "vite-tsconfig-paths": "^4.3.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.39.0",
+    "@playwright/test": "^1.42.1",
     "@remix-run/eslint-config": "^2.7.1",
+    "@remix-run/testing": "^2.7.1",
     "@shopify/api-codegen-preset": "^0.0.3",
     "@shopify/app-bridge-types": "^0.0.7",
-    "@remix-run/testing": "^2.0.0",
     "@shopify/shopify-app-session-storage-memory": "^2.0.0",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.0.0",

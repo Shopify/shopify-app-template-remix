@@ -1,6 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 import dotenv from "dotenv";
+import url from "node:url";
 import path from "node:path";
+
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config({
   path: path.resolve(__dirname, "./tests/test-utilities/test.env"),
@@ -98,7 +102,7 @@ export default defineConfig({
   // Run your local dev server before starting the tests.
   webServer: [
     {
-      command: 'npx remix build && npm run start',
+      command: 'npm run build && npm run start',
       url: 'http://127.0.0.1:3000',
       timeout: 120 * 1000,
       reuseExistingServer: !process.env.CI,

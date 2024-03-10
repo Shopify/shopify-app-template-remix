@@ -3,7 +3,11 @@ import { sessionStorage } from '~/shopify.server';
 import { Session } from '@shopify/shopify-api';
 import dotenv from "dotenv";
 import path from "node:path";
+import url from "node:url";
 import { SignJWT } from "jose";
+
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config({
   path: path.resolve(__dirname, "../test-utilities/test.env")
