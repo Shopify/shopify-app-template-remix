@@ -16,6 +16,7 @@ const shopify = shopifyApp({
   scopes: process.env.SCOPES?.split(","),
   appUrl: process.env.SHOPIFY_APP_URL || "",
   authPathPrefix: "/auth",
+  isEmbeddedApp: false,
   sessionStorage: new PrismaSessionStorage(prisma),
   distribution: AppDistribution.AppStore,
   restResources,
@@ -31,8 +32,6 @@ const shopify = shopifyApp({
     },
   },
   future: {
-    v3_webhookAdminContext: true,
-    v3_authenticatePublic: true,
     unstable_newEmbeddedAuthStrategy: true,
   },
   ...(process.env.SHOP_CUSTOM_DOMAIN

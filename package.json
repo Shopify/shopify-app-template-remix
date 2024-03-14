@@ -1,5 +1,5 @@
 {
-  "name": "app",
+  "name": "example-app--credit-card-payments-app-template--remix",
   "private": true,
   "scripts": {
     "build": "vite build && vite build --ssr",
@@ -53,6 +53,8 @@
   },
   "workspaces": {
     "packages": [
+      "web",
+      "web/frontend",
       "extensions/*"
     ]
   },

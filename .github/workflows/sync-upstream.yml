@@ -1,0 +1,60 @@
+name: Sync with upstream
+
+on:
+  schedule:
+    - cron:  '0 7 * * 1,4'
+    # scheduled at 07:00 every Monday and Thursday
+  workflow_dispatch:
+
+jobs:
+  sync_latest_from_upstream:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    name: Sync latest commits from upstream repo
+
+    steps:
+    - name: Checkout source repo
+      uses: actions/checkout@v4
+      with:
+        repository: shopify/shopify-app-template-remix
+        fetch-depth: 0
+        ref: javascript
+
+    - name: Checkout target repo
+      uses: actions/checkout@v4
+      with:
+        repository: shopify/example-app--credit-card-payments-app-template--remix
+        fetch-depth: 0
+        ref: main-js
+
+    - name: Setup git config
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Reset javascript
+      run: |
+        git push origin --delete javascript &>/dev/null || true
+        git switch -c javascript
+        git push origin javascript
+
+    - name: Pull upstream changes
+      run: |
+        git remote add upstream https://github.com/shopify/shopify-app-template-remix.git
+        git fetch upstream
+        git reset --hard upstream/javascript
+
+    - name: Clean any workflows
+      run: |
+        shopt -s extglob
+        cd .github/workflows
+        rm -- !(js-to-docs.yml|sync-upstream.yml)
+        git add .
+        git commit -m "[Actions] Revert any workflow changes due to lack of permissions."
+
+    - name: Push changes
+      run: |
+        git push origin javascript --force
+        gh pr create --repo Shopify/example-app--credit-card-payments-app-template--remix --head javascript --title 'Sync javascript with upstream' --body 'This is an automated PR that syncs the repo with its source upstream.' &>/dev/null || true

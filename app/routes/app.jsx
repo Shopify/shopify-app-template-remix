@@ -1,3 +1,4 @@
+import React from "react";
 import { json } from "@remix-run/node";
 import { Link, Outlet, useLoaderData, useRouteError } from "@remix-run/react";
 import { boundary } from "@shopify/shopify-app-remix/server";
@@ -6,26 +7,33 @@ import "@shopify/polaris/build/esm/styles.css";
 import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }) => {
-  await authenticate.admin(request);
-
-  return json({ apiKey: process.env.SHOPIFY_API_KEY || "" });
-};
+  return json({
+    polarisTranslations: require("@shopify/polaris/locales/en.json"),
+    apiKey: process.env.SHOPIFY_API_KEY,
+  });
+}
 
 export default function App() {
-  const { apiKey } = useLoaderData();
+  const { polarisTranslations } = useLoaderData();
 
   return (
-    <AppProvider isEmbeddedApp apiKey={apiKey}>
-      <ui-nav-menu>
-        <Link to="/app" rel="home">
-          Home
-        </Link>
-        <Link to="/app/additional">Additional page</Link>
-      </ui-nav-menu>
-      <Outlet />
-    </AppProvider>
+    <>
+      <PolarisAppProvider
+        i18n={polarisTranslations}
+        linkComponent={RemixPolarisLink}
+      >
+        <Outlet />
+      </PolarisAppProvider>
+    </>
   );
 }
+
+/** @type {any} */
+const RemixPolarisLink = React.forwardRef((/** @type {any} */ props, ref) => (
+  <Link {...props} to={props.url ?? props.to} ref={ref}>
+    {props.children}
+  </Link>
+));
 
 // Shopify needs Remix to catch some thrown responses, so that their headers are included in the response.
 export function ErrorBoundary() {
