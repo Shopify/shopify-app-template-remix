@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./app/*"],
+      "@testing-library/polaris": [
+        "./tests/test-utilities/testing-library-polaris"
+      ]
+    }
+  }  
+}
