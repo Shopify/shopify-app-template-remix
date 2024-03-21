@@ -82,7 +82,8 @@ export default function Index() {
     if (productId) {
       shopify.toast.show("Product created");
     }
-  }, [productId, shopify.toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productId]);
   const generateProduct = () => submit({}, { replace: true, method: "POST" });
 
   return (
