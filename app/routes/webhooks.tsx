@@ -5,7 +5,11 @@ import db from "../db.server";
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { topic, shop, session, admin } = await authenticate.webhook(request);
 
-  if (!admin) {
+  const isCLIWebhookTriggerTest =
+    request.headers.get("x-shopify-test") === "true" &&
+    process.env.NODE_ENV !== "production";
+
+  if (!admin && !isCLIWebhookTriggerTest) {
     // The admin context isn't returned if the webhook fired after a shop was uninstalled.
     throw new Response();
   }
