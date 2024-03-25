@@ -40,7 +40,7 @@
   "devDependencies": {
     "@remix-run/eslint-config": "^2.7.1",
     "@shopify/api-codegen-preset": "^0.0.6",
-    "@shopify/app-bridge-types": "^0.0.7",
+    "@shopify/app-bridge-types": "^0.0.10",
     "@types/eslint": "^8.40.0",
     "@types/node": "^20.6.3",
     "@types/react": "^18.2.31",
