@@ -243,7 +243,7 @@ in this situation, please update the [.graphqlrc.ts](https://github.com/Shopify/
 
 See [hosting on Vercel](#hosting-on-vercel).
 
-### admin object undefined on webhook events triggered by the CLI
+### Admin object undefined on webhook events triggered by the CLI
 
 When you trigger a webhook event using the Shopify CLI, the `admin` object will be `undefined`. This is because the CLI does trigger an event with a valid shop. The `admin` object is only available when the webhook is triggered by a real shop.
 
