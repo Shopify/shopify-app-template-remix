@@ -52,7 +52,6 @@ export const action = async ({ request }) => {
       variables: {
         input: {
           title: `${color} Snowboard`,
-          variants: [{ price: Math.random() * 100 }],
         },
       },
     },
