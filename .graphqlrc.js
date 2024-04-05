@@ -1,12 +1,12 @@
 import fs from "fs";
-import { LATEST_API_VERSION } from "@shopify/shopify-api";
 import { shopifyApiProject, ApiType } from "@shopify/api-codegen-preset";
+import { apiVersion } from "./app/shopify.server";
 function getConfig() {
   const config = {
     projects: {
       default: shopifyApiProject({
         apiType: ApiType.Admin,
-        apiVersion: LATEST_API_VERSION,
+        apiVersion: apiVersion,
         documents: ["./app/**/*.{js,ts,jsx,tsx}"],
         outputDir: "./app/types",
       }),
