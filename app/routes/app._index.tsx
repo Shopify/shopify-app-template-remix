@@ -52,15 +52,42 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     {
       variables: {
         input: {
-          title: `${color} Snowboard`
+          title: `${color} Snowboard`,
         },
       },
     },
   );
   const responseJson = await response.json();
 
+  const variantId =
+    responseJson.data!.productCreate!.product!.variants.edges[0]!.node!.id!;
+  const variantResponse = await admin.graphql(
+    `#graphql
+      mutation updateVariant($input: ProductVariantInput!) {
+        productVariantUpdate(input: $input) {
+          productVariant {
+            id
+            price
+            barcode
+            createdAt
+          }
+        }
+      }`,
+    {
+      variables: {
+        input: {
+          id: variantId,
+          price: Math.random() * 100,
+        },
+      },
+    },
+  );
+
+  const variantResponseJson = await variantResponse.json();
+
   return json({
-    product: responseJson.data?.productCreate?.product,
+    product: responseJson!.data!.productCreate!.product,
+    variant: variantResponseJson!.data!.productVariantUpdate!.productVariant,
   });
 };
 
@@ -155,18 +182,44 @@ export default function Index() {
                   )}
                 </InlineStack>
                 {actionData?.product && (
-                  <Box
-                    padding="400"
-                    background="bg-surface-active"
-                    borderWidth="025"
-                    borderRadius="200"
-                    borderColor="border"
-                    overflowX="scroll"
-                  >
-                    <pre style={{ margin: 0 }}>
-                      <code>{JSON.stringify(actionData.product, null, 2)}</code>
-                    </pre>
-                  </Box>
+                  <>
+                    <Text as="h3" variant="headingMd">
+                      {" "}
+                      productCreate mutation
+                    </Text>
+                    <Box
+                      padding="400"
+                      background="bg-surface-active"
+                      borderWidth="025"
+                      borderRadius="200"
+                      borderColor="border"
+                      overflowX="scroll"
+                    >
+                      <pre style={{ margin: 0 }}>
+                        <code>
+                          {JSON.stringify(actionData.product, null, 2)}
+                        </code>
+                      </pre>
+                    </Box>
+                    <Text as="h3" variant="headingMd">
+                      {" "}
+                      productVariantUpdate mutation
+                    </Text>
+                    <Box
+                      padding="400"
+                      background="bg-surface-active"
+                      borderWidth="025"
+                      borderRadius="200"
+                      borderColor="border"
+                      overflowX="scroll"
+                    >
+                      <pre style={{ margin: 0 }}>
+                        <code>
+                          {JSON.stringify(actionData.variant, null, 2)}
+                        </code>
+                      </pre>
+                    </Box>
+                  </>
                 )}
               </BlockStack>
             </Card>
