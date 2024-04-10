@@ -21,6 +21,11 @@ Fixes #0000 <!-- link to issue if one exists -->
   Before / after screenshots appreciated for UI changes.
 -->
 
+### Test this PR
+```bash
+npm init @shopify/app@latest -- --template=https://github.com/Shopify/shopify-app-template-remix.git#<your-branch-name>
+```
+
 ### Checklist
 
 **Note**: once this PR is merged, it becomes a new release for this template.
