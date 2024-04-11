@@ -28,7 +28,7 @@
     "@shopify/app": "^3.57.1",
     "@shopify/cli": "^3.57.1",
     "@shopify/polaris": "^12.0.0",
-    "@shopify/shopify-api": "^9.2.0",
+    "@shopify/shopify-api": "^9.5.1",
     "@shopify/shopify-app-remix": "^2.5.0",
     "@shopify/shopify-app-session-storage-prisma": "^4.0.2",
     "isbot": "^5.1.0",
