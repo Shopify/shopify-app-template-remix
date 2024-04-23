@@ -13,19 +13,22 @@ export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
 
-  return json({ apiKey: process.env.SHOPIFY_API_KEY || "" });
+  return json({ apiKey: process.env.SHOPIFY_API_KEY || "", appBridgeUrl: process.env.APP_BRIDGE_URL });
 };
 
 export default function App() {
-  const { apiKey } = useLoaderData<typeof loader>();
+  const { apiKey, appBridgeUrl } = useLoaderData<typeof loader>();
 
   return (
-    <AppProvider isEmbeddedApp apiKey={apiKey}>
+    <AppProvider isEmbeddedApp apiKey={apiKey} __APP_BRIDGE_URL={appBridgeUrl}>
       <NavMenu>
         <Link to="/app" rel="home">
           Home
         </Link>
         <Link to="/app/additional">Additional page</Link>
+        <Link to="/app/additional2">Additional page 2</Link>
+        <Link to="/app/additional3">Additional page 3</Link>
+        <Link to="/app/additional4">Additional page 4</Link>
       </NavMenu>
       <Outlet />
     </AppProvider>

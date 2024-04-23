@@ -93,9 +93,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Index() {
+<<<<<<< HEAD
   const fetcher = useFetcher<typeof action>();
 
   const shopify = useAppBridge();
+=======
+  const nav = useNavigation();
+    const actionData = useActionData<typeof action>();
+  const submit = useSubmit();
+>>>>>>> 3b89b9d (Rebase and add more examples)
   const isLoading =
     ["loading", "submitting"].includes(fetcher.state) && fetcher.formMethod === "POST";
   const productId = fetcher.data?.product?.id.replace(
@@ -116,7 +122,14 @@ export default function Index() {
         <button variant="primary" onClick={generateProduct}>
           Generate a product
         </button>
+        <button onClick={() => shopify.saveBar.toggle('saveBar')}>
+          Toggle saveBar
+        </button>
       </TitleBar>
+      <ui-save-bar id="saveBar">
+        <button variant="primary" onClick={() => shopify.saveBar.show('saveBar')}></button>
+        <button onClick={() => shopify.saveBar.hide('saveBar')}></button>
+      </ui-save-bar>
       <BlockStack gap="500">
         <Layout>
           <Layout.Section>
