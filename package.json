@@ -58,5 +58,11 @@
   },
   "trustedDependencies": [
     "@shopify/plugin-cloudflare"
-  ]
+  ],
+  "resolutions": {
+    "undici": "6.13.0"
+  },
+  "overrides": {
+    "undici": "6.13.0"
+  }
 }
