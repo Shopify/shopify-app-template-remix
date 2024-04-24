@@ -35,6 +35,7 @@
     "prisma": "^5.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "undici": "6.13.0",
     "vite-tsconfig-paths": "^4.3.1"
   },
   "devDependencies": {
@@ -58,11 +59,5 @@
   },
   "trustedDependencies": [
     "@shopify/plugin-cloudflare"
-  ],
-  "resolutions": {
-    "undici": "6.13.0"
-  },
-  "overrides": {
-    "undici": "6.13.0"
-  }
+  ]
 }
