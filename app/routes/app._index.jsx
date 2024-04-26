@@ -61,7 +61,7 @@ export const action = async ({ request }) => {
     responseJson.data.productCreate.product.variants.edges[0].node.id;
   const variantResponse = await admin.graphql(
     `#graphql
-      mutation updateVariant($input: ProductVariantInput!) {
+      mutation shopifyRemixTemplateUpdateVariant($input: ProductVariantInput!) {
         productVariantUpdate(input: $input) {
           productVariant {
             id
