@@ -254,14 +254,14 @@ Webhooks triggered by the CLI are intended for initial experimentation testing o
 
 ### Using Defer & await for streaming responses
 
-To test defer/await locally you'll need to use the Shopify CLI slightly differently:
+To test [streaming](https://remix.run/docs/en/main/guides/streaming) using defer/await locally you'll need to use the Shopify CLI slightly differently:
 
 1. First setup ngrok: https://ngrok.com/product/secure-tunnels
 2. Create an ngrok tunnel on port 8080: `ngrok http 8080`.
 3. Copy the forwarding address. This should be something like: `https://f355-2607-fea8-bb5c-8700-7972-d2b5-3f2b-94ab.ngrok-free.app`
 4. In a separate terminal run `yarn shopify app dev --tunnel-url=TUNNEL_URL:8080` replacing `TUNNEL_URL` for the address you copied in step 3.
 
-By default the CLI uses a cloudflare tunnel. Unfortunately it looks like cloudflare tunnels wait for the Response stream to finish, then sends one chunk.
+By default the CLI uses a cloudflare tunnel. Unfortunately it cloudflare tunnels wait for the Response stream to finish, then sends one chunk.
 
 This will not affect production, since tunnels are only for local development.
 
