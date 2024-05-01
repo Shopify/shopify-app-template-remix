@@ -229,7 +229,7 @@ That will force the OAuth process and call the `afterAuth` hook.
 
 Webhooks subscriptions created in the [Shopify admin](https://help.shopify.com/en/manual/orders/notifications/webhooks) will fail HMAC validation. This is because the webhook payload is not signed with your app's secret key.
 
-Create [webhook subscriptions](<(https://shopify.dev/docs/api/shopify-app-remix/v1/guide-webhooks)>) using the `shopifyApp` object instead.
+Create [webhook subscriptions](https://shopify.dev/docs/api/shopify-app-remix/v1/guide-webhooks) using the `shopifyApp` object instead.
 
 Test your webhooks with the [Shopify CLI](https://shopify.dev/docs/apps/tools/cli/commands#webhook-trigger) or by triggering events manually in the Shopify admin(e.g. Updating the product title to trigger a `PRODUCTS_UPDATE`).
 
@@ -254,7 +254,7 @@ Webhooks triggered by the CLI are intended for initial experimentation testing o
 
 ### Using Defer & await for streaming responses
 
-To test [streaming](https://remix.run/docs/en/main/guides/streaming) using defer/await locally you'll need to use the Shopify CLI slightly differently:
+To test [streaming using defer/await](https://remix.run/docs/en/main/guides/streaming) during local development you'll need to use the Shopify CLI slightly differently:
 
 1. First setup ngrok: https://ngrok.com/product/secure-tunnels
 2. Create an ngrok tunnel on port 8080: `ngrok http 8080`.
