@@ -1,0 +1,18 @@
+on: [push, pull_request]
+
+name: CI
+
+jobs:
+  CI:
+    name: CI_Node_${{ matrix.version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [18, 20]
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.version }}
+      - name: Install
+        run: yarn install
