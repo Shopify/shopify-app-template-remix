@@ -19,8 +19,6 @@
     "paths": {
       "~/*": ["./app/*"]
     },
-    "types": [
-      "node", "@shopify/app-bridge-types"
-    ]
+    "types": ["node"]
   }
 }
