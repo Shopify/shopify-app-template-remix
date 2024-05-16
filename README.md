@@ -149,14 +149,26 @@ When you reach the step for [setting up environment variables](https://shopify.d
 
 ### Hosting on Vercel
 
-When hosting your Shopify Remix app on Vercel, Vercel uses a fork of the [Remix library](https://github.com/vercel/remix).
-
-To ensure all global variables are set correctly when you deploy your app to Vercel update your app to use the Vercel adapter instead of the node adapter.
+Using the Vercel Preset is recommended when hosting your Shopify Remix app on Vercel. You'll also want to ensure imports that would normally come from `@remix-run/node` are imported from `@vercel/remix` instead. Learn more about hosting Remix apps on Vercel [here](https://vercel.com/docs/frameworks/remix).
 
 ```diff
-// shopify.server.ts
-- import "@shopify/shopify-app-remix/adapters/node";
-+ import "@shopify/shopify-app-remix/adapters/vercel";
+// vite.config.ts
+import { vitePlugin as remix } from "@remix-run/dev";
+import { defineConfig, type UserConfig } from "vite";
+import tsconfigPaths from "vite-tsconfig-paths";
++ import { vercelPreset } from '@vercel/remix/vite';
+
+installGlobals();
+
+export default defineConfig({
+  plugins: [
+    remix({
+      ignoredRouteFiles: ["**/.*"],
++     presets: [vercelPreset()],
+    }),
+    tsconfigPaths(),
+  ],
+});
 ```
 
 ## Gotchas / Troubleshooting
