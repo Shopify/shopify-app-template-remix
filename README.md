@@ -300,7 +300,7 @@ model Session {
 ####  Error: The "mongodb" provider is not supported with this command
 MongoDB does not support the [prisma migrate](https://www.prisma.io/docs/orm/prisma-migrate/understanding-prisma-migrate/overview) command. If you are using MongoDB please see the [Prisma documentation](https://www.prisma.io/docs/orm/overview/databases/mongodb) for more information.
 
-#### prisma needs to perform transactions, which requires your mongodb server to be run as a replica set
+#### Prisma needs to perform transactions, which requires your mongodb server to be run as a replica set
 See the [Prisma documentation](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/mongodb/connect-your-database-node-mongodb) for connecting to a MongoDB database.
 
 ## Benefits
