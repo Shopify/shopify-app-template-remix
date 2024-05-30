@@ -31,9 +31,6 @@ const shopify = shopifyApp({
     },
   },
   future: {
-    v3_webhookAdminContext: true,
-    v3_authenticatePublic: true,
-    v3_lineItemBilling: true,
     unstable_newEmbeddedAuthStrategy: true,
   },
   ...(process.env.SHOP_CUSTOM_DOMAIN
