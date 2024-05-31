@@ -7,5 +7,12 @@ CREATE TABLE "Session" (
     "scope" TEXT,
     "expires" DATETIME,
     "accessToken" TEXT NOT NULL,
-    "userId" BIGINT
+    "userId" BIGINT,
+    "firstName" TEXT,
+    "lastName" TEXT,
+    "email" TEXT,
+    "accountOwner" BOOLEAN NOT NULL DEFAULT false,
+    "locale" TEXT,
+    "collaborator" BOOLEAN DEFAULT false,
+    "emailVerified" BOOLEAN DEFAULT false
 );
