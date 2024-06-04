@@ -201,6 +201,27 @@ Shopify apps are best when they are embedded into the Shopify Admin. This templa
 2. Remove any use of App Bridge APIs (`window.shopify`) from your code
 3. Update the config for shopifyApp in `app/shopify.server.js`. Pass `isEmbeddedApp: false`
 
+### Custom Apps
+
+The Shopify CLI and App template are compatible with Public and Custom apps that are managed in the Partner Dashboard.
+
+By default the template is configured for Public apps. If you are building a custom app, you can make the following changes:
+
+1. Change the distribution type in the ShopifyApp config in the `shopify.server.ts` file to `SingleMerchant`.
+```diff
+//shopify.server.ts
+const shopify = shopifyApp({
+  apiKey: process.env.SHOPIFY_API_KEY,
+  apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
++  distribution: AppDistribution.SingleMerchant,
+-  distribution: AppDistribution.AppStore
+```
+
+2. Update the distribution setting in the Partner Dashboard to `Custom App` in the App setup. Apps > Your App > Manage Distribution > Custom App.
+
+> [!NOTE]
+> The Shopify CLI is not currently compatible with with [custom apps](https://shopify.dev/docs/apps/launch/distribution#capabilities-and-requirements) that are managed in the Merchant's Admin.
+
 ### OAuth goes into a loop when I change my app's scopes
 
 If you change your app's scopes and authentication goes into a loop and fails with a message from Shopify that it tried too many times, you might have forgotten to update your scopes with Shopify.
