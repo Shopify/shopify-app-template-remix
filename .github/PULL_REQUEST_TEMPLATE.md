@@ -23,7 +23,7 @@ Fixes #0000 <!-- link to issue if one exists -->
 
 ### Test this PR
 ```bash
-npm init @shopify/app@latest -- --template=https://github.com/Shopify/shopify-app-template-remix.git#<your-branch-name>
+shopify app init --template=https://github.com/Shopify/shopify-app-template-remix#<your-branch-name>
 ```
 
 ### Checklist
