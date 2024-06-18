@@ -20,7 +20,7 @@
   },
   "type": "module",
   "engines": {
-    "node": "^18.20 || ^20.10 || ^22"
+    "node": "^18.20 || ^20.10 || >=21.0.0"
   },
   "dependencies": {
     "@prisma/client": "^5.11.0",
