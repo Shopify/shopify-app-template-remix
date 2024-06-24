@@ -14,7 +14,7 @@ import {
 import polarisTranslations from "@shopify/polaris/locales/en.json";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 
-import { login } from "../../shopify.server";
+import { login } from "~/shopify.server";
 
 import { loginErrorMessage } from "./error.server";
 
