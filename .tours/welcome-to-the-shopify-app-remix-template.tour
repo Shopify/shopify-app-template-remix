@@ -1,0 +1,32 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Welcome to the Shopify App Remix Template",
+  "steps": [
+    {
+      "file": "app/routes/app._index.tsx",
+      "description": "## Welcome to the Shopify App Remix Template\n\nThis is a full stack web skeleton Shopify app configured with the tool and libraries you need to get started building fast. Take this tour to understand the basics of the template. Want something more in depth? Check out our [build a QR code app tutorial](https://shopify.dev/docs/apps/build/build?framework=remix)!\n\nLet's get started!",
+      "line": 127
+    },
+    {
+      "file": "app/routes/app.tsx",
+      "description": "## Authentication and Authorization\n\nThe app template has OAuth and Authentication out of the box! This line of code will ensure that requests coming to your app are authenticated correctly. And if a merchant has not already accepted the required scopes for your app it will start the OAuth process. \n\nThis is provided by the shopify-app-remix library, which is full of helper functions to make your interactions with the Shopify platform easier!\n\nLearn more about [authentication](https://shopify.dev/docs/api/shopify-app-remix/v2/authenticate/admin) and the Shopify Remix library.",
+      "line": 14
+    },
+    {
+      "file": "app/routes/app._index.tsx",
+      "description": "## Build UI with Polaris\nThe app template is already configured to use components from Polaris, Shopify's design system. \n\nLearn more about [Polaris](https://polaris.shopify.com/).",
+      "line": 16
+    },
+    {
+      "file": "prisma/schema.prisma",
+      "description": "## Save data with Prisma and SQlite\n\nThe app template comes configured with Prisma for as the ORM and migration management, backed by a SQLlite database.\n\nLearn more about [Prisma](https://www.prisma.io/)\n\nThe template supports 10 different data storage options so you cna use what you are most comfortable with.\n\nLearn more about [data storage](https://github.com/Shopify/shopify-app-js/tree/main/packages/apps/session-storage).",
+      "line": 16
+    },
+    {
+      "file": "app/routes/app._index.tsx",
+      "description": "## Build your app with Remix\n\nThe app template uses Remix.js as the framework for the fullstack application.\n\nLearn more about [Remix](https://remix.run/docs/en/main)!",
+      "line": 19
+    }
+  ],
+  "ref": "main"
+}
