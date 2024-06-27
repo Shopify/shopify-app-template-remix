@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { json } from "@remix-run/node";
-import { useActionData, useNavigation, useSubmit } from "@remix-run/react";
+import { useFetcher } from "@remix-run/react";
 import {
   Page,
   Layout,
@@ -90,13 +90,12 @@ export const action = async ({ request }) => {
 };
 
 export default function Index() {
-  const nav = useNavigation();
-  const actionData = useActionData();
-  const submit = useSubmit();
+  const fetcher = useFetcher();
   const shopify = useAppBridge();
   const isLoading =
-    ["loading", "submitting"].includes(nav.state) && nav.formMethod === "POST";
-  const productId = actionData?.product?.id.replace(
+    ["loading", "submitting"].includes(fetcher.state) &&
+    fetcher.formMethod === "POST";
+  const productId = fetcher.data?.product?.id.replace(
     "gid://shopify/Product/",
     "",
   );
@@ -106,7 +105,7 @@ export default function Index() {
       shopify.toast.show("Product created");
     }
   }, [productId, shopify]);
-  const generateProduct = () => submit({}, { replace: true, method: "POST" });
+  const generateProduct = () => fetcher.submit({}, { method: "POST" });
 
   return (
     <Page>
@@ -170,7 +169,7 @@ export default function Index() {
                   <Button loading={isLoading} onClick={generateProduct}>
                     Generate a product
                   </Button>
-                  {actionData?.product && (
+                  {fetcher.data?.product && (
                     <Button
                       url={`shopify:admin/products/${productId}`}
                       target="_blank"
@@ -180,7 +179,7 @@ export default function Index() {
                     </Button>
                   )}
                 </InlineStack>
-                {actionData?.product && (
+                {fetcher.data?.product && (
                   <>
                     <Text as="h3" variant="headingMd">
                       {" "}
@@ -196,7 +195,7 @@ export default function Index() {
                     >
                       <pre style={{ margin: 0 }}>
                         <code>
-                          {JSON.stringify(actionData.product, null, 2)}
+                          {JSON.stringify(fetcher.data.product, null, 2)}
                         </code>
                       </pre>
                     </Box>
@@ -214,7 +213,7 @@ export default function Index() {
                     >
                       <pre style={{ margin: 0 }}>
                         <code>
-                          {JSON.stringify(actionData.variant, null, 2)}
+                          {JSON.stringify(fetcher.data.variant, null, 2)}
                         </code>
                       </pre>
                     </Box>
