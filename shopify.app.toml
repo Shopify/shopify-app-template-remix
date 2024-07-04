@@ -7,4 +7,4 @@ api_version = "2024-04"
 
   [[webhooks.subscriptions]]
   topics = [ "app/uninstalled" ]
-  uri = "/webhooks"
+  uri = "/webhooks/app/uninstalled"
