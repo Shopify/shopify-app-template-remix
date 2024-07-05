@@ -3,7 +3,7 @@
 scopes = "write_products"
 
 [webhooks]
-api_version = "2024-04"
+api_version = "2024-07"
 
   [[webhooks.subscriptions]]
   topics = [ "app/uninstalled" ]
