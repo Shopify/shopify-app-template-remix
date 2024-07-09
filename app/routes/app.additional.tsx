@@ -8,7 +8,7 @@ import {
   Text,
   BlockStack,
 } from '@shopify/polaris';
-import {TitleBar} from '@shopify/app-bridge-react';
+import {SaveBar, TitleBar} from '@shopify/app-bridge-react';
 
 export default function AdditionalPage() {
   return (
@@ -18,13 +18,13 @@ export default function AdditionalPage() {
           Toggle saveBar
         </button>
       </TitleBar>
-      <ui-save-bar id="saveBar">
+      <SaveBar id="saveBar">
         <button
           variant="primary"
           onClick={() => shopify.saveBar.show('saveBar')}
         ></button>
         <button onClick={() => shopify.saveBar.hide('saveBar')}></button>
-      </ui-save-bar>
+      </SaveBar>
       <Layout>
         <Layout.Section>
           <Card>

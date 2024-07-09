@@ -14,7 +14,7 @@ import {
   Link,
   InlineStack,
 } from "@shopify/polaris";
-import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
+import { TitleBar, useAppBridge, SaveBar } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -93,15 +93,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Index() {
-<<<<<<< HEAD
   const fetcher = useFetcher<typeof action>();
 
   const shopify = useAppBridge();
-=======
-  const nav = useNavigation();
-    const actionData = useActionData<typeof action>();
-  const submit = useSubmit();
->>>>>>> 3b89b9d (Rebase and add more examples)
   const isLoading =
     ["loading", "submitting"].includes(fetcher.state) && fetcher.formMethod === "POST";
   const productId = fetcher.data?.product?.id.replace(
@@ -126,10 +120,10 @@ export default function Index() {
           Toggle saveBar
         </button>
       </TitleBar>
-      <ui-save-bar id="saveBar">
+      <SaveBar id="saveBar">
         <button variant="primary" onClick={() => shopify.saveBar.show('saveBar')}></button>
         <button onClick={() => shopify.saveBar.hide('saveBar')}></button>
-      </ui-save-bar>
+      </SaveBar>
       <BlockStack gap="500">
         <Layout>
           <Layout.Section>
