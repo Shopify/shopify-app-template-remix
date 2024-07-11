@@ -4,4 +4,4 @@ webhooks_path = "/webhooks"
 
 [commands]
 predev = "npx prisma generate"
-dev = "npx prisma migrate deploy && npm exec remix vite:dev"
+dev = "npx prisma migrate deploy && node ./server.js"

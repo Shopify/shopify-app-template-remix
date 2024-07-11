@@ -15,3 +15,4 @@ package-lock.json
 yarn.lock
 
 /extensions/*/dist
+*.pem
