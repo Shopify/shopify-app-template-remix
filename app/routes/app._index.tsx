@@ -97,7 +97,8 @@ export default function Index() {
 
   const shopify = useAppBridge();
   const isLoading =
-    ["loading", "submitting"].includes(fetcher.state) && fetcher.formMethod === "POST";
+    ["loading", "submitting"].includes(fetcher.state) &&
+    fetcher.formMethod === "POST";
   const productId = fetcher.data?.product?.id.replace(
     "gid://shopify/Product/",
     "",
