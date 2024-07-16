@@ -22,13 +22,13 @@ Fixes #0000 <!-- link to issue if one exists -->
 -->
 
 ### Test this PR
+
 ```bash
 shopify app init --template=https://github.com/Shopify/shopify-app-template-remix#<your-branch-name>
 ```
 
 ### Checklist
 
-**Note**: once this PR is merged, it becomes a new release for this template.
-
-- [ ] I have added/updated tests for this change
 - [ ] I have made changes to the `README.md` file and other related documentation, if applicable
+- [ ] I have added an entry to `CHANGELOG.md`
+- [ ] I'm aware I need to create a new release when this PR is merged
