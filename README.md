@@ -281,13 +281,14 @@ This will not affect production, since tunnels are only for local development.
 
 By default this template uses SQLlite as the database. It is recommended to move to a persisted database for production. If you choose to use MongoDB, you will need to make some modifications to the schema and prisma configuration. For more information please see the [Prisma MongoDB documentation](https://www.prisma.io/docs/orm/overview/databases/mongodb).
 
-Alternatively  you can use a MongDB database directly with the [MongoDB session storage adapter](https://github.com/Shopify/shopify-app-js/tree/main/packages/apps/session-storage/shopify-app-session-storage-mongodb).
+Alternatively you can use a MongDB database directly with the [MongoDB session storage adapter](https://github.com/Shopify/shopify-app-js/tree/main/packages/apps/session-storage/shopify-app-session-storage-mongodb).
 
 #### Mapping the id field
-In MongoDB, an ID must be a single field that defines an @id attribute and a @map("_id") attribute.
-The prisma adapter expects the ID field to be the ID of the session, and not the _id field of the document.
 
-To make this work you can add a new field to the schema that maps the _id field to the id field. For more information see the [Prisma documentation](https://www.prisma.io/docs/orm/prisma-schema/data-model/models#defining-an-id-field)
+In MongoDB, an ID must be a single field that defines an @id attribute and a @map("\_id") attribute.
+The prisma adapter expects the ID field to be the ID of the session, and not the \_id field of the document.
+
+To make this work you can add a new field to the schema that maps the \_id field to the id field. For more information see the [Prisma documentation](https://www.prisma.io/docs/orm/prisma-schema/data-model/models#defining-an-id-field)
 
 ```prisma
 model Session {
@@ -297,8 +298,10 @@ model Session {
 }
 ```
 
-####  Error: The "mongodb" provider is not supported with this command
-MongoDB does not support the [prisma migrate](https://www.prisma.io/docs/orm/prisma-migrate/understanding-prisma-migrate/overview) command. Instead, you can use the [prisma db push](https://www.prisma.io/docs/orm/reference/prisma-cli-reference#db-push) command and update the `shopify.web.toml` file with the following commands. If you are using MongoDB please see the [Prisma documentation](https://www.prisma.io/docs/orm/overview/databases/mongodb) for more information. 
+#### Error: The "mongodb" provider is not supported with this command
+
+MongoDB does not support the [prisma migrate](https://www.prisma.io/docs/orm/prisma-migrate/understanding-prisma-migrate/overview) command. Instead, you can use the [prisma db push](https://www.prisma.io/docs/orm/reference/prisma-cli-reference#db-push) command and update the `shopify.web.toml` file with the following commands. If you are using MongoDB please see the [Prisma documentation](https://www.prisma.io/docs/orm/overview/databases/mongodb) for more information.
+
 ```toml
 [commands]
 predev = "npx prisma generate && npx prisma db push"
@@ -306,7 +309,17 @@ dev = "npm exec remix vite:dev"
 ```
 
 #### Prisma needs to perform transactions, which requires your mongodb server to be run as a replica set
+
 See the [Prisma documentation](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/mongodb/connect-your-database-node-mongodb) for connecting to a MongoDB database.
+
+### I want to use Polaris v13.0.0 or higher
+
+Currently, this template is set up to work on node v18.20 or higher. However, `@shopify/polaris` is limited to v12 because v13 can only run on node v20+.
+
+You don't have to make any changes to the code in order to be able to upgrade Polaris to v13, but you'll need to do the following:
+
+- Upgrade your node version to v20.10 or higher.
+- Update your `Dockerfile` to pull `FROM node:20-alpine` instead of `node:18-alpine`
 
 ## Benefits
 
