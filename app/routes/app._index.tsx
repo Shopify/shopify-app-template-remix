@@ -60,26 +60,25 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   );
   const responseJson = await response.json();
 
-  const variantId =
-    responseJson.data!.productCreate!.product!.variants.edges[0]!.node!.id!;
+  const product = responseJson.data!.productCreate!.product!;
+  const variantId = product.variants.edges[0]!.node!.id!;
+
   const variantResponse = await admin.graphql(
     `#graphql
-      mutation shopifyRemixTemplateUpdateVariant($input: ProductVariantInput!) {
-        productVariantUpdate(input: $input) {
-          productVariant {
-            id
-            price
-            barcode
-            createdAt
-          }
+    mutation shopifyRemixTemplateUpdateVariant($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
+      productVariantsBulkUpdate(productId: $productId, variants: $variants) {
+        productVariants {
+          id
+          price
+          barcode
+          createdAt
         }
-      }`,
+      }
+    }`,
     {
       variables: {
-        input: {
-          id: variantId,
-          price: Math.random() * 100,
-        },
+        productId: product.id,
+        variants: [{ id: variantId, price: "100.00" }],
       },
     },
   );
@@ -88,7 +87,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   return json({
     product: responseJson!.data!.productCreate!.product,
-    variant: variantResponseJson!.data!.productVariantUpdate!.productVariant,
+    variant:
+      variantResponseJson!.data!.productVariantsBulkUpdate!.productVariants,
   });
 };
 
@@ -205,7 +205,7 @@ export default function Index() {
                     </Box>
                     <Text as="h3" variant="headingMd">
                       {" "}
-                      productVariantUpdate mutation
+                      productVariantsBulkUpdate mutation
                     </Text>
                     <Box
                       padding="400"
