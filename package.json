@@ -60,12 +60,6 @@
   "trustedDependencies": [
     "@shopify/plugin-cloudflare"
   ],
-  "resolutions": {
-    "undici": "6.13.0",
-    "graphql-config": "5.1.0"
-  },
-  "overrides": {
-    "undici": "6.13.0",
-    "graphql-config": "5.1.0"
-  }
+  "resolutions": {},
+  "overrides": {}
 }
