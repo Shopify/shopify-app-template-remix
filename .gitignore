@@ -18,3 +18,7 @@ yarn.lock
 pnpm-lock.yaml
 
 /extensions/*/dist
+
+# Ignore shopify files created during app dev
+.shopify/*
+.shopify.lock
