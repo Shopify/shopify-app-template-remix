@@ -24,9 +24,3 @@ api_version = "2024-07"
   [[webhooks.subscriptions]]
   uri = "/webhooks/app/uninstalled"
   topics = [ "app/uninstalled" ]
-
-  # Optional: Configured for illustration purposes
-  # Delete if the app doesn't care about the product create event
-  [[webhooks.subscriptions]]
-  topics = ["products/create"]
-  uri = "/webhooks/products/create"
