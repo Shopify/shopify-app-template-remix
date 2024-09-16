@@ -24,3 +24,11 @@ api_version = "2024-07"
   [[webhooks.subscriptions]]
   uri = "/webhooks/app/uninstalled"
   topics = [ "app/uninstalled" ]
+
+  # # For reference
+  # # Only receive webhooks for products with a price >= 10.00
+  # # See: https://shopify.dev/docs/apps/build/webhooks/customize/filters
+  # [[webhooks.subscriptions]]
+  # topics = ["products/update"]
+  # uri = "https://example.com/webhooks"
+  # filter = "variants.price:>=10.00"
