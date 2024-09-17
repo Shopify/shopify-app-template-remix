@@ -1,6 +1,6 @@
 name = "remix"
 roles = ["frontend", "backend"]
-webhooks_path = "/webhooks"
+webhooks_path = "/webhooks/app/uninstalled"
 
 [commands]
 predev = "npx prisma generate"
