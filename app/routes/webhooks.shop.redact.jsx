@@ -1,7 +1,6 @@
-import type { ActionFunctionArgs } from "@remix-run/node";
 import { authenticate } from "~/shopify.server";
 
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request }) => {
   const { session } = await authenticate.webhook(request);
 
   // SHOP_REDACT will be fired up to 48 hours after app is uninstalled
