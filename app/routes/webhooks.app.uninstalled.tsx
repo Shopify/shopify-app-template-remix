@@ -5,8 +5,8 @@ import db from "~/db.server";
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { shop, session } = await authenticate.webhook(request);
 
-  // Webhook requests can trigger after an app is uninstalled.
-  // If the app is already uninstalled, the session may be undefined.
+  // Webhook requests can trigger multiple times and after an app has already been uninstalled.
+  // If this webhook already ran, the session may have been deleted previously.
   if (session) {
     db.session.deleteMany({ where: { shop } });
   }
