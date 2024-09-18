@@ -1,5 +1,13 @@
 # @shopify/shopify-app-template-remix
 
+## 2024.09.18
+
+- [850](https://github.com/Shopify/shopify-app-template-remix/pull/850) Removed "~" import alias
+
+## 2024.09.17
+
+- [842](https://github.com/Shopify/shopify-app-template-remix/pull/842)Move webhook processing to individual routes
+
 ## 2024.08.19
 
 Replaced deprecated `productVariantUpdate` with `productVariantsBulkUpdate`
