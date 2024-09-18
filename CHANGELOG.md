@@ -1,5 +1,9 @@
 # @shopify/shopify-app-template-remix
 
+## Unreleased
+
+- Removed "~" import alias
+
 ## 2024.08.19
 
 Replaced deprecated `productVariantUpdate` with `productVariantsBulkUpdate`
