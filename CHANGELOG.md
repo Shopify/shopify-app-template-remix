@@ -1,6 +1,6 @@
 # @shopify/shopify-app-template-remix
 
-## Unreleased
+## 2024.09.18
 
 - Removed "~" import alias
 
