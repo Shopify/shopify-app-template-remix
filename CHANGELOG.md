@@ -2,7 +2,7 @@
 
 ## 2024.10.02
 
-- [854](https://github.com/Shopify/shopify-app-template-remix/pull/854) Update to Shopify App API v2024-10 and shopify-app-remix v3.3.2
+- [854](https://github.com/Shopify/shopify-app-template-remix/pull/863) Update to Shopify App API v2024-10 and shopify-app-remix v3.3.2
 
 ## 2024.09.18
 
