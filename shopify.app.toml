@@ -5,30 +5,29 @@ scopes = "write_products"
 [webhooks]
 api_version = "2024-07"
 
-  # Mandatory compliance topics for public apps
-  # Delete only if the app is not public
-  # See: https://shopify.dev/docs/apps/build/privacy-law-compliance
-  [[webhooks.subscriptions]]
-  uri = "/webhooks/customers/data_request"
-  compliance_topics = [ "customers/data_request"]
-
-  [[webhooks.subscriptions]]
-  uri = "/webhooks/customers/redact"
-  compliance_topics = [ "customers/redact" ]
-
-  [[webhooks.subscriptions]]
-  uri = "/webhooks/shop/redact"
-  compliance_topics = [ "shop/redact" ]
-
-  # When a shop uninstalls the app, delete the session for that shop
+  # Handled by: /app/routes/webhooks.app.uninstalled.tsx
   [[webhooks.subscriptions]]
   uri = "/webhooks/app/uninstalled"
-  topics = [ "app/uninstalled" ]
+  topics = ["app/uninstalled"]
 
-  # # For reference
-  # # Only receive webhooks for products with a price >= 10.00
-  # # See: https://shopify.dev/docs/apps/build/webhooks/customize/filters
+  # Webhooks can have filters
+  # Only receive webhooks for products with a price >= 10.00
+  # See: https://shopify.dev/docs/apps/build/webhooks/customize/filters
   # [[webhooks.subscriptions]]
   # topics = ["products/update"]
   # uri = "https://example.com/webhooks"
   # filter = "variants.price:>=10.00"
+
+  # Mandatory compliance topics for public apps only
+  # See: https://shopify.dev/docs/apps/build/privacy-law-compliance
+  # [[webhooks.subscriptions]]
+  # uri = "/webhooks/customers/data_request"
+  # compliance_topics = ["customers/data_request"]
+
+  # [[webhooks.subscriptions]]
+  # uri = "/webhooks/customers/redact"
+  # compliance_topics = ["customers/redact"]
+
+  # [[webhooks.subscriptions]]
+  # uri = "/webhooks/shop/redact"
+  # compliance_topics = ["shop/redact"]
