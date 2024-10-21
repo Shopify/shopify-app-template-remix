@@ -11,14 +11,14 @@ api_version = "2024-07"
   topics = ["app/uninstalled"]
 
   # Webhooks can have filters
-  # Only receive webhooks for products with a price >= 10.00
+  # Only receive webhooks for product updates with a product price >= 10.00
   # See: https://shopify.dev/docs/apps/build/webhooks/customize/filters
   # [[webhooks.subscriptions]]
   # topics = ["products/update"]
-  # uri = "https://example.com/webhooks"
+  # uri = "/webhooks/products/update"
   # filter = "variants.price:>=10.00"
 
-  # Mandatory compliance topics for public apps only
+  # Mandatory compliance topic for public apps only
   # See: https://shopify.dev/docs/apps/build/privacy-law-compliance
   # [[webhooks.subscriptions]]
   # uri = "/webhooks/customers/data_request"
