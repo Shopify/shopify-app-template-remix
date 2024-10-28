@@ -10,7 +10,7 @@ api_version = "2024-07"
   uri = "/webhooks/app/uninstalled"
   topics = ["app/uninstalled"]
 
-  # Handled by: /app/routes/webhooks.app.scopes.update.tsx
+  # Handled by: /app/routes/webhooks.app.scopes_update.tsx
   [[webhooks.subscriptions]]
   topics = [ "app/scopes_update" ]
   uri = "/webhooks/app/scopes_update"
