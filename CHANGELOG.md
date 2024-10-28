@@ -1,5 +1,8 @@
 # @shopify/shopify-app-template-remix
 
+## 2024.10.28
+- [875](https://github.com/Shopify/shopify-app-template-remix/pull/875) Add Scopes Update Webhook
+
 ## 2024.10.02
 
 - [863](https://github.com/Shopify/shopify-app-template-remix/pull/863) Update to Shopify App API v2024-10 and shopify-app-remix v3.3.2
