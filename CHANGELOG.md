@@ -1,5 +1,9 @@
 # @shopify/shopify-app-template-remix
 
+## 2024.10.29
+
+- [876](https://github.com/Shopify/shopify-app-template-remix/pull/876) Update shopify-app-remix to v3.4.0 and shopify-app-session-storage-prisma to v5.1.5
+
 ## 2024.10.02
 
 - [863](https://github.com/Shopify/shopify-app-template-remix/pull/863) Update to Shopify App API v2024-10 and shopify-app-remix v3.3.2
