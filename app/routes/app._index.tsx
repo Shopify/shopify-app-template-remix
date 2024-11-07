@@ -30,8 +30,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   ];
   const response = await admin.graphql(
     `#graphql
-      mutation populateProduct($input: ProductInput!) {
-        productCreate(input: $input) {
+      mutation populateProduct($product: ProductCreateInput!) {
+        productCreate(product: $product) {
           product {
             id
             title
@@ -52,7 +52,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       }`,
     {
       variables: {
-        input: {
+        product: {
           title: `${color} Snowboard`,
         },
       },

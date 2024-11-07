@@ -1,5 +1,9 @@
 # @shopify/shopify-app-template-remix
 
+## 2024.11.06
+
+- [881](https://github.com/Shopify/shopify-app-template-remix/pull/881) Update to the productCreate mutation to use the new ProductCreateInput type
+
 ## 2024.10.29
 
 - [876](https://github.com/Shopify/shopify-app-template-remix/pull/876) Update shopify-app-remix to v3.4.0 and shopify-app-session-storage-prisma to v5.1.5
