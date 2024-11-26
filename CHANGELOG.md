@@ -1,5 +1,9 @@
 # @shopify/shopify-app-template-remix
 
+## 2024.11.26
+
+- [888](https://github.com/Shopify/shopify-app-template-remix/pull/888) Update restResources version to 2024-10
+
 ## 2024.11.06
 
 - [881](https://github.com/Shopify/shopify-app-template-remix/pull/881) Update to the productCreate mutation to use the new ProductCreateInput type
