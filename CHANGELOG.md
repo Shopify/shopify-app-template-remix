@@ -1,5 +1,8 @@
 # @shopify/shopify-app-template-remix
 
+## 2024.11.26
+- [#891](https://github.com/Shopify/shopify-app-template-remix/pull/891) Enable remix future flags. 
+
 ## 2024.11.06
 
 - [881](https://github.com/Shopify/shopify-app-template-remix/pull/881) Update to the productCreate mutation to use the new ProductCreateInput type
