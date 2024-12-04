@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { json } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import {
   Page,
@@ -81,10 +80,10 @@ export const action = async ({ request }) => {
   );
   const variantResponseJson = await variantResponse.json();
 
-  return json({
+  return {
     product: responseJson.data.productCreate.product,
     variant: variantResponseJson.data.productVariantsBulkUpdate.productVariants,
-  });
+  };
 };
 
 export default function Index() {
