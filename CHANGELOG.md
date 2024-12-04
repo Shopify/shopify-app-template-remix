@@ -1,8 +1,12 @@
 # @shopify/shopify-app-template-remix
 
-## 2024.11.26
+## 2024.12.04
 
+- [#891](https://github.com/Shopify/shopify-app-template-remix/pull/891) Enable remix future flags.
+-  
+## 2024.11.26
 - [888](https://github.com/Shopify/shopify-app-template-remix/pull/888) Update restResources version to 2024-10
+
 
 ## 2024.11.06
 

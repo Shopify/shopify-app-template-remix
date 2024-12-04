@@ -86,7 +86,7 @@ export async function loader({ request }) {
     },
   } = await response.json();
 
-  return json(nodes);
+  return nodes;
 }
 ```
 
