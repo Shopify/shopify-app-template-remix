@@ -2,11 +2,14 @@
 
 ## 2024.12.04
 
+- [875](https://github.com/Shopify/shopify-app-template-remix/pull/875) Add Scopes Update Webhook
+
+## 2024.12.04
+
 - [#891](https://github.com/Shopify/shopify-app-template-remix/pull/891) Enable remix future flags.
--  
+
 ## 2024.11.26
 - [888](https://github.com/Shopify/shopify-app-template-remix/pull/888) Update restResources version to 2024-10
-
 
 ## 2024.11.06
 
@@ -26,7 +29,7 @@
 
 ## 2024.09.17
 
-- [842](https://github.com/Shopify/shopify-app-template-remix/pull/842)Move webhook processing to individual routes
+- [842](https://github.com/Shopify/shopify-app-template-remix/pull/842) Move webhook processing to individual routes
 
 ## 2024.08.19
 
