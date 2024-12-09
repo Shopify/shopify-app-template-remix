@@ -1,5 +1,9 @@
 # @shopify/shopify-app-template-remix
 
+## 2024.12.09
+
+- [#904](https://github.com/Shopify/shopify-app-template-remix/pull/904) bump `@shopify/app-bridge-react` to latest
+
 ## 2024.12.05
 
 - [#899](https://github.com/Shopify/shopify-app-template-remix/pull/899) Disable v3_singleFetch flag
