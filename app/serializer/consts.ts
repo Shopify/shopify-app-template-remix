@@ -1,0 +1,11 @@
+export const WRAPPER = 'xo-wrapper';
+export const LINE_SIGNAL = '_____line_____';
+export const SPLIT_SIGNAL = '_____split_____';
+export const SECTION_DATA_GLOBAL_ATTR = 'data-xb-section-global';
+export const DESIGN_MODE_START = '_____design-mode-start_____';
+export const DESIGN_MODE_END = '_____design-mode-end_____';
+export const STYLE_TAG_START = '_____style-tag-start_____';
+export const STYLE_TAG_END = '_____style-tag-end_____';
+export const ONE_KB = 1024;
+export const SECTION_SPACING = '<!-- XB_SECTION_SPACING -->';
+export const LIMITED_SIZE_CLASS = 'xo-limited-size';

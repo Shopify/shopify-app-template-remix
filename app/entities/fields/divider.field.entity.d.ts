@@ -1,0 +1,1 @@
+export type DividerValue = undefined;
