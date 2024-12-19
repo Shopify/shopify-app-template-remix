@@ -1,9 +1,12 @@
 # @shopify/shopify-app-template-remix
 
+## 2024.12.19
+
+- [#904](https://github.com/Shopify/shopify-app-template-remix/pull/904) bump `@shopify/app-bridge-react` to latest
+- 
 ## 2024.12.18
 
 - [875](https://github.com/Shopify/shopify-app-template-remix/pull/875) Add Scopes Update Webhook
-
 ## 2024.12.05
 
 - [#910](https://github.com/Shopify/shopify-app-template-remix/pull/910) Install `openssl` in Docker image to fix Prisma (see [#25817](https://github.com/prisma/prisma/issues/25817#issuecomment-2538544254))
