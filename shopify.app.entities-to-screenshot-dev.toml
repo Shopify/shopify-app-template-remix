@@ -1,0 +1,36 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "019de87211b2d292be44e66945b8005c"
+application_url = "https://huong.awe7.com"
+embedded = true
+name = "entities-to-screenshot-dev"
+handle = "entities-to-screenshot-dev"
+
+[build]
+include_config_on_deploy = true
+
+[webhooks]
+api_version = "2024-10"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products, read_themes"
+
+[auth]
+redirect_urls = [
+  "https://huong.awe7.com/auth/callback",
+  "https://huong.awe7.com/auth/shopify/callback",
+  "https://huong.awe7.com/api/auth/callback"
+]
+
+[app_proxy]
+url = "https://huong.awe7.com/proxy"
+subpath = "entities-builder"
+prefix = "apps"
+
+[pos]
+embedded = false
