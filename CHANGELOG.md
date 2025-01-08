@@ -1,5 +1,10 @@
 # @shopify/shopify-app-template-remix
 
+
+## 2025.01.8
+
+- [#923](https://github.com/Shopify/shopify-app-template-remix/pull/923) Enable GraphQL autocomplete for Javascript
+
 ## 2024.12.19
 
 - [#904](https://github.com/Shopify/shopify-app-template-remix/pull/904) bump `@shopify/app-bridge-react` to latest
@@ -17,6 +22,7 @@
 ## 2024.12.04
 
 - [#891](https://github.com/Shopify/shopify-app-template-remix/pull/891) Enable remix future flags.
+-
 
 ## 2024.11.26
 - [888](https://github.com/Shopify/shopify-app-template-remix/pull/888) Update restResources version to 2024-10
