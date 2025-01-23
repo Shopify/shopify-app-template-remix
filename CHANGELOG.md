@@ -1,5 +1,8 @@
 # @shopify/shopify-app-template-remix
 
+## 2025.01.23
+
+- [#923](https://github.com/Shopify/shopify-app-template-remix/pull/923) Update `@shopify/shopify-app-session-storage-prisma` to v6.0.0
 
 ## 2025.01.8
 
