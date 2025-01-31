@@ -16,12 +16,14 @@ const paymentSessionResolve = `
   mutation PaymentSessionResolve(
     $id: ID!,
     $authorizationExpiresAt: DateTime,
-    $authentication: PaymentSessionThreeDSecureAuthentication
+    $authentication: PaymentSessionThreeDSecureAuthentication,
+    $networkTransactionId: String
   ) {
     paymentSessionResolve(
       id: $id,
       authorizationExpiresAt: $authorizationExpiresAt,
-      authentication: $authentication
+      authentication: $authentication,
+      networkTransactionId: $networkTransactionId
     ) {
       paymentSession {
         id
