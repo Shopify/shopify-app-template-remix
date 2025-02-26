@@ -325,6 +325,13 @@ You don't have to make any changes to the code in order to be able to upgrade Po
 - Upgrade your node version to v20.10 or higher.
 - Update your `Dockerfile` to pull `FROM node:20-alpine` instead of `node:18-alpine`
 
+### "nbf" claim timestamp check failed
+
+This error will occur of the `nbf` claim timestamp check failed. This is because the JWT token is expired.
+If you  are consistently getting this error, it could be that the clock on your machine is not in sync with the server.
+
+To fix this ensure you have enabled `Set time and date automatically` in the `Date and Time` settings on your computer.
+
 ## Benefits
 
 Shopify apps are built on a variety of Shopify tools to create a great merchant experience.
