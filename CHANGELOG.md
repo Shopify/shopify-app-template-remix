@@ -1,5 +1,8 @@
 # @shopify/shopify-app-template-remix
 
+## 2025.03.01
+- [982](https://github.com/Shopify/shopify-app-template-remix/pull/982) Add Shopify Dev Assistant extension to the VSCode extension recommendations
+
 ## 2025.01.31
 - [#952](https://github.com/Shopify/shopify-app-template-remix/pull/952) Update to Shopify App API v2025-01
 
