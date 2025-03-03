@@ -13,7 +13,7 @@ import {
   DataTable,
   Modal,
 } from "@shopify/polaris";
-import { CancelSmallMinor, TickMinor } from "@shopify/polaris-icons";
+import { XSmallIcon, CheckSmallIcon } from "@shopify/polaris-icons";
 import { useState, useCallback, useEffect } from "react";
 import {
   useActionData,
@@ -146,7 +146,7 @@ export default function DashboardSimulator() {
   const activator = (session, type) => {
     if (!session.status || session.status === PENDING)
       return <Button onClick={() => raiseModal(session, type)}>Open</Button>
-    return <Icon source={TickMinor} />
+    return <Icon source={CheckSmallIcon} />
   }
 
   const refundRows = refundSessions.map((refund) => [
@@ -317,8 +317,8 @@ const buildPaymentItems = (paymentSession, activator) => {
         <LegacyStack>
           {
             paymentSession.test
-              ? (<Icon source={TickMinor} color="primary"/>)
-              : (<Icon source={CancelSmallMinor} color="critical"/>)
+              ? (<Icon source={CheckSmallIcon} color="primary"/>)
+              : (<Icon source={XSmallIcon} color="critical"/>)
           }
         </LegacyStack>
       )
