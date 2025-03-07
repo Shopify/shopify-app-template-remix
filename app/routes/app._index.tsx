@@ -27,8 +27,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const color = ["Red", "Orange", "Yellow", "Green"][
     Math.floor(Math.random() * 4)
   ];
-  const response = await admin.graphql(
-    `#graphql
+  try {
+    const response = await admin.graphql(
+      `#graphql
       mutation populateProduct($product: ProductCreateInput!) {
         productCreate(product: $product) {
           product {
@@ -49,21 +50,21 @@ export const action = async ({ request }: ActionFunctionArgs) => {
           }
         }
       }`,
-    {
-      variables: {
-        product: {
-          title: `${color} Snowboard`,
+      {
+        variables: {
+          product: {
+            title: `${color} Snowboard`,
+          },
         },
       },
-    },
-  );
-  const responseJson = await response.json();
+    );
+    const responseJson = await response.json();
 
-  const product = responseJson.data!.productCreate!.product!;
-  const variantId = product.variants.edges[0]!.node!.id!;
+    const product = responseJson.data!.productCreate!.product!;
+    const variantId = product.variants.edges[0]!.node!.id!;
 
-  const variantResponse = await admin.graphql(
-    `#graphql
+    const variantResponse = await admin.graphql(
+      `#graphql
     mutation shopifyRemixTemplateUpdateVariant($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
       productVariantsBulkUpdate(productId: $productId, variants: $variants) {
         productVariants {
@@ -74,21 +75,24 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         }
       }
     }`,
-    {
-      variables: {
-        productId: product.id,
-        variants: [{ id: variantId, price: "100.00" }],
+      {
+        variables: {
+          productId: product.id,
+          variants: [{ id: variantId, price: "100.00" }],
+        },
       },
-    },
-  );
+    );
 
-  const variantResponseJson = await variantResponse.json();
+    const variantResponseJson = await variantResponse.json();
 
-  return {
-    product: responseJson!.data!.productCreate!.product,
-    variant:
-      variantResponseJson!.data!.productVariantsBulkUpdate!.productVariants,
-  };
+    return {
+      product: responseJson!.data!.productCreate!.product,
+      variant:
+        variantResponseJson!.data!.productVariantsBulkUpdate!.productVariants,
+    };
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export default function Index() {

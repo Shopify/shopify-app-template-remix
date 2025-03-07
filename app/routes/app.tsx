@@ -12,14 +12,17 @@ export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
 
-  return { apiKey: process.env.SHOPIFY_API_KEY || "" };
+  return {
+    apiKey: process.env.SHOPIFY_API_KEY || "",
+    isTesting: process.env.NODE_ENV === "test",
+  };
 };
 
 export default function App() {
-  const { apiKey } = useLoaderData<typeof loader>();
+  const { apiKey, isTesting } = useLoaderData<typeof loader>();
 
   return (
-    <AppProvider isEmbeddedApp apiKey={apiKey}>
+    <AppProvider isEmbeddedApp={!isTesting} apiKey={apiKey}>
       <NavMenu>
         <Link to="/app" rel="home">
           Home

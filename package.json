@@ -16,7 +16,8 @@
     "shopify": "shopify",
     "prisma": "prisma",
     "graphql-codegen": "graphql-codegen",
-    "vite": "vite"
+    "vite": "vite",
+    "test": "NODE_ENV=test playwright test"
   },
   "type": "module",
   "engines": {
@@ -41,6 +42,7 @@
     "vite-tsconfig-paths": "^5.0.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.51.0",
     "@remix-run/eslint-config": "^2.15.0",
     "@remix-run/route-config": "^2.15.0",
     "@shopify/api-codegen-preset": "^1.1.1",
@@ -50,6 +52,7 @@
     "@types/react-dom": "^18.2.14",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^10.0.1",
+    "msw": "^2.7.3",
     "prettier": "^3.2.4",
     "typescript": "^5.2.2",
     "vite": "^5.1.3"
