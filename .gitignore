@@ -12,6 +12,7 @@ database.sqlite
 
 .env
 .env.*
+!.env.testing.example
 
 package-lock.json
 yarn.lock
@@ -22,3 +23,9 @@ pnpm-lock.yaml
 # Ignore shopify files created during app dev
 .shopify/*
 .shopify.lock
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
