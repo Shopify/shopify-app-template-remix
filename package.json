@@ -63,9 +63,13 @@
     "@shopify/plugin-cloudflare"
   ],
   "resolutions": {
-    "@graphql-tools/url-loader": "8.0.16"
+    "@graphql-tools/url-loader": "8.0.16",
+    "@graphql-codegen/client-preset": "4.7.0",
+    "@graphql-codegen/typescript-operations": "4.5.0"
   },
   "overrides": {
-    "@graphql-tools/url-loader": "8.0.16"
+    "@graphql-tools/url-loader": "8.0.16",
+    "@graphql-codegen/client-preset": "4.7.0",
+    "@graphql-codegen/typescript-operations": "4.5.0"
   }
 }
