@@ -191,7 +191,7 @@ Embedded Shopify apps must maintain the user session, which can be tricky inside
 2. Use the `redirect` helper returned from `authenticate.admin`. Do not use `redirect` from `@remix-run/node`
 3. Use `useSubmit` or `<Form/>` from `@remix-run/react`. Do not use a lowercase `<form/>`.
 
-This only applies if you app is embedded, which it will be by default.
+This only applies if your app is embedded, which it will be by default.
 
 ### Non Embedded
 
