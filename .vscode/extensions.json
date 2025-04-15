@@ -1,7 +1,6 @@
 {
   "recommendations": [
     "graphql.vscode-graphql",
-    "shopify.polaris-for-vscode",
-    "shopify.vscode-shopify-dev-assistant"
+    "shopify.polaris-for-vscode"
   ]
 }
