@@ -171,7 +171,7 @@ export default defineConfig({
 });
 ```
 
-## Gotchas / Troubleshooting
+## Troubleshooting
 
 ### Database tables don't exist
 
@@ -195,11 +195,13 @@ This only applies if your app is embedded, which it will be by default.
 
 ### Non Embedded
 
-Shopify apps are best when they are embedded into the Shopify Admin. This template is configured that way. If you have a reason to not embed your please make 2 changes:
+Shopify apps are best when they are embedded in the Shopify Admin, which is how this template is configured. If you have a reason to not embed your app please make the following changes:
 
-1. Change the `isEmbeddedApp` prop to false for the `AppProvider` in `/app/routes/app.jsx`
-2. Remove any use of App Bridge APIs (`window.shopify`) from your code
-3. Update the config for shopifyApp in `app/shopify.server.js`. Pass `isEmbeddedApp: false`
+1. Ensure `embedded = false` is set in [shopify.app.toml`](./shopify.app.toml). [Docs here](https://shopify.dev/docs/apps/build/cli-for-apps/app-configuration#global).
+2. Pass `isEmbeddedApp: false` to `shopifyApp()` in `./app/shopify.server.js|ts`.
+3. Change the `isEmbeddedApp` prop to `isEmbeddedApp={false}` for the `AppProvider` in `/app/routes/app.jsx|tsx`.
+4. Remove the `@shopify/app-bridge-react` dependency from [package.json](./package.json) and `vite.config.ts|js`.
+5. Remove anything imported from `@shopify/app-bridge-react`.  For example: `NavMenu`, `TitleBar` and `useAppBridge`.
 
 ### OAuth goes into a loop when I change my app's scopes
 
