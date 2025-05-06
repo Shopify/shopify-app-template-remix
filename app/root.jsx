@@ -1,6 +1,3 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { authenticate } from "./shopify.server";
-
 import {
   Links,
   Meta,
@@ -9,15 +6,16 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
+import { authenticate } from "./shopify.server";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request }) => {
   await authenticate.admin(request);
 
   return { apiKey: process.env.SHOPIFY_API_KEY || "" };
 };
 
 export default function App() {
-  const { apiKey } = useLoaderData<typeof loader>();
+  const { apiKey } = useLoaderData();
 
   return (
     <html>
