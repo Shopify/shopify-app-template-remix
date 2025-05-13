@@ -7,9 +7,9 @@ export default function App() {
   return (
     <>
       <ui-nav-menu>
-        <s-link href="/app" rel="home">
+        <Link to="/app" rel="home">
           Home
-        </s-link>
+        </Link>
         <Link to="/app/additional">Additional page</Link>
       </ui-nav-menu>
       <Outlet />
