@@ -187,7 +187,7 @@ You need to create the database for Prisma. Run the `setup` script in `package.j
 
 Embedded Shopify apps must maintain the user session, which can be tricky inside an iFrame. To avoid issues:
 
-1. Use `Link` from `@remix-run/react` or `@shopify/polaris`. Do not use `<a>`.
+1. Use `Link` from `@remix-run/react` or `s-link`. Do not use `<a>`.
 2. Use the `redirect` helper returned from `authenticate.admin`. Do not use `redirect` from `@remix-run/node`
 3. Use `useSubmit` or `<Form/>` from `@remix-run/react`. Do not use a lowercase `<form/>`.
 
@@ -318,15 +318,6 @@ dev = "npm exec remix vite:dev"
 
 See the [Prisma documentation](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/mongodb/connect-your-database-node-mongodb) for connecting to a MongoDB database.
 
-### I want to use Polaris v13.0.0 or higher
-
-Currently, this template is set up to work on node v18.20 or higher. However, `@shopify/polaris` is limited to v12 because v13 can only run on node v20+.
-
-You don't have to make any changes to the code in order to be able to upgrade Polaris to v13, but you'll need to do the following:
-
-- Upgrade your node version to v20.10 or higher.
-- Update your `Dockerfile` to pull `FROM node:20-alpine` instead of `node:18-alpine`
-
 ### "nbf" claim timestamp check failed
 
 This error will occur of the `nbf` claim timestamp check failed. This is because the JWT token is expired.
@@ -347,7 +338,6 @@ The Remix app template comes with the following out-of-the-box functionality:
 - [GraphQL Admin API](https://github.com/Shopify/shopify-app-js/tree/main/packages/shopify-app-remix#using-the-shopify-admin-graphql-api): Querying or mutating Shopify admin data
 - [Webhooks](https://github.com/Shopify/shopify-app-js/tree/main/packages/shopify-app-remix#authenticating-webhook-requests): Callbacks sent by Shopify when certain events occur
 - [AppBridge](https://shopify.dev/docs/api/app-bridge): This template uses the next generation of the Shopify App Bridge library which works in unison with previous versions.
-- [Polaris](https://polaris.shopify.com/): Design system that enables apps to create Shopify-like experiences
 
 ## Tech Stack
 
@@ -355,9 +345,7 @@ This template uses [Remix](https://remix.run). The following Shopify tools are a
 
 - [Shopify App Remix](https://shopify.dev/docs/api/shopify-app-remix) provides authentication and methods for interacting with Shopify APIs.
 - [Shopify App Bridge](https://shopify.dev/docs/apps/tools/app-bridge) allows your app to seamlessly integrate your app within Shopify's Admin.
-- [Polaris React](https://polaris.shopify.com/) is a powerful design system and component library that helps developers build high quality, consistent experiences for Shopify merchants.
 - [Webhooks](https://github.com/Shopify/shopify-app-js/tree/main/packages/shopify-app-remix#authenticating-webhook-requests): Callbacks sent by Shopify when certain events occur
-- [Polaris](https://polaris.shopify.com/): Design system that enables apps to create Shopify-like experiences
 
 ## Resources
 
