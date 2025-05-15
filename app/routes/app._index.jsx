@@ -133,10 +133,14 @@ export default function Index() {
           </s-link>{" "}
           mutation in our API references.
         </s-paragraph>
+
+        <s-list-item>hehe</s-list-item>
+        <s-list-item>hehe</s-list-item>
+
         <s-stack direction="inline" gap="base">
           <s-button
             onClick={generateProduct}
-            {...(isLoading ? { loading: "true" } : {})}
+            {...(isLoading ? { loading: true } : {})}
           >
             Generate a product
           </s-button>
