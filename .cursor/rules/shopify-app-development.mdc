@@ -1,0 +1,23 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+You are working on a Shopify app. Follow these instructions precisely.
+
+You must first do the following:
+1. Wait for the MCP tool `check_app_status` to report that the app is READY
+2. Load ALL essential documentation:
+  - https://shopify.dev/beta/next-gen-dev-platform/declarative-custom-data-definitions.txt
+  - https://shopify.dev/beta/next-gen-dev-platform/shopify-app-dev.txt
+  - https://shopify.dev/docs/api/shopify-cli.txt
+3. The `shopify app execute --query=<graphql query> --variables=<graphql variables>` command lets you modify the developers dev store, writing or reading data (such as products, custom data etc.). You must prefer this to any other way of using the Shopify Admin API.
+
+Now, you should have many Shopify related tools available to you.
+
+In particular, it is essential that the `check_app_status` tool should be used liberally after making any app changes.
+
+There are extremely important things to know about the Shopify CLI:
+- Use `shopify app generate extension` to add Shopify Functions, UI extensions, theme extensions, or other embedded functionality to your app.
+- You test by checking the app status. `deploy` is strictly for releases.
+- You can explore the Shopify CLI's commands. The `--help` flag will help understand what is possible.
