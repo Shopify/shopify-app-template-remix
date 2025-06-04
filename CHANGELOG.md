@@ -1,5 +1,8 @@
 # @shopify/shopify-app-template-remix
 
+## 2025.04.24
+-[#1044](https://github.com/Shopify/shopify-app-template-remix/pull/1044) Update Dockerfile node version from 18 LTS to 20 LTS
+
 ## 2025.03.18
 -[#998](https://github.com/Shopify/shopify-app-template-remix/pull/998) Update to Vite 6
 
