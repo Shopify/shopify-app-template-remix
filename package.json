@@ -1,77 +1,95 @@
 {
-  "name": "app",
-  "private": true,
+  "name": "shopify-app-template-remix",
+  "version": "1.0.0",
+  "description": "Shopify app template with Remix, Polaris, and component conversion tools",
   "scripts": {
-    "build": "remix vite:build",
-    "dev": "shopify app dev",
-    "config:link": "shopify app config link",
-    "generate": "shopify app generate",
-    "deploy": "shopify app deploy",
-    "config:use": "shopify app config use",
-    "env": "shopify app env",
-    "start": "remix-serve ./build/server/index.js",
-    "docker-start": "npm run setup && npm run start",
-    "setup": "prisma generate && prisma migrate deploy",
+    "dev": "remix dev",
+    "build": "remix build",
+    "start": "remix-serve ./build/index.js",
+    "typecheck": "tsc",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
-    "shopify": "shopify",
-    "prisma": "prisma",
-    "graphql-codegen": "graphql-codegen",
-    "vite": "vite"
-  },
-  "type": "module",
-  "engines": {
-    "node": "^18.20 || ^20.10 || >=21.0.0"
+    "lint:fix": "eslint --cache --cache-location ./node_modules/.cache/eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui",
+    "test:components": "vitest run tests/components",
+    "test:api": "vitest run tests/api",
+    "test:e2e": "vitest run tests/e2e",
+    "test:setup": "node scripts/test-setup.cjs",
+    "storybook": "storybook dev -p 6006",
+    "storybook:build": "storybook build",
+    "preview": "cd preview && yarn start",
+    "preview:setup": "node scripts/preview-setup.cjs",
+    "convert:v0": "node scripts/v0-to-polaris.cjs",
+    "convert:shadcn": "node scripts/shadcn-to-polaris.cjs",
+    "setup": "node scripts/setup-dev.cjs",
+    "setup-preview": "node scripts/setup-preview.js"
   },
   "dependencies": {
-    "@prisma/client": "^6.2.1",
-    "@remix-run/dev": "^2.16.1",
-    "@remix-run/fs-routes": "^2.16.1",
-    "@remix-run/node": "^2.16.1",
-    "@remix-run/react": "^2.16.1",
-    "@remix-run/serve": "^2.16.1",
-    "@shopify/app-bridge-react": "^4.1.6",
-    "@shopify/cli": "^3.63.1",
+    "@monaco-editor/react": "^4.7.0",
+    "@remix-run/node": "^2.8.1",
+    "@remix-run/react": "^2.8.1",
+    "@remix-run/serve": "^2.8.1",
+    "@shopify/app-bridge": "^3.7.9",
+    "@shopify/app-bridge-react": "^3.7.9",
     "@shopify/polaris": "^12.0.0",
-    "@shopify/shopify-app-remix": "^3.7.0",
-    "@shopify/shopify-app-session-storage-prisma": "^6.0.0",
-    "isbot": "^5.1.0",
-    "prisma": "^6.2.1",
+    "graphql-request": "^6.1.0",
+    "isbot": "^4.1.0",
+    "monaco-editor": "^0.52.2",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "vite-tsconfig-paths": "^5.0.1"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@remix-run/eslint-config": "^2.16.1",
-    "@remix-run/route-config": "^2.16.1",
-    "@shopify/api-codegen-preset": "^1.1.1",
-    "@types/eslint": "^9.6.1",
-    "@types/node": "^22.2.0",
-    "@types/react": "^18.2.31",
-    "@types/react-dom": "^18.2.14",
-    "eslint": "^8.42.0",
-    "eslint-config-prettier": "^10.0.1",
-    "prettier": "^3.2.4",
-    "typescript": "^5.2.2",
-    "vite": "^6.2.2"
+    "@remix-run/dev": "^2.8.1",
+    "@shopify/shopify-api": "^11.13.0",
+    "@storybook/addon-essentials": "^7.6.10",
+    "@storybook/addon-interactions": "^7.6.10",
+    "@storybook/addon-links": "^7.6.10",
+    "@storybook/blocks": "^7.6.10",
+    "@storybook/react-vite": "^7.6.10",
+    "@storybook/testing-library": "^0.2.2",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/user-event": "^14.5.1",
+    "@types/react": "^18.2.20",
+    "@types/react-dom": "^18.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
+    "@vitejs/plugin-react": "^4.5.1",
+    "@vitest/coverage-v8": "3.2.2",
+    "@vitest/ui": "^3.2.2",
+    "eslint": "^8.38.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "graphql": "^16.11.0",
+    "husky": "^8.0.3",
+    "jsdom": "^23.0.1",
+    "lint-staged": "^14.0.1",
+    "prettier": "^3.0.3",
+    "storybook": "^7.6.10",
+    "typescript": "^5.1.6",
+    "vite": "^5.0.10",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "3.2.2"
   },
-  "workspaces": {
-    "packages": [
-      "extensions/*"
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "sideEffects": false,
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write"
     ]
-  },
-  "trustedDependencies": [
-    "@shopify/plugin-cloudflare"
-  ],
-  "resolutions": {
-    "@graphql-tools/url-loader": "8.0.16",
-    "@graphql-codegen/client-preset": "4.7.0",
-    "@graphql-codegen/typescript-operations": "4.5.0",
-    "minimatch": "9.0.5"
-  },
-  "overrides": {
-    "@graphql-tools/url-loader": "8.0.16",
-    "@graphql-codegen/client-preset": "4.7.0",
-    "@graphql-codegen/typescript-operations": "4.5.0",
-    "minimatch": "9.0.5"
   }
 }
