@@ -1,5 +1,7 @@
 # @shopify/shopify-app-template-remix
 
+## 2025.06.12
+-[#1082](https://github.com/Shopify/shopify-app-template-remix/pull/1082) Remove local Shopify CLI from the template. Developers should use the Shopify CLI [installed globally](https://shopify.dev/docs/api/shopify-cli#installation).
 ## 2025.03.18
 -[#998](https://github.com/Shopify/shopify-app-template-remix/pull/998) Update to Vite 6
 
