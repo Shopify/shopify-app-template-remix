@@ -1,12 +1,41 @@
-import type { HeadersFunction } from "@remix-run/node";
-import { Link, Outlet, useRouteError } from "@remix-run/react";
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { Link, Outlet, useLoaderData, useNavigate, useRouteError } from "@remix-run/react";
 import { boundary } from "@shopify/shopify-app-remix/server";
+import { authenticate } from "app/shopify.server";
+import { useEffect } from "react";
 
 export const links = () => [];
 
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  await authenticate.admin(request);
+
+  return { apiKey: process.env.SHOPIFY_API_KEY || "" };
+};
+
 export default function App() {
+  const { apiKey } = useLoaderData<typeof loader>();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleNavigate = (event: Event) => {
+      const href = (event.target as HTMLElement)?.getAttribute("href");
+      if (href) navigate(href);
+    };
+
+    document.addEventListener("shopify:navigate", handleNavigate);
+
+    return () =>
+      document.removeEventListener("shopify:navigate", handleNavigate);
+  }, [navigate]);
+
   return (
     <>
+      <script
+        src="https://cdn.shopify.com/shopifycloud/app-bridge.js"
+        data-api-key={apiKey}
+        data-link-behavior="remix"
+      />
+      <script src="https://cdn.shopify.com/shopifycloud/app-bridge-ui-experimental.js"></script>
       <ui-nav-menu>
         <Link to="/app" rel="home">
           Home
