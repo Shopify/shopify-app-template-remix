@@ -136,7 +136,7 @@ export default function Index() {
         <s-stack direction="inline" gap="base">
           <s-button
             onClick={generateProduct}
-            {...(isLoading ? { loading: true } : {})}
+            {...(isLoading ? { loading: "true" } : {})}
           >
             Generate a product
           </s-button>
@@ -150,33 +150,37 @@ export default function Index() {
             </s-button>
           )}
         </s-stack>
+        {fetcher.data?.product && (
+          <s-section heading="productCreate mutation">
+            <s-stack direction="column" gap="base">
+              <s-box
+                padding="base"
+                borderWidth="base"
+                borderRadius="base"
+                borderColor="auto"
+                background="subdued"
+              >
+                <pre style={{ margin: 0 }}>
+                  <code>{JSON.stringify(fetcher.data.product, null, 2)}</code>
+                </pre>
+              </s-box>
+
+              <s-heading>productVariantsBulkUpdate mutation</s-heading>
+              <s-box
+                padding="base"
+                borderWidth="base"
+                borderRadius="base"
+                borderColor="auto"
+                background="subdued"
+              >
+                <pre style={{ margin: 0 }}>
+                  <code>{JSON.stringify(fetcher.data.variant, null, 2)}</code>
+                </pre>
+              </s-box>
+            </s-stack>
+          </s-section>
+        )}
       </s-section>
-      {fetcher.data?.product && (
-        <s-section heading="productCreate mutation">
-          <s-paragraph>
-            {JSON.stringify(fetcher.data.product, null, 2)}
-          </s-paragraph>
-
-          <s-box
-            padding="base"
-            borderWidth="base"
-            borderRadius="base"
-            borderColor="auto"
-            background="subdued"
-          >
-            <pre style={{ margin: 0 }}>
-              <code>{JSON.stringify(fetcher.data.product, null, 2)}</code>
-            </pre>
-          </s-box>
-
-          <s-heading>productVariantsBulkUpdate mutation</s-heading>
-          <s-box>
-            <pre style={{ margin: 0 }}>
-              <code>{JSON.stringify(fetcher.data.variant, null, 2)}</code>
-            </pre>
-          </s-box>
-        </s-section>
-      )}
 
       <s-section slot="aside" heading="App template specs">
         <s-paragraph>
