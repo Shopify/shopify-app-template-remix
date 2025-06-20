@@ -8,9 +8,7 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
-  useNavigate,
 } from "@remix-run/react";
-import { useEffect } from "react";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
@@ -20,20 +18,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function App() {
   const { apiKey } = useLoaderData<typeof loader>();
-
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const handleNavigate = (event: Event) => {
-      const href = (event.target as HTMLElement)?.getAttribute("href");
-      if (href) navigate(href);
-    };
-
-    document.addEventListener("shopify:navigate", handleNavigate);
-
-    return () =>
-      document.removeEventListener("shopify:navigate", handleNavigate);
-  }, [navigate]);
 
   return (
     <html>
