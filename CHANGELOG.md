@@ -1,4 +1,5 @@
-# @shopify/shopify-app-template-remix
+# @shopify/shopify-app-template-remix 
+// a change
 
 ## 2025.06.12
 - [#1075](https://github.com/Shopify/shopify-app-template-remix/pull/1075) Add Shopify MCP to [VSCode configs](https://code.visualstudio.com/docs/copilot/chat/mcp-servers#_enable-mcp-support-in-vs-code)
