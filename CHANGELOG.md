@@ -1,5 +1,8 @@
 # @shopify/shopify-app-template-remix
 
+## 2025.07.07
+- [#1103](https://github.com/Shopify/shopify-app-template-remix/pull/1086) Remove deprecated .npmrc config values
+
 ## 2025.06.12
 - [#1075](https://github.com/Shopify/shopify-app-template-remix/pull/1075) Add Shopify MCP to [VSCode configs](https://code.visualstudio.com/docs/copilot/chat/mcp-servers#_enable-mcp-support-in-vs-code)
 
