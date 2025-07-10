@@ -27,8 +27,6 @@ export default function App() {
         <meta name="shopify-link-behavior" content="remix" />
         <meta name="shopify-api-key" content={apiKey} />
         <link rel="preconnect" href="https://cdn.shopify.com/" />
-        <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
-        <script src="https://cdn.shopify.com/shopifycloud/app-bridge-ui-experimental.js"></script>
         <Meta />
         <Links />
       </head>
