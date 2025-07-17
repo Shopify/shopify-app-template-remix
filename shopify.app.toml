@@ -47,8 +47,8 @@ api_version = "2024-07"
   # uri = "/webhooks/shop/redact"
   # compliance_topics = ["shop/redact"]
 
-  # [START configure-subscription-pubsub]
+  # [START configure-subscription]
   [[webhooks.subscriptions]]
   topics = ["orders/create"]
-  uri = "pubsub://<PROJECT-ID>:<PUBSUB-TOPIC-ID>"
-  # [END configure-subscription-pubsub]
+  uri = "arn:aws:events:<AWS-REGION>::event-source/aws.partner/shopify.com/<APP-ID>/<EVENT-SOURCE-NAME>"
+  # [END configure-subscription]
