@@ -47,8 +47,8 @@ api_version = "2024-07"
   # uri = "/webhooks/shop/redact"
   # compliance_topics = ["shop/redact"]
 
-  # [START configure-subscription-https]
+  # [START configure-subscription-pubsub]
   [[webhooks.subscriptions]]
   topics = ["orders/create"]
-  uri = "/webhooks/app/orders-create"
-  # [END configure-subscription-https]
+  uri = "pubsub://<PROJECT-ID>:<PUBSUB-TOPIC-ID>"
+  # [END configure-subscription-pubsub]
