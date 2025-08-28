@@ -5,11 +5,57 @@ updates:
     schedule:
       interval: weekly
   # Enable version updates for npm
-  - package-ecosystem: "npm"
+  - package-ecosystem: 'npm'
     # Look for `package.json` and `lock` files in the `root` directory
-    directory: "/"
+    directory: '/'
     # Check the npm registry for updates every day (weekdays)
     schedule:
-      interval: "daily"
+      interval: 'weekly'
     # Dependabot defaults to 5 open pull requests at a time
     open-pull-requests-limit: 100
+    # ignore versions already covered by a range
+    # e.g: ^1.2.3 -> 1.2.4, would be ignored
+    versioning-strategy: increase-if-necessary
+
+    # Cooldown is the number of days after a release to wait until opening a PR
+    # This gives us more confidence changes can be merged because changes have been community tested.
+    # See: https://github.blog/changelog/2025-07-01-dependabot-supports-configuration-of-a-minimum-package-age/
+    cooldown:
+      default-days: 14
+      semver-major-days: 30
+      semver-minor-days: 14
+      semver-patch-days: 14
+
+    groups:
+
+      # Group together PRs of dependant packages
+      prisma:
+        patterns:
+          - 'prisma'
+          - '@prisma/client'
+      react:
+        patterns:
+          - 'react'
+          - 'react-dom'
+          - '@types/react'
+          - '@types/react-dom'
+      vite:
+        patterns:
+          - 'vite'
+          - 'vite-tsconfig-paths'
+      remix:
+        patterns:
+          - '@remix-run/dev'
+          - '@remix-run/fs-routes'
+          - '@remix-run/node'
+          - '@remix-run/react'
+          - '@remix-run/eslint-config'
+          - '@remix-run/route-config'
+
+      # Group all patch updates not accounted for in prior groups in a single PR.
+      # This reduces the number of PRs to review and rebase.
+      patch-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "patch"
