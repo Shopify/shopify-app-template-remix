@@ -13,9 +13,6 @@ updates:
       interval: 'weekly'
     # Dependabot defaults to 5 open pull requests at a time
     open-pull-requests-limit: 100
-    # ignore versions already covered by a range
-    # e.g: ^1.2.3 -> 1.2.4, would be ignored
-    versioning-strategy: increase-if-necessary
 
     # Cooldown is the number of days after a release to wait until opening a PR
     # This gives us more confidence changes can be merged because changes have been community tested.
