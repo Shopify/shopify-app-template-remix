@@ -1,5 +1,8 @@
 # @shopify/shopify-app-template-remix
 
+## 2025.08.16
+- [#52](https://github.com/Shopify/shopify-app-template-remix/pull/1153) Use `ApiVersion.July25` rather than `LATEST_API_VERSION` in `.graphqlrc`.
+
 ## 2025.07.07
 - [#1103](https://github.com/Shopify/shopify-app-template-remix/pull/1086) Remove deprecated .npmrc config values
 
