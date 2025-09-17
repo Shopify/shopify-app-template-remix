@@ -3,7 +3,7 @@
 scopes = "write_products"
 
 [webhooks]
-api_version = "2024-10"
+api_version = "2025-07"
 
   # Handled by: /app/routes/webhooks.app.uninstalled.tsx
   [[webhooks.subscriptions]]
