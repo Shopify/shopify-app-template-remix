@@ -1,5 +1,12 @@
 # @shopify/shopify-app-template-remix
 
+## 2025.09.17
+- [#1156](https://github.com/Shopify/shopify-app-template-remix/pull/1156) Update shopify-app-remix to v4.0.0 and shopify-app-session-storage-prisma to v7.0.0
+- Update minimum Node.js version to 20
+  - CI matrix now tests Node 20, 22, and 24 (previously 18, 20)
+  - Dockerfile updated to use node:20-alpine base image
+  - convert-to-js workflow updated to use Node 20.10.x
+
 ## 2025.07.07
 - [#1103](https://github.com/Shopify/shopify-app-template-remix/pull/1086) Remove deprecated .npmrc config values
 
