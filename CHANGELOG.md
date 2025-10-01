@@ -1,5 +1,13 @@
 # @shopify/shopify-app-template-remix
 
+## 2025.10.01
+
+**Remix is now React Router.** As of [React Router v7](https://remix.run/blog/merging-remix-and-react-router), Remix and React Router have merged.
+
+For new projects, use the **[Shopify App Template - React Router](https://github.com/Shopify/shopify-app-template-react-router)** instead.
+
+To migrate your existing Remix app, follow the **[migration guide](https://github.com/Shopify/shopify-app-template-react-router/wiki/Upgrading-from-Remix)**.
+
 ## 2025.08.16
 - [#52](https://github.com/Shopify/shopify-app-template-remix/pull/1153) Use `ApiVersion.July25` rather than `LATEST_API_VERSION` in `.graphqlrc`.
 
