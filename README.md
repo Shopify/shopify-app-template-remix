@@ -2,11 +2,19 @@
 
 This is a template for building a [Shopify app](https://shopify.dev/docs/apps/getting-started) using the [Remix](https://remix.run) framework.
 
+## Upgrade to React Router
+
+You should only use this template for reference in an existing Remix app that you have not yet upgraded.
+
+If you are building a new Shopify app you should use React Router and not Remix.  Please see the [Quick start guide for React Router](https://github.com/Shopify/shopify-app-template-react-router?tab=readme-ov-file#quick-start).
+
+If you already have a Remix app, you should upgrade to React Router.  Please see the [Upgrading to React Router guide](https://github.com/Shopify/shopify-app-template-react-router/wiki/Upgrading-from-Remix).
+
+## Quick start
+
 Rather than cloning this repo, you can use your preferred package manager and the Shopify CLI with [these steps](https://shopify.dev/docs/apps/getting-started/create).
 
 Visit the [`shopify.dev` documentation](https://shopify.dev/docs/api/shopify-app-remix) for more details on the Remix app package.
-
-## Quick start
 
 ### Prerequisites
 
