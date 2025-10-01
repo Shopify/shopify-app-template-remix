@@ -1,5 +1,8 @@
 # @shopify/shopify-app-template-remix
 
+## 2025.10.01
+- [#1163](https://github.com/Shopify/shopify-app-template-remix/pull/1163) Add a call to action to upgrade to React Router.
+
 ## 2025.08.16
 - [#52](https://github.com/Shopify/shopify-app-template-remix/pull/1153) Use `ApiVersion.July25` rather than `LATEST_API_VERSION` in `.graphqlrc`.
 
