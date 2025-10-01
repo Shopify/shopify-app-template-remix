@@ -1,5 +1,12 @@
 # Shopify App Template - Remix
 
+> [!NOTE]
+> **Remix is now React Router.** As of [React Router v7](https://remix.run/blog/merging-remix-and-react-router), Remix and React Router have merged.
+> 
+> For new projects, use the **[Shopify App Template - React Router](https://github.com/Shopify/shopify-app-template-react-router)** instead.
+> 
+> To migrate your existing Remix app, follow the **[migration guide](https://github.com/Shopify/shopify-app-template-react-router/wiki/Upgrading-from-Remix)**.
+
 This is a template for building a [Shopify app](https://shopify.dev/docs/apps/getting-started) using the [Remix](https://remix.run) framework.
 
 Rather than cloning this repo, you can use your preferred package manager and the Shopify CLI with [these steps](https://shopify.dev/docs/apps/getting-started/create).
@@ -15,50 +22,24 @@ Before you begin, you'll need the following:
 1. **Node.js**: [Download and install](https://nodejs.org/en/download/) it if you haven't already.
 2. **Shopify Partner Account**: [Create an account](https://partners.shopify.com/signup) if you don't have one.
 3. **Test Store**: Set up either a [development store](https://help.shopify.com/en/partners/dashboard/development-stores#create-a-development-store) or a [Shopify Plus sandbox store](https://help.shopify.com/en/partners/dashboard/managing-stores/plus-sandbox-store) for testing your app.
+4. **Shopify CLI**: [Download and install](https://shopify.dev/docs/apps/tools/cli/getting-started) it if you haven't already.
+```shell
+npm install -g @shopify/cli@latest
+```
 
 ### Setup
 
-If you used the CLI to create the template, you can skip this section.
-
-Using yarn:
-
 ```shell
-yarn install
-```
-
-Using npm:
-
-```shell
-npm install
-```
-
-Using pnpm:
-
-```shell
-pnpm install
+shopify app init --template=https://github.com/Shopify/shopify-app-template-remix
 ```
 
 ### Local Development
 
-Using yarn:
-
 ```shell
-yarn dev
+shopify app dev
 ```
 
-Using npm:
 
-```shell
-npm run dev
-```
-
-Using pnpm:
-
-```shell
-pnpm run dev
-```
-
-Press P to open the URL to your app. Once you click install, you can start development.
 
 Local development is powered by [the Shopify CLI](https://shopify.dev/docs/apps/tools/cli). It logs into your partners account, connects to an app, provides environment variables, updates remote config, creates a tunnel and provides commands to generate extensions.
 
