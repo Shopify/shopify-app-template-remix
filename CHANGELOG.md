@@ -1,5 +1,9 @@
 # @shopify/shopify-app-template-remix
 
+## next
+
+- [#1170](https://github.com/Shopify/shopify-app-template-remix/pull/1170) Upgrade Node 18 to 20 via Dockerfile.
+
 ## 2025.10.01
 
 **Remix is now React Router.** As of [React Router v7](https://remix.run/blog/merging-remix-and-react-router), Remix and React Router have merged.
