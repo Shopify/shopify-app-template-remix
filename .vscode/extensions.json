@@ -2,5 +2,6 @@
   "recommendations": [
     "graphql.vscode-graphql",
     "shopify.polaris-for-vscode",
+    "Lokalise.i18n-ally"
   ]
 }
