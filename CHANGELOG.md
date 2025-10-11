@@ -1,5 +1,9 @@
 # @shopify/shopify-app-template-remix
 
+## Next Release
+
+- [#1171](https://github.com/Shopify/shopify-app-template-remix/pull/1171) Add i18n VSCode recommended extension.
+
 ## 2025.10.01
 
 **Remix is now React Router.** As of [React Router v7](https://remix.run/blog/merging-remix-and-react-router), Remix and React Router have merged.
