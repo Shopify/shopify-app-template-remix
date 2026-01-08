@@ -1,5 +1,9 @@
 # @shopify/shopify-app-template-remix
 
+## 2025.12.11
+
+- [#1201](https://github.com/Shopify/shopify-app-template-remix/pull/1201) Update `@shopify/shopify-app-remix` to v4.1.0 and `@shopify/shopify-app-session-storage-prisma` to v8.0.0, add refresh token fields (`refreshToken` and `refreshTokenExpires`) to Session model in Prisma schema, and adopt the `expiringOfflineAccessTokens` flag for enhanced security through token rotation. See [expiring vs non-expiring offline tokens](https://shopify.dev/docs/apps/build/authentication-authorization/access-tokens/offline-access-tokens#expiring-vs-non-expiring-offline-tokens) for more information.
+
 ## 2025.10.01
 
 **Remix is now React Router.** As of [React Router v7](https://remix.run/blog/merging-remix-and-react-router), Remix and React Router have merged.
