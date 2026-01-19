@@ -73,7 +73,6 @@
     "@graphql-codegen/client-preset": "4.7.0",
     "@graphql-codegen/typescript-operations": "4.5.0",
     "minimatch": "9.0.5",
-    "vite": "^6.2.2",
-    "esbuild-plugins-node-modules-polyfill": "1.7.1"
+    "vite": "^6.2.2"
   }
 }
