@@ -1,4 +1,4 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "react-router";
 import { getUserPrivilegesHash } from "../services/hn.services";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {

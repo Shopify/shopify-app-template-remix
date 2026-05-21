@@ -1,4 +1,4 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "react-router";
 import { getCurrentUser } from "../services/hn.services";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {

@@ -3,6 +3,7 @@ node_modules
 
 /.cache
 /build
+.react-router/
 /app/build
 /public/build/
 /public/_dev
@@ -23,3 +24,6 @@ pnpm-lock.yaml
 .shopify.lock
 
 !shopify.app.*.toml
+shopify.app.toml
+api.specs.yaml
+.github

@@ -1,0 +1,26 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "ca0acfc2cb53d4e722b53ed0b7f6c99a"
+name = "HNIE Name - DEV"
+application_url = "https://app-name-hnie-uat-dev.au.azure.hndigital.net"
+handle = "hnie-name-dev"
+embedded = true
+
+[webhooks]
+api_version = "2025-10"
+
+[access_scopes]
+scopes = "read_users"
+
+[auth]
+redirect_urls = [
+	"https://app-name-hnie-uat-dev.au.azure.hndigital.net/auth/callback",
+	"https://app-name-hnie-uat-dev.au.azure.hndigital.net/auth/shopify/callback",
+	"https://app-name-hnie-uat-dev.au.azure.hndigital.net/api/auth/callback"
+]
+
+[pos]
+embedded = false
+
+[build]
+

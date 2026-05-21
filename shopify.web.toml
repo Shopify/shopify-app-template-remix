@@ -1,7 +1,7 @@
-name = "remix"
+name = "react-router"
 roles = ["frontend", "backend"]
 webhooks_path = "/webhooks/app/uninstalled"
 
 [commands]
 predev = ""
-dev = "npm exec remix vite:dev -- --host"
+dev = "npm exec react-router dev -- --host"

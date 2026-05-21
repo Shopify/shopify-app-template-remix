@@ -1,31 +1,24 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "bd5e268040fabc7eae3d1b5453a75d93"
-name = "HN Template App"
-handle = "hn-template-app"
-application_url = "https://jacket-israel-bother-review.trycloudflare.com"
+client_id = "8b0dbcbdd6fd109311ad095953532230"
+application_url = "https://advertising-sink-foo-resistant.trycloudflare.com"
 embedded = true
-
-[webhooks]
-api_version = "2025-04"
-
-  [[webhooks.subscriptions]]
-  topics = [ "app/uninstalled" ]
-  uri = "/webhooks/app/uninstalled"
-
-  [[webhooks.subscriptions]]
-  topics = [ "app/scopes_update" ]
-  uri = "/webhooks/app/scopes_update"
+name = "HNUK Specs Management - Jeff"
+handle = "hnuk-specs-management-jeff"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_users"
+scopes = "read_products,read_users"
 
 [auth]
-redirect_urls = ["https://jacket-israel-bother-review.trycloudflare.com/auth/callback", "https://jacket-israel-bother-review.trycloudflare.com/auth/shopify/callback", "https://jacket-israel-bother-review.trycloudflare.com/api/auth/callback"]
+redirect_urls = [
+  "https://advertising-sink-foo-resistant.trycloudflare.com/auth/callback",
+  "https://advertising-sink-foo-resistant.trycloudflare.com/auth/shopify/callback",
+  "https://advertising-sink-foo-resistant.trycloudflare.com/api/auth/callback"
+]
 
-[pos]
-embedded = false
+[webhooks]
+api_version = "2026-04"
 
 [build]
 automatically_update_urls_on_dev = true

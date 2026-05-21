@@ -1,0 +1,25 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "11b32b0786d1e97bc6da025327de823f"
+name = "HNUK Name - UAT"
+application_url = "https://app-name-hnni-uat.au.azure.hndigital.net"
+handle = "hnuk-name-uat"
+embedded = true
+
+[webhooks]
+api_version = "2025-10"
+
+[access_scopes]
+scopes = "read_users"
+
+[auth]
+redirect_urls = [
+	"https://app-name-hnni-uat.au.azure.hndigital.net/auth/callback",
+	"https://app-name-hnni-uat.au.azure.hndigital.net/auth/shopify/callback",
+	"https://app-name-hnni-uat.au.azure.hndigital.net/api/auth/callback"
+]
+
+[pos]
+embedded = false
+
+[build]

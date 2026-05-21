@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "auth": "node auth.js",
-    "build": "remix vite:build",
+    "build": "react-router build",
     "dev": "run-p auth develop",
     "develop": "shopify app dev",
     "config:link": "shopify app config link",
@@ -11,52 +11,73 @@
     "deploy": "shopify app deploy",
     "config:use": "shopify app config use",
     "env": "shopify app env",
-    "start": "remix-serve ./build/server/index.js",
-    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
+    "start": "react-router-serve ./build/server/index.js",
+    "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "shopify": "shopify",
     "graphql-codegen": "graphql-codegen",
-    "vite": "vite"
+    "vite": "vite",
+    "typecheck": "react-router typegen && tsc --noEmit",
+    "pm2:start": "pm2 start ecosystem.config.cjs",
+    "pm2:stop": "pm2 stop ecosystem.config.cjs",
+    "pm2:restart": "pm2 restart ecosystem.config.cjs",
+    "pm2:delete": "pm2 delete ecosystem.config.cjs",
+    "pm2:logs": "pm2 logs"
   },
   "type": "module",
   "engines": {
-    "node": "^18.20 || ^20.10 || >=21.0.0"
+    "node": ">=20.19 <22 || >=22.12"
   },
   "dependencies": {
-    "@remix-run/dev": "^2.16.1",
-    "@remix-run/fs-routes": "^2.16.1",
-    "@remix-run/node": "^2.16.1",
-    "@remix-run/react": "^2.16.1",
-    "@remix-run/serve": "^2.16.1",
-    "@shopify/app-bridge-react": "^4.1.6",
-    "@shopify/cli": "^3.63.1",
-    "@shopify/polaris": "^12.0.0",
-    "@shopify/shopify-app-remix": "^3.7.0",
-    "@shopify/shopify-app-session-storage-redis": "^4.2.11",
+    "@react-router/dev": "7.15.1",
+    "@react-router/express": "7.15.1",
+    "@react-router/fs-routes": "7.15.1",
+    "@react-router/node": "7.15.1",
+    "@react-router/serve": "7.15.1",
+    "@shopify/app-bridge-react": "^4.2.10",
+    "@shopify/cli": "^3.94.3",
+    "@shopify/polaris": "^13.9.5",
+    "@shopify/shopify-app-react-router": "^1.2.0",
+    "@shopify/shopify-app-session-storage-redis": "^6.0.0",
+    "axios": "^1.16.1",
+    "clsx": "^2.1.1",
+    "compression": "^1.8.1",
     "crypto-ts": "^1.0.2",
+    "dayjs": "^1.11.20",
     "express": "^4.21.2",
-    "graphql-request": "^7.2.0",
-    "isbot": "^5.1.0",
-    "lodash": "^4.17.21",
+    "graphql-request": "^7.4.0",
+    "isbot": "^5.1.40",
+    "lodash": "^4.18.1",
     "npm-run-all": "^4.1.5",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "pm2": "^6.0.14",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router": "7.15.1",
     "usehooks-ts": "^3.1.1",
-    "vite-tsconfig-paths": "^5.0.1"
+    "vite-tsconfig-paths": "^6.1.1",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.13"
   },
   "devDependencies": {
-    "@remix-run/eslint-config": "^2.16.1",
-    "@remix-run/route-config": "^2.16.1",
-    "@shopify/api-codegen-preset": "^1.1.1",
+    "@shopify/api-codegen-preset": "^2.0.0",
+    "@shopify/polaris-types": "^1.0.1",
     "@types/eslint": "^9.6.1",
-    "@types/lodash": "^4.17.20",
-    "@types/node": "^22.2.0",
-    "@types/react": "^18.2.31",
-    "@types/react-dom": "^18.2.14",
-    "eslint": "^8.42.0",
-    "eslint-config-prettier": "^10.0.1",
-    "prettier": "^3.2.4",
-    "typescript": "^5.2.2",
-    "vite": "^6.2.2"
+    "@types/lodash": "^4.17.21",
+    "@types/node": "^22.15.29",
+    "@types/react": "^18.3.25",
+    "@types/react-dom": "^18.3.7",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^3.10.1",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "prettier": "^3.8.3",
+    "sass-embedded": "^1.99.0",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.2"
   },
   "workspaces": {
     "packages": [
@@ -65,17 +86,5 @@
   },
   "trustedDependencies": [
     "@shopify/plugin-cloudflare"
-  ],
-  "resolutions": {
-    "@graphql-tools/url-loader": "8.0.16",
-    "@graphql-codegen/client-preset": "4.7.0",
-    "@graphql-codegen/typescript-operations": "4.5.0",
-    "minimatch": "9.0.5"
-  },
-  "overrides": {
-    "@graphql-tools/url-loader": "8.0.16",
-    "@graphql-codegen/client-preset": "4.7.0",
-    "@graphql-codegen/typescript-operations": "4.5.0",
-    "minimatch": "9.0.5"
-  }
+  ]
 }
