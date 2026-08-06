@@ -24,7 +24,9 @@ export default function App() {
         <Link to="/app" rel="home">
           Home
         </Link>
-        <Link to="/app/additional">Additional page</Link>
+        <Link to="/app/images">🖼️ Upscaling Immagini</Link>
+        <Link to="/app/tags">Tags Manager</Link>
+        <Link to="/app/consolidation">Consolidamento Varianti</Link>
       </NavMenu>
       <Outlet />
     </AppProvider>

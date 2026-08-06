@@ -1,0 +1,56 @@
+// Aggiungi questi modelli al tuo file prisma/schema.prisma esistente
+// (NON sostituire l'intero schema, aggiungi solo questi modelli)
+
+// ====================================================
+// TAGS MANAGER MODELS
+// ====================================================
+
+// Tassonomia: un singolo record con il JSON editabile via UI
+model TagTaxonomy {
+  id        Int      @id @default(autoincrement())
+  shop      String   @unique
+  data      String   // JSON string del file tag-taxonomy.json
+  version   Int      @default(1)
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+// Draft dei tag per singolo prodotto: generati da AI, in attesa di commit
+model ProductTagDraft {
+  id             Int      @id @default(autoincrement())
+  shop           String
+  productId      String   // Shopify product ID (GID o numeric)
+  productTitle   String
+  previousTags   String   // JSON array dei tag attuali (per undo)
+  proposedTags   String   // JSON array dei tag proposti dall'AI
+  status         String   @default("pending") // pending | committed | rejected | failed
+  source         String   @default("ai")      // ai | manual | bulk_remove
+  committedAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  @@unique([shop, productId])
+  @@index([shop, status])
+}
+
+// Job asincroni per operazioni bulk (generazione AI e push su Shopify)
+model TagJob {
+  id             Int      @id @default(autoincrement())
+  shop           String
+  kind           String   // "generate" | "push" | "bulk_remove" | "cleanup_sku"
+  status         String   @default("queued") // queued | running | completed | failed
+  totalItems     Int      @default(0)
+  processedItems Int      @default(0)
+  successItems   Int      @default(0)
+  failedItems    Int      @default(0)
+  productIds     String   // JSON array degli ID dei prodotti da processare
+  options        String?  // JSON con opzioni specifiche (modalità, filtri...)
+  errorLog       String?  // JSON array di errori
+  startedAt      DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  @@index([shop, status])
+  @@index([shop, kind])
+}

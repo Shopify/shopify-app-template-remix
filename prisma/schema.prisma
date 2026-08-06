@@ -9,8 +9,8 @@ generator client {
 // enough when changing adapters.
 // See https://www.prisma.io/docs/orm/reference/prisma-schema-reference#string for more information
 datasource db {
-  provider = "sqlite"
-  url      = "file:dev.sqlite"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Session {
@@ -31,4 +31,64 @@ model Session {
   emailVerified       Boolean?  @default(false)
   refreshToken        String?
   refreshTokenExpires DateTime?
+}
+
+
+model GenerationJob {
+  id            String   @id @default(cuid())
+  shop          String
+  type          String   // "descriptions" | "images"
+  status        String   // "pending" | "running" | "completed" | "failed" | "cancelled"
+  totalItems    Int      @default(0)
+  processedItems Int     @default(0)
+  successCount  Int      @default(0)
+  errorCount    Int      @default(0)
+  payload       String   @default("")  // JSON con prodotti + impostazioni
+  results       String   @default("")  // JSON con risultati man mano
+  errorMessage  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  completedAt   DateTime?
+
+  @@index([shop, status])
+  @@index([createdAt])
+}
+
+model ConsolidationCandidate {
+  id              Int      @id @default(autoincrement())
+  shop            String
+  productId       String // GID Shopify
+  productTitle    String
+  vendor          String   @default("")
+  productType     String   @default("")
+  sku             String   @default("")
+  barcode         String   @default("") // EAN/GTIN della variante
+  imageUrl        String   @default("")
+  imageHash       String   @default("") // dHash 64-bit hex
+  titleNormalized String   @default("")
+  detectedSize    String?
+  detectedColor   String?
+  bucketKey       String   @default("")
+  status          String   @default("pending") // pending | approved | rejected | merged
+  scannedAt       DateTime @default(now())
+
+  @@unique([shop, productId])
+  @@index([shop, bucketKey])
+  @@index([shop, status])
+}
+
+model ConsolidationScan {
+  id           Int       @id @default(autoincrement())
+  shop         String
+  status       String    @default("queued") // queued | running | completed | failed
+  cursor       String?
+  totalScanned Int       @default(0)
+  vendorFilter String?
+  errorLog     String?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([shop, status])
 }

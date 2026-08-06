@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "updatedAt": "2026-04-23T00:00:00Z",
+  "description": "Tassonomia tag 32 Concept Store. Modificabile dall'admin UI.",
+  "groups": [
+    {
+      "prefix": "per",
+      "label": "Destinatario",
+      "description": "Chi riceve il regalo o usa il prodotto",
+      "values": [
+        { "value": "donna", "description": "Prodotti adatti a donne adulte - femminili, eleganti, o neutri" },
+        { "value": "uomo", "description": "Prodotti adatti a uomini adulti - maschili o neutri" },
+        { "value": "casa", "description": "Oggetti per la casa: arredamento, cucina, tavola, decorazioni" },
+        { "value": "tutti", "description": "Prodotti neutri adatti a chiunque (refill, accessori generici)" }
+      ]
+    },
+    {
+      "prefix": "occ",
+      "label": "Occasione",
+      "description": "Momento o ricorrenza per cui il prodotto è adatto",
+      "values": [
+        { "value": "compleanno", "description": "Regali di compleanno - adatti a generiche celebrazioni personali" },
+        { "value": "natale", "description": "Regali natalizi, addobbi, decorazioni feste di fine anno" },
+        { "value": "laurea", "description": "Regali specifici per laurea: pergamene, cornici, mug laureato/a" },
+        { "value": "matrimonio", "description": "Regali per matrimoni e anniversari di coppia" },
+        { "value": "nascita", "description": "Regali per nascita, battesimo, neonati" },
+        { "value": "san-valentino", "description": "Regali romantici per San Valentino" },
+        { "value": "casa-nuova", "description": "Regali per nuova casa, inaugurazione, traslocare" }
+      ]
+    },
+    {
+      "prefix": "stile",
+      "label": "Stile",
+      "description": "Estetica e mood del prodotto",
+      "values": [
+        { "value": "classico", "description": "Design classico, senza tempo, formale" },
+        { "value": "divertente", "description": "Ironico, simpatico, con scritte o forme buffe" },
+        { "value": "elegante", "description": "Raffinato, premium, sofisticato" },
+        { "value": "minimal", "description": "Minimalista, pulito, poche decorazioni" },
+        { "value": "vintage", "description": "Retro, anni 50-80, amarcord" },
+        { "value": "romantico", "description": "Dolce, delicato, con fiori o cuori" },
+        { "value": "geek", "description": "Nerd, pop culture, videogame, film cult" },
+        { "value": "ecologico", "description": "Materiali sostenibili, riciclati, bambù, bioplastica" },
+        { "value": "lusso", "description": "Premium, materiali pregiati, edizioni limitate" },
+        { "value": "handmade", "description": "Fatto a mano, artigianale, pezzi unici" }
+      ]
+    },
+    {
+      "prefix": "micro",
+      "label": "Micro-target",
+      "description": "Destinatari specifici per categorie mirate",
+      "values": [
+        { "value": "mamma", "description": "Specifico per la mamma (festa della mamma, scritte 'mamma')" },
+        { "value": "papà", "description": "Specifico per il papà (festa del papà, scritte 'papà')" },
+        { "value": "fidanzato", "description": "Regalo romantico per partner maschile" },
+        { "value": "fidanzata", "description": "Regalo romantico per partner femminile" },
+        { "value": "amica", "description": "Regalo per amica/e" },
+        { "value": "amico", "description": "Regalo per amico/ci" },
+        { "value": "bimbo", "description": "Bambini maschi 3-10 anni" },
+        { "value": "bimba", "description": "Bambine femmine 3-10 anni" },
+        { "value": "neonato", "description": "Neonati 0-2 anni, prima infanzia" },
+        { "value": "teenager", "description": "Adolescenti 11-17 anni" },
+        { "value": "collega", "description": "Regali per colleghi di lavoro o ufficio" }
+      ]
+    },
+    {
+      "prefix": "tema",
+      "label": "Tema",
+      "description": "Argomento o passione di nicchia",
+      "values": [
+        { "value": "caffè", "description": "Prodotti legati al caffè: tazze, moka, palettine" },
+        { "value": "cucina", "description": "Cucinare, pasticceria, chef" },
+        { "value": "animali", "description": "Cani, gatti, animali domestici" },
+        { "value": "viaggio", "description": "Viaggi, valigie, passaporto, mappe" },
+        { "value": "scuola", "description": "Back to school, studenti, zaini" },
+        { "value": "ufficio", "description": "Lavoro, scrivania, professionisti" },
+        { "value": "sport", "description": "Attività sportive, fitness, palestra" }
+      ]
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   "name": "app",
   "private": true,
   "scripts": {
-    "build": "remix vite:build",
+    "build": "prisma generate && prisma db push --accept-data-loss && remix vite:build",
     "dev": "shopify app dev",
     "config:link": "shopify app config link",
     "generate": "shopify app generate",
@@ -23,7 +23,7 @@
     "node": ">=20.19 <22 || >=22.12"
   },
   "dependencies": {
-    "@prisma/client": "^6.2.1",
+    "@prisma/client": "6.19.3",
     "@remix-run/dev": "^2.16.1",
     "@remix-run/fs-routes": "^2.16.1",
     "@remix-run/node": "^2.16.1",
@@ -33,10 +33,14 @@
     "@shopify/polaris": "^12.0.0",
     "@shopify/shopify-app-remix": "^4.1.0",
     "@shopify/shopify-app-session-storage-prisma": "^8.0.0",
+    "@vercel/kv": "^3.0.0",
     "isbot": "^5.1.0",
-    "prisma": "^6.2.1",
+    "prisma": "6.19.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "redis": "^5.12.1",
+    "replicate": "^1.4.0",
+    "sharp": "^0.34.5",
     "vite-tsconfig-paths": "^5.0.1"
   },
   "devDependencies": {

@@ -1,352 +1,223 @@
-# Shopify App Template - Remix
+# Magic AI Agent — Tags Manager
 
-> [!NOTE]
-> **Remix is now React Router.** As of [React Router v7](https://remix.run/blog/merging-remix-and-react-router), Remix and React Router have merged.
-> 
-> For new projects, use the **[Shopify App Template - React Router](https://github.com/Shopify/shopify-app-template-react-router)** instead.
-> 
-> To migrate your existing Remix app, follow the **[migration guide](https://github.com/Shopify/shopify-app-template-react-router/wiki/Upgrading-from-Remix)**.
+Nuova feature per la Shopify app Magic AI Agent che permette CRUD completo sui tag
+prodotto con generazione AI basata su una tassonomia configurabile.
 
-This is a template for building a [Shopify app](https://shopify.dev/docs/apps/getting-started) using the [Remix](https://remix.run) framework.
+## 🎯 Cosa fa
 
-Rather than cloning this repo, you can use your preferred package manager and the Shopify CLI with [these steps](https://shopify.dev/docs/apps/getting-started/create).
+- **Tab Prodotti**: lista paginata con filtri (status, brand, missing tags, ricerca), selezione
+  persistente multi-page, bulk actions (genera AI, push pending, pulisci SKU, reset tag)
+- **Tab Tassonomia**: editor JSON + anteprima dei tag definiti, modificabile dall'admin UI
+- **Tab Jobs**: coda dei lavori asincroni in corso, con progress bar e log errori
 
-Visit the [`shopify.dev` documentation](https://shopify.dev/docs/api/shopify-app-remix) for more details on the Remix app package.
+## 🔒 Safety
 
-## Quick start
+- **SKU: sempre rimossi** in ogni generazione AI
+- **Modalità draft**: l'AI scrive in una tabella `ProductTagDraft`, poi un secondo comando
+  pusha su Shopify (così si ha preview prima di committare)
+- **Previous tags salvati** nel DB prima di modificare (per eventuale undo)
+- **Worker timeout-aware**: ogni batch dura max 4 minuti, poi si ferma e aspetta il prossimo
+  trigger (evita timeout Vercel)
+- **Validazione tag**: l'AI può usare SOLO tag definiti nella tassonomia, niente invenzioni
 
-### Prerequisites
+---
 
-Before you begin, you'll need the following:
+## 📥 Installazione nel repo `shopify-app-template-remix`
 
-1. **Node.js**: [Download and install](https://nodejs.org/en/download/) it if you haven't already.
-2. **Shopify Partner Account**: [Create an account](https://partners.shopify.com/signup) if you don't have one.
-3. **Test Store**: Set up either a [development store](https://help.shopify.com/en/partners/dashboard/development-stores#create-a-development-store) or a [Shopify Plus sandbox store](https://help.shopify.com/en/partners/dashboard/managing-stores/plus-sandbox-store) for testing your app.
-4. **Shopify CLI**: [Download and install](https://shopify.dev/docs/apps/tools/cli/getting-started) it if you haven't already.
-```shell
-npm install -g @shopify/cli@latest
+### Step 1 — Copia i file
+
+Copia i file nelle posizioni corrispondenti nel tuo repo:
+
+```
+shopify-app-template-remix/
+├── app/
+│   ├── lib/
+│   │   ├── taxonomy.server.ts           ← nuovo
+│   │   ├── ai-tagger.server.ts          ← nuovo
+│   │   └── tag-jobs.server.ts           ← nuovo
+│   └── routes/
+│       ├── app.tags.tsx                 ← nuovo (UI principale)
+│       ├── api.tags.products.tsx        ← nuovo (lista prodotti)
+│       ├── api.tags.vendors.tsx         ← nuovo (dropdown brand)
+│       ├── api.tags.taxonomy.tsx        ← nuovo (CRUD tassonomia)
+│       ├── api.tags.manual.tsx          ← nuovo (modifica manuale singola)
+│       ├── api.tags.jobs.tsx            ← nuovo (lista job)
+│       ├── api.tags.jobs.create.tsx     ← nuovo (crea job)
+│       ├── api.tags.jobs.process.tsx    ← nuovo (worker)
+│       └── api.tags.jobs.$id.tsx        ← nuovo (singolo job)
+├── data/
+│   └── tag-taxonomy.json                ← nuovo (vocabolario iniziale)
+└── prisma/
+    └── schema.prisma                    ← MODIFICARE (vedi Step 2)
 ```
 
-### Setup
+### Step 2 — Aggiungi i modelli Prisma
 
-```shell
-shopify app init --template=https://github.com/Shopify/shopify-app-template-remix
+Apri `prisma/schema.prisma` e aggiungi in fondo i 3 modelli dal file
+`schema-additions.prisma` (TagTaxonomy, ProductTagDraft, TagJob).
+
+Poi esegui:
+
+```bash
+npx prisma migrate dev --name add_tags_manager
+npx prisma generate
 ```
 
-### Local Development
+### Step 3 — Aggiungi la voce al menu della app
 
-```shell
-shopify app dev
+Apri il tuo `app/routes/app.tsx` (o dove hai il layout) e aggiungi il link al Tags Manager nella nav:
+
+```tsx
+<Link to="/app/tags">Tags Manager</Link>
 ```
 
+### Step 4 — Variabili d'ambiente
 
+Assicurati di avere in `.env` (e su Vercel Environment Variables):
 
-Local development is powered by [the Shopify CLI](https://shopify.dev/docs/apps/tools/cli). It logs into your partners account, connects to an app, provides environment variables, updates remote config, creates a tunnel and provides commands to generate extensions.
+```env
+ANTHROPIC_API_KEY=sk-ant-api03-...
+SHOPIFY_ACCESS_TOKEN=shpat_... (se fetchi direttamente da worker - opzionale)
+TAG_JOB_WORKER_TOKEN=un_token_segreto_random (opzionale, per cron esterni)
+```
 
-### Authenticating and querying data
+### Step 5 — Installazione dipendenze
 
-To authenticate and query data you can use the `shopify` const that is exported from `/app/shopify.server.js`:
+Il codice usa `@anthropic-ai/sdk` che probabilmente hai già dalla feature descriptions.
+In caso contrario:
 
-```js
-export async function loader({ request }) {
-  const { admin } = await shopify.authenticate.admin(request);
+```bash
+npm install @anthropic-ai/sdk
+```
 
-  const response = await admin.graphql(`
+### Step 6 — Deploy su Vercel
+
+```bash
+git add .
+git commit -m "feat: tags manager with AI generation"
+git push
+```
+
+Vercel farà auto-deploy.
+
+### Step 7 — (opzionale) Cron per elaborare i job in background
+
+Aggiungi `vercel.json` nel root del repo (o aggiorna quello esistente):
+
+```json
+{
+  "crons": [
     {
-      products(first: 25) {
-        nodes {
-          title
-          description
-        }
-      }
-    }`);
-
-  const {
-    data: {
-      products: { nodes },
-    },
-  } = await response.json();
-
-  return nodes;
+      "path": "/api/tags/jobs/process",
+      "schedule": "*/5 * * * *"
+    }
+  ]
 }
 ```
 
-This template comes preconfigured with examples of:
+Questo invoca il worker ogni 5 minuti. Se hai già delle cron per altre feature, aggiungi solo
+la riga qui dentro alla lista esistente.
 
-1. Setting up your Shopify app in [/app/shopify.server.ts](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/shopify.server.ts)
-2. Querying data using Graphql. Please see: [/app/routes/app.\_index.tsx](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/routes/app._index.tsx).
-3. Responding to webhooks in individual files such as [/app/routes/webhooks.app.uninstalled.tsx](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/routes/webhooks.app.uninstalled.tsx) and [/app/routes/webhooks.app.scopes_update.tsx](https://github.com/Shopify/shopify-app-template-remix/blob/main/app/routes/webhooks.app.scopes_update.tsx)
+---
 
-Please read the [documentation for @shopify/shopify-app-remix](https://www.npmjs.com/package/@shopify/shopify-app-remix#authenticating-admin-requests) to understand what other API's are available.
+## 🔄 Workflow utente tipo
 
-## Deployment
+### Scenario: tag tutti i prodotti "draft" con AI
 
-### Application Storage
+1. Apri Tags Manager → Tab **Prodotti**
+2. Filtro Status = "Draft" + Filtro "Solo senza tag strutturati" = ON
+3. Click **"Seleziona tutti in questa pagina"** → poi "Avanti" → seleziona ancora → ecc.
+   (la selezione è persistente multi-page)
+4. Click **"Genera tag con AI"** → si crea un TagJob di tipo "generate"
+5. Vai al Tab **Jobs** → vedi la progress bar del job in corso
+6. Quando il job è "completed", torna al Tab **Prodotti**: i prodotti avranno un badge
+   **"X tag pending"** nella colonna Pending
+7. Rivedi i tag proposti (puoi vederli scorrendo la tabella)
+8. Seleziona di nuovo i prodotti da committare → **"Pusha pending su Shopify"**
+9. Un secondo TagJob di tipo "push" esegue le PUT su Shopify
 
-This template uses [Prisma](https://www.prisma.io/) to store session data, by default using an [SQLite](https://www.sqlite.org/index.html) database.
-The database is defined as a Prisma schema in `prisma/schema.prisma`.
+### Scenario: pulisci tag SKU: da tutti i prodotti
 
-This use of SQLite works in production if your app runs as a single instance.
-The database that works best for you depends on the data your app needs and how it is queried.
-You can run your database of choice on a server yourself or host it with a SaaS company.
-Here's a short list of databases providers that provide a free tier to get started:
+1. Filtro = nessuno (tutti i prodotti)
+2. Click "Seleziona tutti in questa pagina" su più pagine
+3. Click **"Pulisci tag SKU:"**
+4. Si crea un TagJob di tipo "cleanup_sku" che rimuove tutti i tag SKU:* dai prodotti
+   selezionati **direttamente su Shopify**
 
-| Database   | Type             | Hosters                                                                                                                                                                                                                               |
-| ---------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| MySQL      | SQL              | [Digital Ocean](https://www.digitalocean.com/products/managed-databases-mysql), [Planet Scale](https://planetscale.com/), [Amazon Aurora](https://aws.amazon.com/rds/aurora/), [Google Cloud SQL](https://cloud.google.com/sql/docs/mysql) |
-| PostgreSQL | SQL              | [Digital Ocean](https://www.digitalocean.com/products/managed-databases-postgresql), [Amazon Aurora](https://aws.amazon.com/rds/aurora/), [Google Cloud SQL](https://cloud.google.com/sql/docs/postgres)                                   |
-| Redis      | Key-value        | [Digital Ocean](https://www.digitalocean.com/products/managed-databases-redis), [Amazon MemoryDB](https://aws.amazon.com/memorydb/)                                                                                                        |
-| MongoDB    | NoSQL / Document | [Digital Ocean](https://www.digitalocean.com/products/managed-databases-mongodb), [MongoDB Atlas](https://www.mongodb.com/atlas/database)                                                                                                  |
+### Scenario: modifica tassonomia
 
-To use one of these, you can use a different [datasource provider](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#datasource) in your `schema.prisma` file, or a different [SessionStorage adapter package](https://github.com/Shopify/shopify-api-js/blob/main/packages/shopify-api/docs/guides/session-storage.md).
+1. Apri Tags Manager → Tab **Tassonomia**
+2. Vedi anteprima dei gruppi attuali + editor JSON sotto
+3. Modifica il JSON (aggiungi/rimuovi gruppi o valori, aggiorna le descrizioni per l'AI)
+4. Click **"Salva tassonomia"**
+5. La nuova versione è immediatamente disponibile per i prossimi job AI
 
-### Build
+---
 
-Remix handles building the app for you, by running the command below with the package manager of your choice:
-
-Using yarn:
-
-```shell
-yarn build
-```
-
-Using npm:
-
-```shell
-npm run build
-```
-
-Using pnpm:
-
-```shell
-pnpm run build
-```
-
-## Hosting
-
-When you're ready to set up your app in production, you can follow [our deployment documentation](https://shopify.dev/docs/apps/deployment/web) to host your app on a cloud provider like [Heroku](https://www.heroku.com/) or [Fly.io](https://fly.io/).
-
-When you reach the step for [setting up environment variables](https://shopify.dev/docs/apps/deployment/web#set-env-vars), you also need to set the variable `NODE_ENV=production`.
-
-### Hosting on Vercel
-
-Using the Vercel Preset is recommended when hosting your Shopify Remix app on Vercel. You'll also want to ensure imports that would normally come from `@remix-run/node` are imported from `@vercel/remix` instead. Learn more about hosting Remix apps on Vercel [here](https://vercel.com/docs/frameworks/remix).
-
-```diff
-// vite.config.ts
-import { vitePlugin as remix } from "@remix-run/dev";
-import { defineConfig, type UserConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
-+ import { vercelPreset } from '@vercel/remix/vite';
-
-installGlobals();
-
-export default defineConfig({
-  plugins: [
-    remix({
-      ignoredRouteFiles: ["**/.*"],
-+     presets: [vercelPreset()],
-    }),
-    tsconfigPaths(),
-  ],
-});
-```
-
-## Troubleshooting
-
-### Database tables don't exist
-
-If you get this error:
+## 🧠 Architettura riassunta
 
 ```
-The table `main.Session` does not exist in the current database.
+┌────────────────────────────────────────────────────────────┐
+│   UI /app/tags (Polaris tabs)                              │
+└───────────┬────────────────┬────────────────┬──────────────┘
+            │                │                │
+            ↓                ↓                ↓
+     /api/tags/products  /api/tags/taxonomy  /api/tags/jobs
+     (GraphQL Admin)     (CRUD Prisma)       (lista + worker)
+            │                                 │
+            ↓                                 ↓
+        Shopify API                    /api/tags/jobs/create
+                                              │
+                                              ↓
+                                       TagJob DB record
+                                              │
+                                              ↓ (cron /5 min)
+                                       /api/tags/jobs/process
+                                              │
+                                              ↓
+                                       tag-jobs.server.ts
+                                        │
+                                        ↓
+                               [ai-tagger.server.ts]
+                                        │
+                                        ↓
+                                   Claude Haiku
+                                        │
+                                        ↓
+                                ProductTagDraft
+                                (pending)
+                                        │
+                                        ↓ (commit/push)
+                                  Shopify API PUT
 ```
 
-You need to create the database for Prisma. Run the `setup` script in `package.json` using your preferred package manager.
+---
 
-### Navigating/redirecting breaks an embedded app
+## ⚠️ Note e limitazioni
 
-Embedded Shopify apps must maintain the user session, which can be tricky inside an iFrame. To avoid issues:
+- **Neon cold start**: primi call dopo inattività possono fallire. Il worker ritenta automaticamente.
+- **Claude rate limit**: se processi >100 prodotti/min potresti beccare 429. Il worker include una pausa di 400ms tra prodotti.
+- **Vercel timeout**: le funzioni hanno timeout 300s (Free) o 900s (Pro). Il worker si ferma a 4 min per stare largo.
+- **Selezione persistente**: funziona finché non ricarichi la pagina. Se cambi i filtri, la selezione viene mantenuta ma i prodotti visibili cambiano.
+- **Tassonomia con caratteri speciali**: se includi `à è é ù` (es: `micro:papà`), Shopify li accetta ma fai attenzione alle regole smart collection che devono matchare esattamente.
+- **Undo non implementato nella UI**: i `previousTags` sono salvati in `ProductTagDraft`, ma la funzione undo UI può essere aggiunta in seguito se serve.
 
-1. Use `Link` from `@remix-run/react` or `@shopify/polaris`. Do not use `<a>`.
-2. Use the `redirect` helper returned from `authenticate.admin`. Do not use `redirect` from `@remix-run/node`
-3. Use `useSubmit` or `<Form/>` from `@remix-run/react`. Do not use a lowercase `<form/>`.
+---
 
-This only applies if your app is embedded, which it will be by default.
+## 🧪 Testing consigliato
 
-### Non Embedded
+1. **Primo test**: modalità "draft" — genera tag per 5-10 prodotti, controlla i draft, pusha, verifica su Shopify admin.
+2. **Stress test**: seleziona 500 prodotti → genera AI. Vedi che il worker processa a batch senza timeout.
+3. **Cleanup SKU**: seleziona 50 prodotti con molti tag SKU:, esegui "Pulisci SKU:", verifica su Shopify.
+4. **Rollback test**: se qualcosa va storto, i `previousTags` nel DB permettono di scrivere uno script manuale di restore.
 
-Shopify apps are best when they are embedded in the Shopify Admin, which is how this template is configured. If you have a reason to not embed your app please make the following changes:
+---
 
-1. Ensure `embedded = false` is set in [shopify.app.toml`](./shopify.app.toml). [Docs here](https://shopify.dev/docs/apps/build/cli-for-apps/app-configuration#global).
-2. Pass `isEmbeddedApp: false` to `shopifyApp()` in `./app/shopify.server.js|ts`.
-3. Change the `isEmbeddedApp` prop to `isEmbeddedApp={false}` for the `AppProvider` in `/app/routes/app.jsx|tsx`.
-4. Remove the `@shopify/app-bridge-react` dependency from [package.json](./package.json) and `vite.config.ts|js`.
-5. Remove anything imported from `@shopify/app-bridge-react`.  For example: `NavMenu`, `TitleBar` and `useAppBridge`.
+## 📝 TODO futuri (eventuali)
 
-### OAuth goes into a loop when I change my app's scopes
-
-If you change your app's scopes and authentication goes into a loop and fails with a message from Shopify that it tried too many times, you might have forgotten to update your scopes with Shopify.
-To do that, you can run the `deploy` CLI command.
-
-Using yarn:
-
-```shell
-yarn deploy
-```
-
-Using npm:
-
-```shell
-npm run deploy
-```
-
-Using pnpm:
-
-```shell
-pnpm run deploy
-```
-
-### My shop-specific webhook subscriptions aren't updated
-
-If you are registering webhooks in the `afterAuth` hook, using `shopify.registerWebhooks`, you may find that your subscriptions aren't being updated.  
-
-Instead of using the `afterAuth` hook, the recommended approach is to declare app-specific webhooks in the `shopify.app.toml` file.  This approach is easier since Shopify will automatically update changes to webhook subscriptions every time you run `deploy` (e.g: `npm run deploy`).  Please read these guides to understand more:
-
-1. [app-specific vs shop-specific webhooks](https://shopify.dev/docs/apps/build/webhooks/subscribe#app-specific-subscriptions)
-2. [Create a subscription tutorial](https://shopify.dev/docs/apps/build/webhooks/subscribe/get-started?framework=remix&deliveryMethod=https)
-
-If you do need shop-specific webhooks, please keep in mind that the package calls `afterAuth` in 2 scenarios:
-
-- After installing the app
-- When an access token expires
-
-During normal development, the app won't need to re-authenticate most of the time, so shop-specific subscriptions aren't updated. To force your app to update the subscriptions, you can uninstall and reinstall it in your development store. That will force the OAuth process and call the `afterAuth` hook.
-
-### Admin created webhook failing HMAC validation
-
-Webhooks subscriptions created in the [Shopify admin](https://help.shopify.com/en/manual/orders/notifications/webhooks) will fail HMAC validation. This is because the webhook payload is not signed with your app's secret key.  There are 2 solutions:
-
-1. Use [app-specific webhooks](https://shopify.dev/docs/apps/build/webhooks/subscribe#app-specific-subscriptions) defined in your toml file instead (recommended)
-2. Create [webhook subscriptions](https://shopify.dev/docs/api/shopify-app-remix/v1/guide-webhooks) using the `shopifyApp` object.
-
-Test your webhooks with the [Shopify CLI](https://shopify.dev/docs/apps/tools/cli/commands#webhook-trigger) or by triggering events manually in the Shopify admin(e.g. Updating the product title to trigger a `PRODUCTS_UPDATE`).
-
-### Incorrect GraphQL Hints
-
-By default the [graphql.vscode-graphql](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql) extension for VS Code will assume that GraphQL queries or mutations are for the [Shopify Admin API](https://shopify.dev/docs/api/admin). This is a sensible default, but it may not be true if:
-
-1. You use another Shopify API such as the storefront API.
-2. You use a third party GraphQL API.
-
-in this situation, please update the [.graphqlrc.ts](https://github.com/Shopify/shopify-app-template-remix/blob/main/.graphqlrc.ts) config.
-
-### First parameter has member 'readable' that is not a ReadableStream.
-
-See [hosting on Vercel](#hosting-on-vercel).
-
-### Admin object undefined on webhook events triggered by the CLI
-
-When you trigger a webhook event using the Shopify CLI, the `admin` object will be `undefined`. This is because the CLI triggers an event with a valid, but non-existent, shop. The `admin` object is only available when the webhook is triggered by a shop that has installed the app.
-
-Webhooks triggered by the CLI are intended for initial experimentation testing of your webhook configuration. For more information on how to test your webhooks, see the [Shopify CLI documentation](https://shopify.dev/docs/apps/tools/cli/commands#webhook-trigger).
-
-### Using Defer & await for streaming responses
-
-To test [streaming using defer/await](https://remix.run/docs/en/main/guides/streaming) during local development you'll need to use the Shopify CLI slightly differently:
-
-1. First setup ngrok: https://ngrok.com/product/secure-tunnels
-2. Create an ngrok tunnel on port 8080: `ngrok http 8080`.
-3. Copy the forwarding address. This should be something like: `https://f355-2607-fea8-bb5c-8700-7972-d2b5-3f2b-94ab.ngrok-free.app`
-4. In a separate terminal run `yarn shopify app dev --tunnel-url=TUNNEL_URL:8080` replacing `TUNNEL_URL` for the address you copied in step 3.
-
-By default the CLI uses a cloudflare tunnel. Unfortunately it cloudflare tunnels wait for the Response stream to finish, then sends one chunk.
-
-This will not affect production, since tunnels are only for local development.
-
-### Using MongoDB and Prisma
-
-By default this template uses SQLlite as the database. It is recommended to move to a persisted database for production. If you choose to use MongoDB, you will need to make some modifications to the schema and prisma configuration. For more information please see the [Prisma MongoDB documentation](https://www.prisma.io/docs/orm/overview/databases/mongodb).
-
-Alternatively you can use a MongDB database directly with the [MongoDB session storage adapter](https://github.com/Shopify/shopify-app-js/tree/main/packages/apps/session-storage/shopify-app-session-storage-mongodb).
-
-#### Mapping the id field
-
-In MongoDB, an ID must be a single field that defines an @id attribute and a @map("\_id") attribute.
-The prisma adapter expects the ID field to be the ID of the session, and not the \_id field of the document.
-
-To make this work you can add a new field to the schema that maps the \_id field to the id field. For more information see the [Prisma documentation](https://www.prisma.io/docs/orm/prisma-schema/data-model/models#defining-an-id-field)
-
-```prisma
-model Session {
-  session_id  String    @id @default(auto()) @map("_id") @db.ObjectId
-  id          String    @unique
-...
-}
-```
-
-#### Error: The "mongodb" provider is not supported with this command
-
-MongoDB does not support the [prisma migrate](https://www.prisma.io/docs/orm/prisma-migrate/understanding-prisma-migrate/overview) command. Instead, you can use the [prisma db push](https://www.prisma.io/docs/orm/reference/prisma-cli-reference#db-push) command and update the `shopify.web.toml` file with the following commands. If you are using MongoDB please see the [Prisma documentation](https://www.prisma.io/docs/orm/overview/databases/mongodb) for more information.
-
-```toml
-[commands]
-predev = "npx prisma generate && npx prisma db push"
-dev = "npm exec remix vite:dev"
-```
-
-#### Prisma needs to perform transactions, which requires your mongodb server to be run as a replica set
-
-See the [Prisma documentation](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/mongodb/connect-your-database-node-mongodb) for connecting to a MongoDB database.
-
-### I want to use Polaris v13.0.0 or higher
-
-Currently, this template is set up to work on node v18.20 or higher. However, `@shopify/polaris` is limited to v12 because v13 can only run on node v20+.
-
-You don't have to make any changes to the code in order to be able to upgrade Polaris to v13, but you'll need to do the following:
-
-- Upgrade your node version to v20.10 or higher.
-- Update your `Dockerfile` to pull `FROM node:20-alpine` instead of `node:18-alpine`
-
-### "nbf" claim timestamp check failed
-
-This error will occur of the `nbf` claim timestamp check failed. This is because the JWT token is expired.
-If you  are consistently getting this error, it could be that the clock on your machine is not in sync with the server.
-
-To fix this ensure you have enabled `Set time and date automatically` in the `Date and Time` settings on your computer.
-
-## Benefits
-
-Shopify apps are built on a variety of Shopify tools to create a great merchant experience.
-
-<!-- TODO: Uncomment this after we've updated the docs -->
-<!-- The [create an app](https://shopify.dev/docs/apps/getting-started/create) tutorial in our developer documentation will guide you through creating a Shopify app using this template. -->
-
-The Remix app template comes with the following out-of-the-box functionality:
-
-- [OAuth](https://github.com/Shopify/shopify-app-js/tree/main/packages/shopify-app-remix#authenticating-admin-requests): Installing the app and granting permissions
-- [GraphQL Admin API](https://github.com/Shopify/shopify-app-js/tree/main/packages/shopify-app-remix#using-the-shopify-admin-graphql-api): Querying or mutating Shopify admin data
-- [Webhooks](https://github.com/Shopify/shopify-app-js/tree/main/packages/shopify-app-remix#authenticating-webhook-requests): Callbacks sent by Shopify when certain events occur
-- [AppBridge](https://shopify.dev/docs/api/app-bridge): This template uses the next generation of the Shopify App Bridge library which works in unison with previous versions.
-- [Polaris](https://polaris.shopify.com/): Design system that enables apps to create Shopify-like experiences
-
-## Tech Stack
-
-This template uses [Remix](https://remix.run). The following Shopify tools are also included to ease app development:
-
-- [Shopify App Remix](https://shopify.dev/docs/api/shopify-app-remix) provides authentication and methods for interacting with Shopify APIs.
-- [Shopify App Bridge](https://shopify.dev/docs/apps/tools/app-bridge) allows your app to seamlessly integrate your app within Shopify's Admin.
-- [Polaris React](https://polaris.shopify.com/) is a powerful design system and component library that helps developers build high quality, consistent experiences for Shopify merchants.
-- [Webhooks](https://github.com/Shopify/shopify-app-js/tree/main/packages/shopify-app-remix#authenticating-webhook-requests): Callbacks sent by Shopify when certain events occur
-- [Polaris](https://polaris.shopify.com/): Design system that enables apps to create Shopify-like experiences
-
-## Resources
-
-- [Remix Docs](https://remix.run/docs/en/v1)
-- [Shopify App Remix](https://shopify.dev/docs/api/shopify-app-remix)
-- [Introduction to Shopify apps](https://shopify.dev/docs/apps/getting-started)
-- [App authentication](https://shopify.dev/docs/apps/auth)
-- [Shopify CLI](https://shopify.dev/docs/apps/tools/cli)
-- [App extensions](https://shopify.dev/docs/apps/app-extensions/list)
-- [Shopify Functions](https://shopify.dev/docs/api/functions)
-- [Getting started with internationalizing your app](https://shopify.dev/docs/apps/best-practices/internationalization/getting-started)
+- UI per vedere il diff (tag attuali vs proposti) prima del push
+- Pulsante "Undo" per ripristinare previousTags
+- Import/export tassonomia come file JSON
+- Report CSV dei tag per analisi
+- Supporto per tag metafield (oltre ai tag base)
+- Preset di filtri salvabili (es: "tutti i draft senza tag")
