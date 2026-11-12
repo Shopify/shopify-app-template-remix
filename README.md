@@ -1,3 +1,5 @@
+> **This repository is no longer maintained.** It has been archived and receives no updates or security fixes. Use [shopify-app-template-react-router](https://github.com/Shopify/shopify-app-template-react-router) instead.
+
 # Shopify App Template - Remix
 
 > [!NOTE]
