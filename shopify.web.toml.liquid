@@ -1,0 +1,11 @@
+name = "remix"
+roles = ["frontend", "backend"]
+webhooks_path = "/webhooks/app/uninstalled"
+
+{%- assign exec = dependency_manager | append: ' exec' -%}
+{%- if dependency_manager == 'yarn' -%}
+{%- assign exec = 'yarn' -%}
+{%- endif %}
+[commands]
+predev = "{{ exec }} prisma generate"
+dev = "{{ exec }} prisma migrate deploy && {{ exec }} remix vite:dev"
